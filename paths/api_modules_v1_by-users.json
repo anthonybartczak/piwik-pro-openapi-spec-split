@@ -1,0 +1,404 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/modules/v1/by-users": {
+      "post": {
+        "summary": "Modules list for given users",
+        "description": "List of modules with access for a list of users",
+        "operationId": "accessible_modules_for_users_batch",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "description": "Resource type",
+                          "type": "string",
+                          "enum": [
+                            "ppms/user"
+                          ]
+                        },
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "UUIDv4 identifier of an object",
+                          "example": "6edb1e3c-4c43-4760-ab76-682ad83146be"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": "list of users"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "id",
+                          "attributes"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "ppms/user/modules"
+                            ]
+                          },
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "UUIDv4 identifier of an object",
+                            "example": "6edb1e3c-4c43-4760-ab76-682ad83146be"
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "required": [
+                              "modules"
+                            ],
+                            "properties": {
+                              "modules": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "analytics",
+                                    "consent_manager",
+                                    "customer_data_platform",
+                                    "tag_manager",
+                                    "administration"
+                                  ],
+                                  "description": "ID of a module"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "errors"
+                  ],
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "errors": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "status",
+                                "code",
+                                "detail",
+                                "source"
+                              ],
+                              "properties": {
+                                "status": {
+                                  "type": "string",
+                                  "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                  "example": "400"
+                                },
+                                "code": {
+                                  "type": "string",
+                                  "description": "an application-specific error code, expressed as a string value",
+                                  "example": "error.default"
+                                },
+                                "detail": {
+                                  "type": "string",
+                                  "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                  "example": "This field is invalid"
+                                },
+                                "source": {
+                                  "type": "object",
+                                  "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                  "properties": {
+                                    "pointer": {
+                                      "type": "string",
+                                      "example": "/data",
+                                      "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "errors": [
+                      {
+                        "status": "400",
+                        "code": "modules.error.too-many-users",
+                        "detail": "This collection contains 101 elements. It should have 100 elements or less.",
+                        "source": {
+                          "pointer": "/data"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "code",
+                              "detail",
+                              "source"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "errors": [
+                          {
+                            "status": "409",
+                            "code": "error",
+                            "source": {
+                              "pointer": "/data"
+                            },
+                            "detail": "The resource object's type (INVALID) is not the type that constitute the collection represented by the endpoint (ppms/user)."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported Media Type",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "code",
+                              "detail",
+                              "source"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "errors": [
+                          {
+                            "status": "415",
+                            "code": "unsupported_media_type",
+                            "source": {
+                              "pointer": "/data"
+                            },
+                            "detail": "Unsupported media type \"UNSUPPORTED\" in request."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Modules"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

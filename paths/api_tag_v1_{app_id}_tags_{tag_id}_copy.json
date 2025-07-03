@@ -1,0 +1,715 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/tag/v1/{app_id}/tags/{tag_id}/copy": {
+      "post": {
+        "summary": "Copy tag",
+        "tags": [
+          "Tag Manager"
+        ],
+        "description": "This action results in asynchronous operation. See more: <a href=\"https://developers.piwik.pro/reference/asynchronous-operations\">Asynchronous operations</a>\n",
+        "responses": {
+          "202": {
+            "description": "Operation data with new (copied) tag identifier",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "description": "Copy tag response",
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "title": "JSON:API 1.0 response data",
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "title": "UUID",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "type": {
+                          "description": "Tag resource type",
+                          "type": "string",
+                          "enum": [
+                            "tag"
+                          ]
+                        },
+                        "relationships": {
+                          "description": "Copy tag relationships",
+                          "type": "object",
+                          "properties": {
+                            "operation": {
+                              "description": "Operation",
+                              "type": "object",
+                              "properties": {
+                                "data": {
+                                  "title": "JSON:API 1.0 relationship data",
+                                  "description": "Operation data",
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "allOf": [
+                                        {
+                                          "description": "Operation identifier"
+                                        },
+                                        {
+                                          "title": "UUID",
+                                          "type": "string",
+                                          "format": "uuid"
+                                        }
+                                      ]
+                                    },
+                                    "type": {
+                                      "description": "Operation resource type",
+                                      "type": "string",
+                                      "enum": [
+                                        "operation"
+                                      ]
+                                    }
+                                  },
+                                  "additionalProperties": false,
+                                  "required": [
+                                    "id",
+                                    "type"
+                                  ]
+                                }
+                              },
+                              "additionalProperties": false,
+                              "required": [
+                                "data"
+                              ]
+                            }
+                          },
+                          "additionalProperties": false,
+                          "required": [
+                            "operation"
+                          ]
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "type",
+                        "relationships"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "fd6d2ebf-5944-4f2d-bda8-7e74f1585c1a",
+                    "type": "tag",
+                    "relationships": {
+                      "operation": {
+                        "data": {
+                          "id": "bb8f1843-165e-462c-86f5-05a0391f82c1",
+                          "type": "operation"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INVALID_JSON_ERROR",
+                      "detail": "The attribute expected to be of type string but integer given.",
+                      "source": {
+                        "pointer": "/data/attributes/trigger_type"
+                      },
+                      "meta": {
+                        "keyword": "type",
+                        "keyword_args": {
+                          "expected": "string",
+                          "used": "integer"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "UNAUTHORIZED_ERROR",
+                      "detail": "Access token not authorized"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "NOT_FOUND_ERROR",
+                      "detail": "There is no application with given identifier: 5c39070d-9e0b-40a2-ae56-392f05711f74",
+                      "source": {
+                        "parameter": "app_id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INTERNAL_SERVER_ERROR",
+                      "detail": "MySQL server has gone away"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "SERVICE_UNAVAILABLE",
+                      "detail": "Maintenance mode enabled for organization (organization: default)"
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Reason": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Reason for service being unavailable",
+                "example": "maintenance-mode"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "description": "Copy tag request",
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "title": "JSON:API 1.0 request data",
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "title": "UUID",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "type": {
+                        "description": "Tag resource type",
+                        "type": "string",
+                        "enum": [
+                          "tag"
+                        ]
+                      },
+                      "attributes": {
+                        "description": "Copy tag attributes",
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "with_triggers": {
+                            "description": "Flag indicating whether tag is copied with or without triggers",
+                            "type": "boolean"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "with_triggers"
+                        ]
+                      },
+                      "relationships": {
+                        "description": "Copy tag relationships",
+                        "type": "object",
+                        "properties": {
+                          "target_app": {
+                            "description": "Target application",
+                            "type": "object",
+                            "properties": {
+                              "data": {
+                                "title": "JSON:API 1.0 relationship data",
+                                "description": "Target application data",
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "title": "UUID",
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "type": {
+                                    "description": "Application resource type",
+                                    "type": "string",
+                                    "enum": [
+                                      "app"
+                                    ]
+                                  }
+                                },
+                                "additionalProperties": false,
+                                "required": [
+                                  "id",
+                                  "type"
+                                ]
+                              }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                              "data"
+                            ]
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "target_app"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "attributes",
+                      "relationships"
+                    ]
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "data"
+                ]
+              },
+              "example": {
+                "data": {
+                  "id": "78e49d2b-4d55-4a6b-af8e-67eaea2cbad1",
+                  "type": "tag",
+                  "attributes": {
+                    "name": "Tag (copy)",
+                    "with_triggers": false
+                  },
+                  "relationships": {
+                    "target_app": {
+                      "data": {
+                        "id": "60733047-e7ea-4a65-8359-84e9bd1590df",
+                        "type": "app"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "app_id",
+          "required": true,
+          "description": "Application identifier",
+          "schema": {
+            "title": "UUID",
+            "type": "string",
+            "format": "uuid"
+          },
+          "example": "1f74dda5-b598-41d6-a9e4-f501ef4379e1"
+        },
+        {
+          "in": "path",
+          "name": "tag_id",
+          "required": true,
+          "description": "Tag identifier",
+          "schema": {
+            "title": "UUID",
+            "type": "string",
+            "format": "uuid"
+          },
+          "example": "5c39070d-9e0b-40a2-ae56-392f05711f74"
+        }
+      ]
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

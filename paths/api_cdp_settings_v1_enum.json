@@ -1,0 +1,200 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/settings/v1/enum": {
+      "get": {
+        "summary": "List enum variants",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "get-enum",
+        "description": "Returns enum variants of the specified enum.",
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Return variants of this enum",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "event_type"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "description": "Return only variants whose label contains this string (case-insensitive)",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "size",
+            "description": "Return at most that many labels",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "label"
+                    ],
+                    "properties": {
+                      "id": {
+                        "oneOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ],
+                        "description": "Identifier of an enum variant"
+                      },
+                      "label": {
+                        "type": "string",
+                        "description": "Human-readable label of an enum variant"
+                      }
+                    }
+                  },
+                  "example": [
+                    {
+                      "id": 1,
+                      "label": "Page View"
+                    },
+                    {
+                      "id": 2,
+                      "label": "Outlink"
+                    },
+                    {
+                      "id": 3,
+                      "label": "Download"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Resource not found (bad ID or resource deleted)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

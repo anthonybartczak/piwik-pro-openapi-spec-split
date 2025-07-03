@@ -1,0 +1,650 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/meta-sites/v1/{meta_site_id}/relationships/apps": {
+      "post": {
+        "summary": "Add apps to meta site",
+        "description": "Adds apps to meta site. You can add up to 1000 apps to meta site in one api call.",
+        "operationId": "add_apps_to_meta_site_v1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "meta_site_id",
+            "required": true,
+            "description": "UUIDv4 identifier of an object",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "id"
+                      ],
+                      "properties": {
+                        "type": {
+                          "description": "Resource type",
+                          "type": "string",
+                          "enum": [
+                            "ppms/app"
+                          ]
+                        },
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "UUIDv4 identifier of an object",
+                          "example": "6edb1e3c-4c43-4760-ab76-682ad83146be"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": "Request data to add apps to meta site",
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "required": [
+                                  "status",
+                                  "title"
+                                ],
+                                "properties": {
+                                  "status": {
+                                    "type": "string",
+                                    "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                    "example": "400"
+                                  },
+                                  "code": {
+                                    "type": "string",
+                                    "description": "an application-specific error code, expressed as a string value",
+                                    "example": "error.default"
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                    "example": "Invalid form"
+                                  },
+                                  "detail": {
+                                    "type": "string",
+                                    "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                    "example": "This field is invalid"
+                                  },
+                                  "source": {
+                                    "type": "object",
+                                    "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                    "properties": {
+                                      "pointer": {
+                                        "type": "string",
+                                        "example": "/data/attributes/name",
+                                        "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                      },
+                                      "parameter": {
+                                        "type": "string",
+                                        "example": "offset",
+                                        "description": "a string indicating which URI query parameter caused the error"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "errors": [
+                          {
+                            "status": "400",
+                            "code": "error.default",
+                            "title": "\"my-id\" is not valid UUID."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "status",
+                        "title"
+                      ],
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                          "example": "400"
+                        },
+                        "code": {
+                          "type": "string",
+                          "description": "an application-specific error code, expressed as a string value",
+                          "example": "error.default"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                          "example": "Invalid form"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                          "example": "This field is invalid"
+                        },
+                        "source": {
+                          "type": "object",
+                          "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                          "properties": {
+                            "pointer": {
+                              "type": "string",
+                              "example": "/data/attributes/name",
+                              "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                            },
+                            "parameter": {
+                              "type": "string",
+                              "example": "offset",
+                              "description": "a string indicating which URI query parameter caused the error"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "errors": [
+                          {
+                            "status": "403",
+                            "code": "error.forbidden",
+                            "title": "Access denied."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "status",
+                        "title"
+                      ],
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                          "example": "400"
+                        },
+                        "code": {
+                          "type": "string",
+                          "description": "an application-specific error code, expressed as a string value",
+                          "example": "error.default"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                          "example": "Invalid form"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                          "example": "This field is invalid"
+                        },
+                        "source": {
+                          "type": "object",
+                          "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                          "properties": {
+                            "pointer": {
+                              "type": "string",
+                              "example": "/data/attributes/name",
+                              "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                            },
+                            "parameter": {
+                              "type": "string",
+                              "example": "offset",
+                              "description": "a string indicating which URI query parameter caused the error"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "errors": [
+                          {
+                            "status": "404",
+                            "code": "meta-site.error.not-exists",
+                            "title": "Meta site with id \"2136b49b-c4b5-44f1-a9ab-b6149bf047a0\" does not exist"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Meta sites"
+        ]
+      },
+      "delete": {
+        "summary": "Remove apps from meta site",
+        "description": "Removes apps from meta site. You can remove up to 1000 apps from meta site in one api call.",
+        "operationId": "remove_apps_from_meta_site_v1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "meta_site_id",
+            "required": true,
+            "description": "UUIDv4 identifier of an object",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "id"
+                      ],
+                      "properties": {
+                        "type": {
+                          "description": "Resource type",
+                          "type": "string",
+                          "enum": [
+                            "ppms/app"
+                          ]
+                        },
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "UUIDv4 identifier of an object",
+                          "example": "6edb1e3c-4c43-4760-ab76-682ad83146be"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": "Request data to remove apps from meta site",
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "required": [
+                                  "status",
+                                  "title"
+                                ],
+                                "properties": {
+                                  "status": {
+                                    "type": "string",
+                                    "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                    "example": "400"
+                                  },
+                                  "code": {
+                                    "type": "string",
+                                    "description": "an application-specific error code, expressed as a string value",
+                                    "example": "error.default"
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                    "example": "Invalid form"
+                                  },
+                                  "detail": {
+                                    "type": "string",
+                                    "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                    "example": "This field is invalid"
+                                  },
+                                  "source": {
+                                    "type": "object",
+                                    "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                    "properties": {
+                                      "pointer": {
+                                        "type": "string",
+                                        "example": "/data/attributes/name",
+                                        "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                      },
+                                      "parameter": {
+                                        "type": "string",
+                                        "example": "offset",
+                                        "description": "a string indicating which URI query parameter caused the error"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "errors": [
+                          {
+                            "status": "400",
+                            "code": "error.default",
+                            "title": "\"my-id\" is not valid UUID."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "status",
+                        "title"
+                      ],
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                          "example": "400"
+                        },
+                        "code": {
+                          "type": "string",
+                          "description": "an application-specific error code, expressed as a string value",
+                          "example": "error.default"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                          "example": "Invalid form"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                          "example": "This field is invalid"
+                        },
+                        "source": {
+                          "type": "object",
+                          "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                          "properties": {
+                            "pointer": {
+                              "type": "string",
+                              "example": "/data/attributes/name",
+                              "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                            },
+                            "parameter": {
+                              "type": "string",
+                              "example": "offset",
+                              "description": "a string indicating which URI query parameter caused the error"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "errors": [
+                          {
+                            "status": "403",
+                            "code": "error.forbidden",
+                            "title": "Access denied."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "status",
+                        "title"
+                      ],
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                          "example": "400"
+                        },
+                        "code": {
+                          "type": "string",
+                          "description": "an application-specific error code, expressed as a string value",
+                          "example": "error.default"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                          "example": "Invalid form"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                          "example": "This field is invalid"
+                        },
+                        "source": {
+                          "type": "object",
+                          "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                          "properties": {
+                            "pointer": {
+                              "type": "string",
+                              "example": "/data/attributes/name",
+                              "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                            },
+                            "parameter": {
+                              "type": "string",
+                              "example": "offset",
+                              "description": "a string indicating which URI query parameter caused the error"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "errors": [
+                          {
+                            "status": "404",
+                            "code": "meta-site.error.not-exists",
+                            "title": "Meta site with id \"2136b49b-c4b5-44f1-a9ab-b6149bf047a0\" does not exist"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Meta sites"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

@@ -1,0 +1,661 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/meta-sites/v1": {
+      "get": {
+        "summary": "List meta sites",
+        "description": "Lists meta sites",
+        "operationId": "list_meta_site_v1",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Limits the number of returned items",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000,
+              "default": 10
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "description": "Sets offset for list of items",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "description": "Search phrase - search for name or id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "description": "Sort field - can be reversed by adding dash before field name e.g (-name)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "created_at",
+                "updated_at",
+                "-name",
+                "-created_at",
+                "-updated_at"
+              ],
+              "default": "name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "meta",
+                    "data"
+                  ],
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "description": "Metadata of a listing",
+                      "required": [
+                        "total"
+                      ],
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of items",
+                          "example": 1
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "UUIDv4 identifier of an object",
+                            "example": "6edb1e3c-4c43-4760-ab76-682ad83146be"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "ppms/meta-site"
+                            ]
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "required": [
+                              "name",
+                              "created_at",
+                              "updated_at"
+                            ],
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Unique name of a meta site",
+                                "example": "All apps",
+                                "maxLength": 191,
+                                "minLength": 1
+                              },
+                              "created_at": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Timestamp of object's creation",
+                                "readOnly": true
+                              },
+                              "updated_at": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Timestamp of object's last modification",
+                                "readOnly": true
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "required": [
+                                  "status",
+                                  "title"
+                                ],
+                                "properties": {
+                                  "status": {
+                                    "type": "string",
+                                    "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                    "example": "400"
+                                  },
+                                  "code": {
+                                    "type": "string",
+                                    "description": "an application-specific error code, expressed as a string value",
+                                    "example": "error.default"
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                    "example": "Invalid form"
+                                  },
+                                  "detail": {
+                                    "type": "string",
+                                    "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                    "example": "This field is invalid"
+                                  },
+                                  "source": {
+                                    "type": "object",
+                                    "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                    "properties": {
+                                      "pointer": {
+                                        "type": "string",
+                                        "example": "/data/attributes/name",
+                                        "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                      },
+                                      "parameter": {
+                                        "type": "string",
+                                        "example": "offset",
+                                        "description": "a string indicating which URI query parameter caused the error"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "status": "400",
+                        "code": "error.default",
+                        "title": "Invalid query parameter 'offset' - value should be a positive integer - got '-1'"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Meta sites"
+        ]
+      },
+      "post": {
+        "summary": "Add meta site",
+        "description": "Adds meta site with unique name. You can add apps to this meta site in\n[/api/meta-sites/v1/{meta_site_id}/relationships/apps](#operation/add_apps_to_meta_site_v1) endpoint.\n",
+        "operationId": "add_meta_site_v1",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "allOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "attributes"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "UUIDv4 identifier of an object",
+                            "example": "6edb1e3c-4c43-4760-ab76-682ad83146be"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "ppms/meta-site"
+                            ]
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "required": [
+                              "name"
+                            ],
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Unique name of a meta site",
+                                "example": "All apps",
+                                "maxLength": 191,
+                                "minLength": 1
+                              },
+                              "currency": {
+                                "type": "string",
+                                "description": "Currency in ISO 4217 format (e.g. USD)",
+                                "example": "USD",
+                                "default": "USD"
+                              },
+                              "timezone": {
+                                "type": "string",
+                                "description": "Timezone in IANA time zone format (like Europe/Warsaw), or UTC offset (like UTC+1)",
+                                "example": "Europe/Warsaw",
+                                "default": "UTC"
+                              },
+                              "e_commerce_tracking": {
+                                "type": "boolean",
+                                "description": "Enables e-commerce reports, additional tab is shown in Analytics module with e-commerce logs. Sales can be easily tracked using this setting.",
+                                "example": false,
+                                "default": false
+                              },
+                              "sharepoint_integration": {
+                                "type": "boolean",
+                                "description": "Enable sharepoint integration",
+                                "example": false,
+                                "default": false
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "description": "Request data to add new meta site",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "attributes"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "UUIDv4 identifier of an object",
+                              "example": "6edb1e3c-4c43-4760-ab76-682ad83146be"
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "ppms/meta-site"
+                              ]
+                            },
+                            "attributes": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "description": "Unique name of a meta site",
+                                  "example": "All apps",
+                                  "maxLength": 191,
+                                  "minLength": 1
+                                },
+                                "currency": {
+                                  "type": "string",
+                                  "description": "Currency in ISO 4217 format (e.g. USD)",
+                                  "example": "USD"
+                                },
+                                "timezone": {
+                                  "type": "string",
+                                  "description": "Timezone in IANA time zone format (like Europe/Warsaw), or UTC offset (like UTC+1)",
+                                  "example": "Europe/Warsaw"
+                                },
+                                "e_commerce_tracking": {
+                                  "type": "boolean",
+                                  "description": "Enables e-commerce reports, additional tab is shown in Analytics module with e-commerce logs. Sales can be easily tracked using this setting.",
+                                  "example": false
+                                },
+                                "sharepoint_integration": {
+                                  "type": "boolean",
+                                  "description": "Enable sharepoint integration",
+                                  "example": false
+                                },
+                                "cnil": {
+                                  "type": "boolean",
+                                  "description": "CNIL integration enabled (true if any of apps in meta site has CNIL integration enabled)",
+                                  "example": false
+                                },
+                                "created_at": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "Timestamp of object's creation",
+                                  "readOnly": true
+                                },
+                                "updated_at": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "Timestamp of object's last modification",
+                                  "readOnly": true
+                                },
+                                "organization": {
+                                  "type": "string",
+                                  "description": "Organization to which a resource belongs to",
+                                  "example": "default",
+                                  "deprecated": true
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "required": [
+                                  "status",
+                                  "title"
+                                ],
+                                "properties": {
+                                  "status": {
+                                    "type": "string",
+                                    "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                    "example": "400"
+                                  },
+                                  "code": {
+                                    "type": "string",
+                                    "description": "an application-specific error code, expressed as a string value",
+                                    "example": "error.default"
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                    "example": "Invalid form"
+                                  },
+                                  "detail": {
+                                    "type": "string",
+                                    "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                    "example": "This field is invalid"
+                                  },
+                                  "source": {
+                                    "type": "object",
+                                    "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                    "properties": {
+                                      "pointer": {
+                                        "type": "string",
+                                        "example": "/data/attributes/name",
+                                        "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                      },
+                                      "parameter": {
+                                        "type": "string",
+                                        "example": "offset",
+                                        "description": "a string indicating which URI query parameter caused the error"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "errors": [
+                          {
+                            "status": "400",
+                            "code": "error.default",
+                            "title": "Invalid form",
+                            "detail": "This field is invalid",
+                            "source": {
+                              "pointer": "/data/attributes/name"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "status",
+                        "title"
+                      ],
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                          "example": "400"
+                        },
+                        "code": {
+                          "type": "string",
+                          "description": "an application-specific error code, expressed as a string value",
+                          "example": "error.default"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                          "example": "Invalid form"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                          "example": "This field is invalid"
+                        },
+                        "source": {
+                          "type": "object",
+                          "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                          "properties": {
+                            "pointer": {
+                              "type": "string",
+                              "example": "/data/attributes/name",
+                              "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                            },
+                            "parameter": {
+                              "type": "string",
+                              "example": "offset",
+                              "description": "a string indicating which URI query parameter caused the error"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "errors": [
+                          {
+                            "status": "403",
+                            "code": "error.forbidden",
+                            "title": "Access denied."
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Meta sites"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

@@ -1,0 +1,796 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/tracker/v1/log": {
+      "get": {
+        "summary": "Logs",
+        "description": "Get stream of logs",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "description": "An application UUID for which Logs are requested",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "d898ae47-61cd-4c9d-9d67-e5a930eb9f38"
+            },
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "event_ids",
+            "description": "Comma separated list of event IDs, whose logs are requested",
+            "schema": {
+              "type": "integer",
+              "example": "1237190827349817,712364176,1234819481923"
+            },
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "server_time_min",
+            "description": "Start of the search time range for the logs. Range start is inclusive. Used to optimize the search query.\n\nWhen `server_time_min` is provided, then `server_time_max` is mandatory.\nDifference between `server_time_max` and `server_time_min` cannot be greater than 720 minutes.\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "%Y-%m-%dT%H:%M:%S",
+              "example": "2022-05-18T08:33:21"
+            },
+            "in": "query"
+          },
+          {
+            "name": "server_time_max",
+            "description": "End of the search time range for the logs. Range end is inclusive. Used to optimize the search query.\n\nWhen `server_time_max` is provided, then `server_time_min` is mandatory.\nDifference between `server_time_max` and `server_time_min` cannot be greater than 720 minutes.\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "%Y-%m-%dT%H:%M:%S",
+              "example": "2022-05-18T08:33:22"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "description": "An anonymized tracking log",
+                  "required": [
+                    "id",
+                    "time",
+                    "ip",
+                    "scheme",
+                    "method",
+                    "headers",
+                    "query_params"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "description": "UUID of the log",
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "76d1b36e-c2d5-44e8-ad60-028cb0bf17f6"
+                    },
+                    "time": {
+                      "description": "Time when the request was received by a tracker (in UTC)",
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2020-02-01T00:00:00.000000000Z"
+                    },
+                    "ip": {
+                      "description": "Tracker client IP (real value can be provided in headers or `cip` parameter), anonymized",
+                      "type": "string",
+                      "enum": [
+                        "<anonymized>"
+                      ]
+                    },
+                    "host": {
+                      "description": "A host under which app is available",
+                      "type": "string",
+                      "example": "piwikpro.tld"
+                    },
+                    "scheme": {
+                      "description": "Scheme used for the request",
+                      "type": "string",
+                      "example": "http"
+                    },
+                    "method": {
+                      "description": "Method used for the request",
+                      "type": "string",
+                      "example": "GET"
+                    },
+                    "headers": {
+                      "description": "Request HTTP headers, some values will be anonymized",
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 2,
+                        "maxItems": 2
+                      },
+                      "example": [
+                        [
+                          "x-forwarded-for",
+                          "172.18.0.15"
+                        ],
+                        [
+                          "accept-language",
+                          "en-US,en;q=0.9"
+                        ],
+                        [
+                          "user-agent",
+                          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.117 Safari/537.36"
+                        ],
+                        [
+                          "user-agent",
+                          "<anonymized>"
+                        ],
+                        [
+                          "x-geoip-longitude",
+                          "<anonymized>"
+                        ],
+                        [
+                          "x-geoip-latitude",
+                          "<anonymized>"
+                        ]
+                      ]
+                    },
+                    "query_params": {
+                      "description": "Tracking request parameters",
+                      "type": "object",
+                      "required": [
+                        "idsite"
+                      ],
+                      "properties": {
+                        "idsite": {
+                          "description": "ID of the tracked app/website - can be UUID or legacy integer.",
+                          "type": "string",
+                          "example": "99ba73f6-79b8-432c-a8fe-62f5fa0fc6aa"
+                        },
+                        "_idts": {
+                          "description": "Time of first visit",
+                          "type": "string",
+                          "example": "1577836800"
+                        },
+                        "_viewts": {
+                          "description": "Time of previous visit",
+                          "type": "string",
+                          "example": "1580342400"
+                        },
+                        "_idvc": {
+                          "description": "Visit counter",
+                          "type": "string",
+                          "example": "2"
+                        },
+                        "url": {
+                          "description": "URL of the action",
+                          "type": "string",
+                          "example": "https://piwik.pro/"
+                        },
+                        "urlref": {
+                          "description": "HTTP referrer",
+                          "type": "string",
+                          "example": "https://clearcode.cc/"
+                        },
+                        "res": {
+                          "description": "Resolution of the visitor's device in pixels",
+                          "type": "string",
+                          "example": "1920x1080"
+                        },
+                        "idgoal": {
+                          "description": "Goal ID. Signifies that a goal has been reached and tracks its conversion.",
+                          "type": "string",
+                          "example": "12"
+                        },
+                        "revenue": {
+                          "description": "Revenue value of achieved goal",
+                          "type": "string",
+                          "example": "7.12"
+                        },
+                        "ping": {
+                          "description": "Enables a special heartbeat mode for the tracking request",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "send_image": {
+                          "description": "Request response content",
+                          "type": "string",
+                          "example": "true"
+                        },
+                        "_cvar": {
+                          "description": "Custom variables set on the ``visit`` scope.",
+                          "type": "string",
+                          "example": "{\"1\":[\"AspectRatio\",\"16:9\"],\"2\":[\"Height\",\"1080\"],\"3\":[\"Width\",\"1920\"]}"
+                        },
+                        "cvar": {
+                          "description": "Custom variables set on the ``page`` scope.",
+                          "type": "string",
+                          "example": "{\"1\":[\"AspectRatio\",\"16:9\"],\"2\":[\"Height\",\"1080\"],\"3\":[\"Width\",\"1920\"]}"
+                        },
+                        "bots": {
+                          "description": "Bots tracking enabled / disabled",
+                          "type": "string",
+                          "example": "0"
+                        },
+                        "rec": {
+                          "description": "Consent to tracking (value \"1\" allows it)",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "new_visit": {
+                          "description": "Forces new session",
+                          "type": "string",
+                          "example": "0"
+                        },
+                        "token_auth": {
+                          "description": "Authentication token used by SuperUser or Admin in requests using parameters that require it",
+                          "type": "string",
+                          "example": "caa18074df8347b684d7b943b2484fe9"
+                        },
+                        "debug": {
+                          "description": "States whether request is used for debugging",
+                          "type": "string",
+                          "example": "0"
+                        },
+                        "ec_id": {
+                          "description": "Ecommerce order ID",
+                          "type": "string",
+                          "example": "order-123-customer-321"
+                        },
+                        "ec_st": {
+                          "description": "Ecommerce order sub-total (order cost without shipping)",
+                          "type": "string",
+                          "example": "7.99"
+                        },
+                        "ec_tx": {
+                          "description": "Ecommerce order tax",
+                          "type": "string",
+                          "example": "1.00"
+                        },
+                        "ec_sh": {
+                          "description": "Ecommerce order shipping",
+                          "type": "string",
+                          "example": "1.95"
+                        },
+                        "ec_dt": {
+                          "description": "Ecommerce order discount",
+                          "type": "string",
+                          "example": "0.05"
+                        },
+                        "ec_items": {
+                          "description": "Ecommerce order item list in the form of two dimensional JSON array",
+                          "type": "string",
+                          "example": "[[\"craft-311\",\"Unicorn Iron on Patch\",\"Crafts & Sewing\",4.99,3],[\"craft-312\",\"Unicorn Lamp\",\"Crafts & Sewing\",13.25,1]]"
+                        },
+                        "_ects": {
+                          "description": "Timestamp of last Ecommerce order",
+                          "type": "string",
+                          "example": "122"
+                        },
+                        "e_c": {
+                          "description": "Custom event category",
+                          "type": "string",
+                          "example": "CE Cat"
+                        },
+                        "e_a": {
+                          "description": "Custom event action",
+                          "type": "string",
+                          "example": "CE Action"
+                        },
+                        "e_n": {
+                          "description": "Custom event name",
+                          "type": "string",
+                          "example": "CE Name"
+                        },
+                        "e_v": {
+                          "description": "Custom event value",
+                          "type": "string",
+                          "example": "7.12"
+                        },
+                        "cip": {
+                          "description": "Override IP, anonymized",
+                          "type": "string",
+                          "enum": [
+                            "<anonymized>"
+                          ]
+                        },
+                        "cdt": {
+                          "description": "Override request time",
+                          "type": "string",
+                          "format": "UNIX timestamp|UTC DateTime<YYYY-MM-DD hh:mm:ss>",
+                          "example": "2018-02-24 15:34:48"
+                        },
+                        "cid": {
+                          "description": "Configuration ID",
+                          "type": "string",
+                          "example": "257cc22df0ec483a"
+                        },
+                        "_id": {
+                          "description": "Visitor ID",
+                          "type": "string",
+                          "example": "dcce8b9ea5d80b52"
+                        },
+                        "uia": {
+                          "description": "Allows to track user anonymously",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "dda": {
+                          "description": "Anonymize device data, including user agent",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "ua": {
+                          "description": "Override User-Agent header, anonymized if dda=1 tracking parameter was provided",
+                          "type": "string",
+                          "example": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36"
+                        },
+                        "lang": {
+                          "description": "Override Accept-Language header",
+                          "type": "string",
+                          "example": "en-US,en;q=0.9,pl;q=0.8"
+                        },
+                        "uid": {
+                          "description": "User ID",
+                          "type": "string",
+                          "example": "username-of-some-user"
+                        },
+                        "country": {
+                          "description": "Override GeoIP country, anonymized",
+                          "type": "string",
+                          "enum": [
+                            "<anonymized>"
+                          ]
+                        },
+                        "region": {
+                          "description": "Override GeoIP region, anonymized",
+                          "type": "string",
+                          "enum": [
+                            "<anonymized>"
+                          ]
+                        },
+                        "city": {
+                          "description": "Override GeoIP city, anonymized",
+                          "type": "string",
+                          "enum": [
+                            "<anonymized>"
+                          ]
+                        },
+                        "long": {
+                          "description": "Override GeoIP longitude, anonymized",
+                          "type": "string",
+                          "enum": [
+                            "<anonymized>"
+                          ]
+                        },
+                        "lat": {
+                          "description": "Override GeoIP latitude, anonymized",
+                          "type": "string",
+                          "enum": [
+                            "<anonymized>"
+                          ]
+                        },
+                        "cs": {
+                          "description": "Page charset",
+                          "type": "string",
+                          "example": "ISO-8859-1"
+                        },
+                        "download": {
+                          "description": "URL of downloaded file",
+                          "type": "string",
+                          "example": "http://example.com/files/TermsOfService.pdf"
+                        },
+                        "link": {
+                          "description": "External URL opened by the Visitor",
+                          "type": "string",
+                          "example": "http://help-example.com/how-to/register.html"
+                        },
+                        "action_name": {
+                          "description": "Name of the action",
+                          "type": "string",
+                          "example": "Piwik PRO Analytics Suite | On-premise & private cloud"
+                        },
+                        "search": {
+                          "description": "Internal search query",
+                          "type": "string",
+                          "example": "searching for this"
+                        },
+                        "search_cat": {
+                          "description": "Internal search category",
+                          "type": "string",
+                          "example": "Result category"
+                        },
+                        "search_cats": {
+                          "description": "Result categories",
+                          "type": "string",
+                          "example": "[\"res cat 1\",\"res cat 2\"]"
+                        },
+                        "search_count": {
+                          "description": "Number of results of internal search",
+                          "type": "string",
+                          "example": "0"
+                        },
+                        "pv_id": {
+                          "description": "Unique page view ID generated when the page is loaded",
+                          "type": "string",
+                          "example": "1ViMbH"
+                        },
+                        "gt_ms": {
+                          "description": "Page generation and load time in milliseconds",
+                          "type": "string",
+                          "example": "448"
+                        },
+                        "h": {
+                          "description": "Hour when the request was made in the visitor's local time",
+                          "type": "string",
+                          "example": "12"
+                        },
+                        "m": {
+                          "description": "Minute when the request was made in the visitor's local time",
+                          "type": "string",
+                          "example": "39"
+                        },
+                        "s": {
+                          "description": "Second when the request was made in the visitor's local time",
+                          "type": "string",
+                          "example": "28"
+                        },
+                        "fla": {
+                          "description": "Status of Flash plugin in Visitor browser",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "java": {
+                          "description": "Status of Java plugin in Visitor browser",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "dir": {
+                          "description": "Status of Adobe Director plugin in Visitor browser",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "qt": {
+                          "description": "Status of QuickTime plugin in Visitor browser",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "realp": {
+                          "description": "Status of RealPlayer plugin in Visitor browser",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "pdf": {
+                          "description": "Status of PDF plugin in Visitor browser",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "wma": {
+                          "description": "Status of Windows Media Player plugin in Visitor browser",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "gears": {
+                          "description": "Status of Gears plugin in Visitor browser",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "ag": {
+                          "description": "Status of Silverlight plugin in Visitor browser",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "cookie": {
+                          "description": "Status of Cookie capability in Visitor browser",
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "c_p": {
+                          "description": "Content piece",
+                          "type": "string",
+                          "example": "Unicorn Iron on Patch"
+                        },
+                        "c_n": {
+                          "description": "Content name",
+                          "type": "string",
+                          "example": "recommended-products"
+                        },
+                        "c_t": {
+                          "description": "Content target",
+                          "type": "string",
+                          "example": "http://example.com/product/unicorn-iron-on-path.html"
+                        },
+                        "c_i": {
+                          "description": "Content interaction",
+                          "type": "string",
+                          "example": "show details"
+                        },
+                        "t_us": {
+                          "description": "Unload Event Start - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "566"
+                        },
+                        "t_ue": {
+                          "description": "Unload Event End - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "566"
+                        },
+                        "t_rs": {
+                          "description": "Redirect Start - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "7"
+                        },
+                        "t_re": {
+                          "description": "Redirect End - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "7"
+                        },
+                        "t_fs": {
+                          "description": "Fetch Start - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "7"
+                        },
+                        "t_ss": {
+                          "description": "Secure Connection Start - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "69"
+                        },
+                        "t_ds": {
+                          "description": "Domain Lookup Start - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "9"
+                        },
+                        "t_cs": {
+                          "description": "Connect Start - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "11"
+                        },
+                        "t_ce": {
+                          "description": "Connect End - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "121"
+                        },
+                        "t_qs": {
+                          "description": "Request Start - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "121"
+                        },
+                        "t_as": {
+                          "description": "Response Start - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "557"
+                        },
+                        "t_ae": {
+                          "description": "Response End - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "569"
+                        },
+                        "t_dl": {
+                          "description": "DOM Loading - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "579"
+                        },
+                        "t_di": {
+                          "description": "DOM Interactive - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "974"
+                        },
+                        "t_ls": {
+                          "description": "DOM Content Loaded Event Start - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "974"
+                        },
+                        "t_le": {
+                          "description": "DOM Content Loaded Event End - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "975"
+                        },
+                        "t_dc": {
+                          "description": "DOM Complete - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "3822"
+                        },
+                        "t_ee": {
+                          "description": "Load Event End - one of the Page Performance Metrics",
+                          "type": "string",
+                          "example": "3923"
+                        },
+                        "_rcn": {
+                          "description": "The Campaign name",
+                          "type": "string",
+                          "example": "deprecated campaign name parameter",
+                          "deprecated": true
+                        },
+                        "_rck": {
+                          "description": "The Campaign Keyword",
+                          "type": "string",
+                          "example": "deprecated keyword parameter",
+                          "deprecated": true
+                        },
+                        "dimension1": {
+                          "description": "Custom dimension 1",
+                          "type": "string",
+                          "example": "custom_dimension_1_value"
+                        },
+                        "dimension2": {
+                          "description": "Custom dimension 2",
+                          "type": "string",
+                          "example": "custom_dimension_2_value"
+                        },
+                        "dimension3": {
+                          "description": "Custom dimension 3",
+                          "type": "string",
+                          "example": "custom_dimension_3_value"
+                        },
+                        "dimension4": {
+                          "description": "Custom dimension 4",
+                          "type": "string",
+                          "example": "custom_dimension_4_value"
+                        },
+                        "dimension5": {
+                          "description": "Custom dimension 5",
+                          "type": "string",
+                          "example": "custom_dimension_5_value"
+                        },
+                        "ts_n": {
+                          "description": "Symbol of tracking source",
+                          "type": "string",
+                          "example": "jstc",
+                          "enum": [
+                            "jstc",
+                            "jstc_tm",
+                            "wla",
+                            "and",
+                            "ios",
+                            "react_native",
+                            "sharepoint",
+                            "confluence",
+                            "amp",
+                            "php",
+                            "",
+                            "unk"
+                          ]
+                        },
+                        "ts_v": {
+                          "description": "Version of tracking source in [Semantic Versioning](https://semver.org) format",
+                          "type": "string",
+                          "example": "1.0.2"
+                        }
+                      }
+                    },
+                    "cookie_id": {
+                      "description": "Cookie ID sent in the _id parameter",
+                      "type": "string",
+                      "example": "eddf6b9aa9d8fb32"
+                    },
+                    "user_id": {
+                      "description": "User ID sent in the uid parameter",
+                      "type": "string",
+                      "example": "particular-user_login"
+                    },
+                    "debug": {
+                      "description": "States whether request is used for debugging",
+                      "type": "boolean",
+                      "default": false,
+                      "example": true
+                    }
+                  }
+                }
+              }
+            },
+            "description": "A stream of anonymized logs matching given criteria"
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (eg. missing GET parameter, or parameter value out of bounds)"
+          },
+          "401": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Access token is missing or invalid"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Authenticated user doesn't have proper access rights or the token is missing or invalid"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Tracker"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

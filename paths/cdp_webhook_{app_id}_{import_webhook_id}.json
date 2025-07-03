@@ -1,0 +1,519 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/cdp/webhook/{app_id}/{import_webhook_id}": {
+      "get": {
+        "summary": "Data webhook import GET request",
+        "security": [],
+        "operationId": "get-import-webhook-request",
+        "description": "Imports data into multiple attributes in an associated profile via webhook GET request.\n",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          },
+          {
+            "in": "path",
+            "name": "import_webhook_id",
+            "description": "An webhook import UUID to which the request is sent",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "e898ae47-61cd-4c9d-9d67-e5a930eb9f39"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "description": "Data that a profile will be enriched with. Properties in the provided object are mapped according to the webhook import configurations.\n\nLimits:\n  * String values length limit - 1024 characters\n  * Array elements limit - 1024 elements\n  * Key names length limit - 256 characters\n  * Webhook request size limit - 50kB\n",
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "A string that follows the ISO 8601 date-time notation, such as `2023-07-21T17:32:28Z`."
+                    }
+                  ]
+                },
+                "example": {
+                  "occupation": "electrician",
+                  "mood": "sad",
+                  "contract_end": "2023-12-10T16:30:00Z",
+                  "name": {
+                    "first": "john",
+                    "last": "doe"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Request accepted and waiting for processing."
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Given application id was not found"
+          },
+          "413": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Payload exceeds 50kB size limit"
+                }
+              }
+            },
+            "description": "Content too large"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "429": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "API Quota Exhaustion"
+                }
+              }
+            },
+            "description": "Too Many Requests error response (API quota exhaustion or rate limit exceeded)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      },
+      "post": {
+        "summary": "Data webhook import POST request",
+        "security": [],
+        "operationId": "post-import-webhook-request",
+        "description": "Imports data into multiple attributes in an associated profile via webhook POST request.\n",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          },
+          {
+            "in": "path",
+            "name": "import_webhook_id",
+            "description": "An webhook import UUID to which the request is sent",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "e898ae47-61cd-4c9d-9d67-e5a930eb9f39"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "description": "Data that a profile will be enriched with. Properties in the provided object are mapped according to the webhook import configurations.\n\nLimits:\n  * String values length limit - 1024 characters\n  * Array elements limit - 1024 elements\n  * Key names length limit - 256 characters\n  * Webhook request size limit - 50kB\n",
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "A string that follows the ISO 8601 date-time notation, such as `2023-07-21T17:32:28Z`."
+                    }
+                  ]
+                },
+                "example": {
+                  "occupation": "electrician",
+                  "mood": "sad",
+                  "contract_end": "2023-12-10T16:30:00Z",
+                  "name": {
+                    "first": "john",
+                    "last": "doe"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Request accepted and waiting for processing."
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Given application id was not found"
+          },
+          "413": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Payload exceeds 50kB size limit"
+                }
+              }
+            },
+            "description": "Content too large"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "429": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "API Quota Exhaustion"
+                }
+              }
+            },
+            "description": "Too Many Requests error response (API quota exhaustion or rate limit exceeded)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      },
+      "put": {
+        "summary": "Data webhook import PUT request",
+        "security": [],
+        "operationId": "put-import-webhook-request",
+        "description": "Imports data into multiple attributes in an associated profile via webhook PUT request.\n",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          },
+          {
+            "in": "path",
+            "name": "import_webhook_id",
+            "description": "An webhook import UUID to which the request is sent",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "e898ae47-61cd-4c9d-9d67-e5a930eb9f39"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "description": "Data that a profile will be enriched with. Properties in the provided object are mapped according to the webhook import configurations.\n\nLimits:\n  * String values length limit - 1024 characters\n  * Array elements limit - 1024 elements\n  * Key names length limit - 256 characters\n  * Webhook request size limit - 50kB\n",
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "A string that follows the ISO 8601 date-time notation, such as `2023-07-21T17:32:28Z`."
+                    }
+                  ]
+                },
+                "example": {
+                  "occupation": "electrician",
+                  "mood": "sad",
+                  "contract_end": "2023-12-10T16:30:00Z",
+                  "name": {
+                    "first": "john",
+                    "last": "doe"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Request accepted and waiting for processing."
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Given application id was not found"
+          },
+          "413": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Payload exceeds 50kB size limit"
+                }
+              }
+            },
+            "description": "Content too large"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "429": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "API Quota Exhaustion"
+                }
+              }
+            },
+            "description": "Too Many Requests error response (API quota exhaustion or rate limit exceeded)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

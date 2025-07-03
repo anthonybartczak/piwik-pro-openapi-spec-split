@@ -1,0 +1,446 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/container-settings/v1/organization/{organization}/opt-out-code": {
+      "get": {
+        "summary": "Get organization's opt-out code",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "description": "Organization's container opt-out code response",
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "title": "Organization's container opt-out code",
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "description": "Organization name",
+                          "type": "string"
+                        },
+                        "type": {
+                          "description": "Container opt-out code for organization resource type",
+                          "type": "string",
+                          "enum": [
+                            "container/organization/opt-out-code"
+                          ]
+                        },
+                        "attributes": {
+                          "description": "Organization's container opt-out code attributes",
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "description": "Opt-out code in HTML format",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "code"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "type",
+                        "attributes"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "type": "container/organization/opt-out-code",
+                    "id": "my_organization",
+                    "attributes": {
+                      "code": "<script>window['stg'] = window['stg'] || {};window['stg'].optedOutCheckboxText=\"You\u2019re opted out. Uncheck to opt in.\";window['stg'].optedInCheckboxText=\"Opt out of data collection and usage\";</script>\n<div id=\"_stg_opt_out_iframe_content\" style=\"display: none;\"><p>Privacy on this site: We collect and process your data on this site to better understand how it is used. You can opt in or out at any time.</p><input id=\"_stg_optout_checkbox\" onclick=\"window.parent.storeUserOptOutPreferences();\" type=\"checkbox\"><label id=\"_stg_optout_checkbox_label\" for=\"_stg_optout_checkbox\"></label></div>\n<script src=\"https://statics.example.com/privacy/script.v2.js\"></script>"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request parameter",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INVALID_URI_PARAMETER_ERROR",
+                      "detail": "Application identifier should be of type UUID",
+                      "source": {
+                        "parameter": "app_id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "UNAUTHORIZED_ERROR",
+                      "detail": "Access token not authorized"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "NOT_FOUND_ERROR",
+                      "detail": "There is no application with given identifier: 5c39070d-9e0b-40a2-ae56-392f05711f74",
+                      "source": {
+                        "parameter": "app_id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INTERNAL_SERVER_ERROR",
+                      "detail": "MySQL server has gone away"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Container Settings"
+        ]
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "organization",
+          "required": true,
+          "description": "Organization name",
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "example": "my_organization"
+        }
+      ]
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

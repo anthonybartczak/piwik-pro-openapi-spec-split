@@ -1,0 +1,3404 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/tag/v1/{app_id}/variables/{variable_id}": {
+      "get": {
+        "summary": "Get variable",
+        "tags": [
+          "Tag Manager"
+        ],
+        "responses": {
+          "200": {
+            "description": "Variable data",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "description": "Variable get response",
+                  "oneOf": [
+                    {
+                      "title": "constant",
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "title": "UUID",
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "variable"
+                              ],
+                              "description": "Variable resource type"
+                            },
+                            "attributes": {
+                              "description": "Variable attributes",
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 255
+                                },
+                                "value": {
+                                  "type": "string",
+                                  "description": "Variable value"
+                                },
+                                "variable_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "constant"
+                                  ],
+                                  "description": "Variable constant type"
+                                },
+                                "options": {
+                                  "description": "Variable options (empty)",
+                                  "type": "object"
+                                },
+                                "builtin": {
+                                  "type": "boolean",
+                                  "description": "Flag indicating whether variable is custom or builtin"
+                                },
+                                "is_published": {
+                                  "type": "boolean",
+                                  "description": "Flag describing whether variable is published (true) or not published (false)"
+                                },
+                                "created_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                },
+                                "updated_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value",
+                                "variable_type",
+                                "options",
+                                "builtin",
+                                "is_published",
+                                "created_at",
+                                "updated_at"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "title": "cookie",
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "title": "UUID",
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "variable"
+                              ],
+                              "description": "Variable resource type"
+                            },
+                            "attributes": {
+                              "description": "Variable attributes",
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 255
+                                },
+                                "value": {
+                                  "type": "string",
+                                  "description": "Variable value"
+                                },
+                                "variable_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "cookie"
+                                  ],
+                                  "description": "Variable cookie type"
+                                },
+                                "options": {
+                                  "description": "Variable options (empty)",
+                                  "type": "object"
+                                },
+                                "builtin": {
+                                  "type": "boolean",
+                                  "description": "Flag indicating whether variable is custom or builtin"
+                                },
+                                "is_published": {
+                                  "type": "boolean",
+                                  "description": "Flag describing whether variable is published (true) or not published (false)"
+                                },
+                                "created_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                },
+                                "updated_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value",
+                                "variable_type",
+                                "options",
+                                "builtin",
+                                "is_published",
+                                "created_at",
+                                "updated_at"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "title": "custom_javascript",
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "title": "UUID",
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "variable"
+                              ],
+                              "description": "Variable resource type"
+                            },
+                            "attributes": {
+                              "description": "Variable attributes",
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 255
+                                },
+                                "value": {
+                                  "type": "string",
+                                  "description": "Variable value"
+                                },
+                                "variable_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "custom_javascript"
+                                  ],
+                                  "description": "Variable custom_javascript type"
+                                },
+                                "options": {
+                                  "description": "Variable options (empty)",
+                                  "type": "object"
+                                },
+                                "builtin": {
+                                  "type": "boolean",
+                                  "description": "Flag indicating whether variable is custom or builtin"
+                                },
+                                "is_published": {
+                                  "type": "boolean",
+                                  "description": "Flag describing whether variable is published (true) or not published (false)"
+                                },
+                                "created_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                },
+                                "updated_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value",
+                                "variable_type",
+                                "options",
+                                "builtin",
+                                "is_published",
+                                "created_at",
+                                "updated_at"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "title": "data_layer",
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "title": "UUID",
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "variable"
+                              ],
+                              "description": "Variable resource type"
+                            },
+                            "attributes": {
+                              "description": "Variable attributes",
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 255
+                                },
+                                "value": {
+                                  "type": "string",
+                                  "description": "Variable value"
+                                },
+                                "variable_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "data_layer"
+                                  ],
+                                  "description": "Variable data_layer type"
+                                },
+                                "options": {
+                                  "description": "Variable options (empty)",
+                                  "type": "object"
+                                },
+                                "builtin": {
+                                  "type": "boolean",
+                                  "description": "Flag indicating whether variable is custom or builtin"
+                                },
+                                "is_published": {
+                                  "type": "boolean",
+                                  "description": "Flag describing whether variable is published (true) or not published (false)"
+                                },
+                                "created_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                },
+                                "updated_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value",
+                                "variable_type",
+                                "options",
+                                "builtin",
+                                "is_published",
+                                "created_at",
+                                "updated_at"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "title": "document",
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "title": "UUID",
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "variable"
+                              ],
+                              "description": "Variable resource type"
+                            },
+                            "attributes": {
+                              "description": "Variable attributes",
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 255
+                                },
+                                "value": {
+                                  "type": "string",
+                                  "description": "Variable value"
+                                },
+                                "variable_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "document"
+                                  ],
+                                  "description": "Variable document type"
+                                },
+                                "options": {
+                                  "description": "Variable options (empty)",
+                                  "type": "object"
+                                },
+                                "builtin": {
+                                  "type": "boolean",
+                                  "description": "Flag indicating whether variable is custom or builtin"
+                                },
+                                "is_published": {
+                                  "type": "boolean",
+                                  "description": "Flag describing whether variable is published (true) or not published (false)"
+                                },
+                                "created_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                },
+                                "updated_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value",
+                                "variable_type",
+                                "options",
+                                "builtin",
+                                "is_published",
+                                "created_at",
+                                "updated_at"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "title": "dom_element",
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "title": "UUID",
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "variable"
+                              ],
+                              "description": "Variable resource type"
+                            },
+                            "attributes": {
+                              "description": "Variable attributes",
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 255
+                                },
+                                "value": {
+                                  "type": "string",
+                                  "description": "Variable value"
+                                },
+                                "variable_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "dom_element"
+                                  ],
+                                  "description": "Variable dom_element type"
+                                },
+                                "options": {
+                                  "type": "object",
+                                  "description": "Variable options",
+                                  "properties": {
+                                    "extract_text_content": {
+                                      "description": "Flag indicating whether you want extract only text or whole element",
+                                      "type": "boolean"
+                                    },
+                                    "selector_type": {
+                                      "description": "Selector type",
+                                      "type": "string",
+                                      "enum": [
+                                        "element_id",
+                                        "css",
+                                        "xpath"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "extract_text_content",
+                                    "selector_type"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "builtin": {
+                                  "type": "boolean",
+                                  "description": "Flag indicating whether variable is custom or builtin"
+                                },
+                                "is_published": {
+                                  "type": "boolean",
+                                  "description": "Flag describing whether variable is published (true) or not published (false)"
+                                },
+                                "created_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                },
+                                "updated_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value",
+                                "variable_type",
+                                "options",
+                                "builtin",
+                                "is_published",
+                                "created_at",
+                                "updated_at"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "title": "random",
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "title": "UUID",
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "variable"
+                              ],
+                              "description": "Variable resource type"
+                            },
+                            "attributes": {
+                              "description": "Variable attributes",
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 255
+                                },
+                                "value": {
+                                  "title": "null",
+                                  "description": "",
+                                  "enum": [
+                                    null
+                                  ]
+                                },
+                                "variable_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "random"
+                                  ],
+                                  "description": "Variable random type"
+                                },
+                                "options": {
+                                  "description": "Variable options (empty)",
+                                  "type": "object"
+                                },
+                                "builtin": {
+                                  "type": "boolean",
+                                  "description": "Flag indicating whether variable is custom or builtin"
+                                },
+                                "is_published": {
+                                  "type": "boolean",
+                                  "description": "Flag describing whether variable is published (true) or not published (false)"
+                                },
+                                "created_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                },
+                                "updated_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value",
+                                "variable_type",
+                                "options",
+                                "builtin",
+                                "is_published",
+                                "created_at",
+                                "updated_at"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "title": "url",
+                      "oneOf": [
+                        {
+                          "title": "parameter",
+                          "type": "object",
+                          "properties": {
+                            "data": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "title": "UUID",
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "variable"
+                                  ],
+                                  "description": "Variable resource type"
+                                },
+                                "attributes": {
+                                  "description": "Variable attributes",
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 255
+                                    },
+                                    "value": {
+                                      "type": "string",
+                                      "enum": [
+                                        "parameter"
+                                      ]
+                                    },
+                                    "variable_type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "url"
+                                      ],
+                                      "description": "Variable url type"
+                                    },
+                                    "options": {
+                                      "type": "object",
+                                      "description": "Variable options",
+                                      "properties": {
+                                        "parameter_name": {
+                                          "description": "Parameter name",
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "parameter_name"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "builtin": {
+                                      "type": "boolean",
+                                      "description": "Flag indicating whether variable is custom or builtin"
+                                    },
+                                    "is_published": {
+                                      "type": "boolean",
+                                      "description": "Flag describing whether variable is published (true) or not published (false)"
+                                    },
+                                    "created_at": {
+                                      "title": "DateTime",
+                                      "description": "ISO 8601",
+                                      "type": "string",
+                                      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                    },
+                                    "updated_at": {
+                                      "title": "DateTime",
+                                      "description": "ISO 8601",
+                                      "type": "string",
+                                      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "value",
+                                    "variable_type",
+                                    "options",
+                                    "builtin",
+                                    "is_published",
+                                    "created_at",
+                                    "updated_at"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "data"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "title": "protocol",
+                          "type": "object",
+                          "properties": {
+                            "data": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "title": "UUID",
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "variable"
+                                  ],
+                                  "description": "Variable resource type"
+                                },
+                                "attributes": {
+                                  "description": "Variable attributes",
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 255
+                                    },
+                                    "value": {
+                                      "type": "string",
+                                      "enum": [
+                                        "protocol"
+                                      ]
+                                    },
+                                    "variable_type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "url"
+                                      ],
+                                      "description": "Variable url type"
+                                    },
+                                    "options": {
+                                      "description": "Variable options (empty)",
+                                      "type": "object"
+                                    },
+                                    "builtin": {
+                                      "type": "boolean",
+                                      "description": "Flag indicating whether variable is custom or builtin"
+                                    },
+                                    "is_published": {
+                                      "type": "boolean",
+                                      "description": "Flag describing whether variable is published (true) or not published (false)"
+                                    },
+                                    "created_at": {
+                                      "title": "DateTime",
+                                      "description": "ISO 8601",
+                                      "type": "string",
+                                      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                    },
+                                    "updated_at": {
+                                      "title": "DateTime",
+                                      "description": "ISO 8601",
+                                      "type": "string",
+                                      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "value",
+                                    "variable_type",
+                                    "options",
+                                    "builtin",
+                                    "is_published",
+                                    "created_at",
+                                    "updated_at"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "data"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "title": "query",
+                          "type": "object",
+                          "properties": {
+                            "data": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "title": "UUID",
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "variable"
+                                  ],
+                                  "description": "Variable resource type"
+                                },
+                                "attributes": {
+                                  "description": "Variable attributes",
+                                  "type": "object",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 255
+                                    },
+                                    "value": {
+                                      "type": "string",
+                                      "enum": [
+                                        "query"
+                                      ]
+                                    },
+                                    "variable_type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "url"
+                                      ],
+                                      "description": "Variable url type"
+                                    },
+                                    "options": {
+                                      "description": "Variable options (empty)",
+                                      "type": "object"
+                                    },
+                                    "builtin": {
+                                      "type": "boolean",
+                                      "description": "Flag indicating whether variable is custom or builtin"
+                                    },
+                                    "is_published": {
+                                      "type": "boolean",
+                                      "description": "Flag describing whether variable is published (true) or not published (false)"
+                                    },
+                                    "created_at": {
+                                      "title": "DateTime",
+                                      "description": "ISO 8601",
+                                      "type": "string",
+                                      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                    },
+                                    "updated_at": {
+                                      "title": "DateTime",
+                                      "description": "ISO 8601",
+                                      "type": "string",
+                                      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "value",
+                                    "variable_type",
+                                    "options",
+                                    "builtin",
+                                    "is_published",
+                                    "created_at",
+                                    "updated_at"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "data"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    {
+                      "title": "lookup_table",
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "title": "UUID",
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "variable"
+                              ],
+                              "description": "Variable resource type"
+                            },
+                            "attributes": {
+                              "description": "Variable attributes",
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 255
+                                },
+                                "value": {
+                                  "title": "Variable reference",
+                                  "description": "Tag Manager's variable reference, example `{{ Campaign }}`",
+                                  "type": "string",
+                                  "pattern": "^{{((?:.(?!}}))*.)}}$"
+                                },
+                                "variable_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "lookup_table"
+                                  ],
+                                  "description": "Variable lookup_table type"
+                                },
+                                "options": {
+                                  "type": "object",
+                                  "description": "Variable lookup table options",
+                                  "properties": {
+                                    "default_value": {
+                                      "description": "Value that will be returned if none of the mapping key is matched.",
+                                      "anyOf": [
+                                        {
+                                          "description": "Do not use default value",
+                                          "title": "null",
+                                          "enum": [
+                                            null
+                                          ]
+                                        },
+                                        {
+                                          "description": "Static text to be returned when value was not found in the table",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "description": "Variable identifier to be returned when value was not found in the table",
+                                          "title": "UUID",
+                                          "type": "string",
+                                          "format": "uuid"
+                                        }
+                                      ]
+                                    },
+                                    "mapping": {
+                                      "description": "Lookup table mapping",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "description": "Lookup table input and output pair",
+                                        "properties": {
+                                          "input": {
+                                            "description": "Input value",
+                                            "anyOf": [
+                                              {
+                                                "description": "Custom string",
+                                                "type": "string"
+                                              },
+                                              {
+                                                "title": "Variable reference",
+                                                "description": "Tag Manager's variable reference, example `{{ Campaign }}`",
+                                                "type": "string",
+                                                "pattern": "^{{((?:.(?!}}))*.)}}$"
+                                              }
+                                            ]
+                                          },
+                                          "output": {
+                                            "description": "Output value",
+                                            "anyOf": [
+                                              {
+                                                "description": "Custom string",
+                                                "type": "string"
+                                              },
+                                              {
+                                                "title": "Variable reference",
+                                                "description": "Tag Manager's variable reference, example `{{ Campaign }}`",
+                                                "type": "string",
+                                                "pattern": "^{{((?:.(?!}}))*.)}}$"
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "input",
+                                          "output"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "default_value",
+                                    "mapping"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "builtin": {
+                                  "type": "boolean",
+                                  "description": "Flag indicating whether variable is custom or builtin"
+                                },
+                                "is_published": {
+                                  "type": "boolean",
+                                  "description": "Flag describing whether variable is published (true) or not published (false)"
+                                },
+                                "created_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                },
+                                "updated_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value",
+                                "variable_type",
+                                "options",
+                                "builtin",
+                                "is_published",
+                                "created_at",
+                                "updated_at"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "title": "cdp_audience",
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "title": "UUID",
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "variable"
+                              ],
+                              "description": "Variable resource type"
+                            },
+                            "attributes": {
+                              "description": "Variable attributes",
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 255
+                                },
+                                "value": {
+                                  "type": "string",
+                                  "description": "Variable value"
+                                },
+                                "variable_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "cdp_audience"
+                                  ],
+                                  "description": "Variable cdp_audience type"
+                                },
+                                "options": {
+                                  "description": "Variable options (empty)",
+                                  "type": "object"
+                                },
+                                "builtin": {
+                                  "type": "boolean",
+                                  "description": "Flag indicating whether variable is custom or builtin"
+                                },
+                                "is_published": {
+                                  "type": "boolean",
+                                  "description": "Flag describing whether variable is published (true) or not published (false)"
+                                },
+                                "created_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                },
+                                "updated_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value",
+                                "variable_type",
+                                "options",
+                                "builtin",
+                                "is_published",
+                                "created_at",
+                                "updated_at"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "title": "abandoned",
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "title": "UUID",
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "variable"
+                              ],
+                              "description": "Variable resource type"
+                            },
+                            "attributes": {
+                              "description": "Variable attributes",
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 255
+                                },
+                                "value": {
+                                  "type": "string",
+                                  "description": "Variable value"
+                                },
+                                "variable_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "abandoned"
+                                  ],
+                                  "description": "Variable abandoned type"
+                                },
+                                "options": {
+                                  "description": "Variable options (empty)",
+                                  "type": "object"
+                                },
+                                "builtin": {
+                                  "type": "boolean",
+                                  "description": "Flag indicating whether variable is custom or builtin"
+                                },
+                                "is_published": {
+                                  "type": "boolean",
+                                  "description": "Flag describing whether variable is published (true) or not published (false)"
+                                },
+                                "created_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                },
+                                "updated_at": {
+                                  "title": "DateTime",
+                                  "description": "ISO 8601",
+                                  "type": "string",
+                                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value",
+                                "variable_type",
+                                "options",
+                                "builtin",
+                                "is_published",
+                                "created_at",
+                                "updated_at"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "677423b3-e529-4e03-88fd-d3b9dcacf2cf",
+                    "type": "variable",
+                    "attributes": {
+                      "name": "New variable name",
+                      "value": "parameter",
+                      "variable_type": "url",
+                      "builtin": false,
+                      "is_published": false,
+                      "options": {
+                        "parameter_name": "param1"
+                      },
+                      "created_at": "2020-01-29T13:43:57+00:00",
+                      "updated_at": "2020-01-29T13:43:57+00:00"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request parameter",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INVALID_URI_PARAMETER_ERROR",
+                      "detail": "Application identifier should be of type UUID",
+                      "source": {
+                        "parameter": "app_id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "UNAUTHORIZED_ERROR",
+                      "detail": "Access token not authorized"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "NOT_FOUND_ERROR",
+                      "detail": "There is no application with given identifier: 5c39070d-9e0b-40a2-ae56-392f05711f74",
+                      "source": {
+                        "parameter": "app_id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INTERNAL_SERVER_ERROR",
+                      "detail": "MySQL server has gone away"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Edit variable",
+        "tags": [
+          "Tag Manager"
+        ],
+        "description": "It is possible to edit variable's type. Just make a request with a new type and all required attributes from its schema.",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INVALID_JSON_ERROR",
+                      "detail": "The attribute expected to be of type string but integer given.",
+                      "source": {
+                        "pointer": "/data/attributes/trigger_type"
+                      },
+                      "meta": {
+                        "keyword": "type",
+                        "keyword_args": {
+                          "expected": "string",
+                          "used": "integer"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "UNAUTHORIZED_ERROR",
+                      "detail": "Access token not authorized"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "NOT_FOUND_ERROR",
+                      "detail": "There is no application with given identifier: 5c39070d-9e0b-40a2-ae56-392f05711f74",
+                      "source": {
+                        "parameter": "app_id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INTERNAL_SERVER_ERROR",
+                      "detail": "MySQL server has gone away"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "SERVICE_UNAVAILABLE",
+                      "detail": "Maintenance mode enabled for organization (organization: default)"
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Reason": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Reason for service being unavailable",
+                "example": "maintenance-mode"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "description": "Variable edit request",
+                "oneOf": [
+                  {
+                    "title": "constant",
+                    "description": "Variables edit request",
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "title": "JSON:API 1.0 request data",
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "title": "UUID",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "variable"
+                            ],
+                            "description": "Variable resource type"
+                          },
+                          "attributes": {
+                            "description": "Variable attributes",
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "value": {
+                                "type": "string",
+                                "description": "Variable value"
+                              },
+                              "variable_type": {
+                                "type": "string",
+                                "enum": [
+                                  "constant"
+                                ],
+                                "description": "Variable constant type"
+                              },
+                              "options": {
+                                "description": "Variable options (empty)",
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "data"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "title": "cookie",
+                    "description": "Variables edit request",
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "title": "JSON:API 1.0 request data",
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "title": "UUID",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "variable"
+                            ],
+                            "description": "Variable resource type"
+                          },
+                          "attributes": {
+                            "description": "Variable attributes",
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "value": {
+                                "type": "string",
+                                "description": "Variable value"
+                              },
+                              "variable_type": {
+                                "type": "string",
+                                "enum": [
+                                  "cookie"
+                                ],
+                                "description": "Variable cookie type"
+                              },
+                              "options": {
+                                "description": "Variable options (empty)",
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "data"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "title": "custom_javascript",
+                    "description": "Variables edit request",
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "title": "JSON:API 1.0 request data",
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "title": "UUID",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "variable"
+                            ],
+                            "description": "Variable resource type"
+                          },
+                          "attributes": {
+                            "description": "Variable attributes",
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "value": {
+                                "type": "string",
+                                "description": "Variable value"
+                              },
+                              "variable_type": {
+                                "type": "string",
+                                "enum": [
+                                  "custom_javascript"
+                                ],
+                                "description": "Variable custom_javascript type"
+                              },
+                              "options": {
+                                "description": "Variable options (empty)",
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "data"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "title": "data_layer",
+                    "description": "Variables edit request",
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "title": "JSON:API 1.0 request data",
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "title": "UUID",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "variable"
+                            ],
+                            "description": "Variable resource type"
+                          },
+                          "attributes": {
+                            "description": "Variable attributes",
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "value": {
+                                "type": "string",
+                                "description": "Variable value"
+                              },
+                              "variable_type": {
+                                "type": "string",
+                                "enum": [
+                                  "data_layer"
+                                ],
+                                "description": "Variable data_layer type"
+                              },
+                              "options": {
+                                "description": "Variable options (empty)",
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "data"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "title": "document",
+                    "description": "Variables edit request",
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "title": "JSON:API 1.0 request data",
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "title": "UUID",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "variable"
+                            ],
+                            "description": "Variable resource type"
+                          },
+                          "attributes": {
+                            "description": "Variable attributes",
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "value": {
+                                "type": "string",
+                                "description": "Variable value"
+                              },
+                              "variable_type": {
+                                "type": "string",
+                                "enum": [
+                                  "document"
+                                ],
+                                "description": "Variable document type"
+                              },
+                              "options": {
+                                "description": "Variable options (empty)",
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "data"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "title": "dom_element",
+                    "description": "Variables edit request",
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "title": "JSON:API 1.0 request data",
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "title": "UUID",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "variable"
+                            ],
+                            "description": "Variable resource type"
+                          },
+                          "attributes": {
+                            "description": "Variable attributes",
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "value": {
+                                "type": "string",
+                                "description": "Variable value"
+                              },
+                              "variable_type": {
+                                "type": "string",
+                                "enum": [
+                                  "dom_element"
+                                ],
+                                "description": "Variable dom_element type"
+                              },
+                              "options": {
+                                "type": "object",
+                                "description": "Variable options",
+                                "properties": {
+                                  "extract_text_content": {
+                                    "description": "Flag indicating whether you want extract only text or whole element",
+                                    "type": "boolean"
+                                  },
+                                  "selector_type": {
+                                    "description": "Selector type",
+                                    "type": "string",
+                                    "enum": [
+                                      "element_id",
+                                      "css",
+                                      "xpath"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "extract_text_content",
+                                  "selector_type"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "data"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "title": "random",
+                    "description": "Variables edit request",
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "title": "JSON:API 1.0 request data",
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "title": "UUID",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "variable"
+                            ],
+                            "description": "Variable resource type"
+                          },
+                          "attributes": {
+                            "description": "Variable attributes",
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "value": {
+                                "title": "null",
+                                "description": "",
+                                "enum": [
+                                  null
+                                ]
+                              },
+                              "variable_type": {
+                                "type": "string",
+                                "enum": [
+                                  "random"
+                                ],
+                                "description": "Variable random type"
+                              },
+                              "options": {
+                                "description": "Variable options (empty)",
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "data"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "title": "url",
+                    "oneOf": [
+                      {
+                        "title": "parameter",
+                        "description": "Variables edit request",
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "title": "JSON:API 1.0 request data",
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "title": "UUID",
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "variable"
+                                ],
+                                "description": "Variable resource type"
+                              },
+                              "attributes": {
+                                "description": "Variable attributes",
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 255
+                                  },
+                                  "value": {
+                                    "type": "string",
+                                    "enum": [
+                                      "parameter"
+                                    ]
+                                  },
+                                  "variable_type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "url"
+                                    ],
+                                    "description": "Variable url type"
+                                  },
+                                  "options": {
+                                    "type": "object",
+                                    "description": "Variable options",
+                                    "properties": {
+                                      "parameter_name": {
+                                        "description": "Parameter name",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "parameter_name"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "attributes"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "data"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "title": "protocol",
+                        "description": "Variables edit request",
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "title": "JSON:API 1.0 request data",
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "title": "UUID",
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "variable"
+                                ],
+                                "description": "Variable resource type"
+                              },
+                              "attributes": {
+                                "description": "Variable attributes",
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 255
+                                  },
+                                  "value": {
+                                    "type": "string",
+                                    "enum": [
+                                      "protocol"
+                                    ]
+                                  },
+                                  "variable_type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "url"
+                                    ],
+                                    "description": "Variable url type"
+                                  },
+                                  "options": {
+                                    "description": "Variable options (empty)",
+                                    "type": "object"
+                                  }
+                                },
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "attributes"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "data"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "title": "query",
+                        "description": "Variables edit request",
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "title": "JSON:API 1.0 request data",
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "title": "UUID",
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "variable"
+                                ],
+                                "description": "Variable resource type"
+                              },
+                              "attributes": {
+                                "description": "Variable attributes",
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 255
+                                  },
+                                  "value": {
+                                    "type": "string",
+                                    "enum": [
+                                      "query"
+                                    ]
+                                  },
+                                  "variable_type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "url"
+                                    ],
+                                    "description": "Variable url type"
+                                  },
+                                  "options": {
+                                    "description": "Variable options (empty)",
+                                    "type": "object"
+                                  }
+                                },
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "attributes"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "data"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  {
+                    "title": "lookup_table",
+                    "description": "Lookup table variable edit request",
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "title": "JSON:API 1.0 request data",
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "title": "UUID",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "variable"
+                            ],
+                            "description": "Variable resource type"
+                          },
+                          "attributes": {
+                            "description": "Variable attributes",
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "value": {
+                                "title": "Variable reference",
+                                "description": "Tag Manager's variable reference, example `{{ Campaign }}`",
+                                "type": "string",
+                                "pattern": "^{{((?:.(?!}}))*.)}}$"
+                              },
+                              "variable_type": {
+                                "type": "string",
+                                "enum": [
+                                  "lookup_table"
+                                ],
+                                "description": "Variable lookup_table type"
+                              },
+                              "options": {
+                                "type": "object",
+                                "description": "Variable lookup table options",
+                                "properties": {
+                                  "default_value": {
+                                    "description": "Value that will be returned if none of the mapping key is matched.",
+                                    "anyOf": [
+                                      {
+                                        "description": "Do not use default value",
+                                        "title": "null",
+                                        "enum": [
+                                          null
+                                        ]
+                                      },
+                                      {
+                                        "description": "Static text to be returned when value was not found in the table",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "description": "Variable identifier to be returned when value was not found in the table",
+                                        "title": "UUID",
+                                        "type": "string",
+                                        "format": "uuid"
+                                      }
+                                    ]
+                                  },
+                                  "mapping": {
+                                    "description": "Lookup table mapping",
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "description": "Lookup table input and output pair",
+                                      "properties": {
+                                        "input": {
+                                          "description": "Input value",
+                                          "anyOf": [
+                                            {
+                                              "description": "Custom string",
+                                              "type": "string"
+                                            },
+                                            {
+                                              "title": "Variable reference",
+                                              "description": "Tag Manager's variable reference, example `{{ Campaign }}`",
+                                              "type": "string",
+                                              "pattern": "^{{((?:.(?!}}))*.)}}$"
+                                            }
+                                          ]
+                                        },
+                                        "output": {
+                                          "description": "Output value",
+                                          "anyOf": [
+                                            {
+                                              "description": "Custom string",
+                                              "type": "string"
+                                            },
+                                            {
+                                              "title": "Variable reference",
+                                              "description": "Tag Manager's variable reference, example `{{ Campaign }}`",
+                                              "type": "string",
+                                              "pattern": "^{{((?:.(?!}}))*.)}}$"
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "input",
+                                        "output"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "default_value",
+                                  "mapping"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "data"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "title": "abandoned",
+                    "description": "Variables edit request",
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "title": "JSON:API 1.0 request data",
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "title": "UUID",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "variable"
+                            ],
+                            "description": "Variable resource type"
+                          },
+                          "attributes": {
+                            "description": "Variable attributes",
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "value": {
+                                "type": "string",
+                                "description": "Variable value"
+                              },
+                              "variable_type": {
+                                "type": "string",
+                                "enum": [
+                                  "abandoned"
+                                ],
+                                "description": "Variable abandoned type"
+                              },
+                              "options": {
+                                "description": "Variable options (empty)",
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "data"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "example": {
+                "data": {
+                  "id": "677423b3-e529-4e03-88fd-d3b9dcacf2cf",
+                  "type": "variable",
+                  "attributes": {
+                    "name": "New variable name",
+                    "variable_type": "url",
+                    "options": {
+                      "parameter_name": "param1"
+                    },
+                    "value": "parameter"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete variable",
+        "tags": [
+          "Tag Manager"
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad request parameter",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INVALID_URI_PARAMETER_ERROR",
+                      "detail": "Application identifier should be of type UUID",
+                      "source": {
+                        "parameter": "app_id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "UNAUTHORIZED_ERROR",
+                      "detail": "Access token not authorized"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "NOT_FOUND_ERROR",
+                      "detail": "There is no application with given identifier: 5c39070d-9e0b-40a2-ae56-392f05711f74",
+                      "source": {
+                        "parameter": "app_id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INTERNAL_SERVER_ERROR",
+                      "detail": "MySQL server has gone away"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "SERVICE_UNAVAILABLE",
+                      "detail": "Maintenance mode enabled for organization (organization: default)"
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Reason": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Reason for service being unavailable",
+                "example": "maintenance-mode"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "app_id",
+          "required": true,
+          "description": "Application identifier",
+          "schema": {
+            "title": "UUID",
+            "type": "string",
+            "format": "uuid"
+          },
+          "example": "1f74dda5-b598-41d6-a9e4-f501ef4379e1"
+        },
+        {
+          "in": "path",
+          "name": "variable_id",
+          "required": true,
+          "description": "Variable identifier",
+          "schema": {
+            "title": "UUID",
+            "type": "string",
+            "format": "uuid"
+          },
+          "example": "5c39070d-9e0b-40a2-ae56-392f05711f74"
+        }
+      ]
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

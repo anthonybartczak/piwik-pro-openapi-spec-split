@@ -1,0 +1,153 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/user-groups/v1/{user_group_id}/permissions": {
+      "post": {
+        "deprecated": true,
+        "summary": "Set permission group",
+        "description": "Please use <a href=\"?path=./access-control/public_v2.yaml#operation/set_app_permission_for_user_group_v2\">Set user group permission for a given app</a> or <a href=\"?path=./access-control/public_v2.yaml#operation/set_meta_site_permission_for_user_group_v2\">Set user group permission for a given meta site</a> instead.<br><br> Sets permission group to entity for user group\n",
+        "operationId": "set_permission_group_for_user_group_v1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_group_id",
+            "required": true,
+            "description": "UUIDv4 identifier of given user group",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "attributes"
+                    ],
+                    "properties": {
+                      "type": {
+                        "description": "Resource type",
+                        "type": "string",
+                        "enum": [
+                          "ppms/permissions/group"
+                        ]
+                      },
+                      "attributes": {
+                        "type": "object",
+                        "required": [
+                          "entity_id",
+                          "group"
+                        ],
+                        "properties": {
+                          "entity_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "UUIDv4 identifier of an object",
+                            "example": "6edb1e3c-4c43-4760-ab76-682ad83146be"
+                          },
+                          "group": {
+                            "type": "string",
+                            "description": "Permission group (for example `edit-publish` contains permissions `view`, `edit` and `publish`)",
+                            "enum": [
+                              "no-access",
+                              "view",
+                              "edit",
+                              "edit-publish",
+                              "manage"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": "Request data to set permission group for user group",
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "tags": [
+          "User Groups"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

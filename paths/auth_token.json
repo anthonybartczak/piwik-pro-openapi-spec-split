@@ -1,0 +1,253 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/auth/token": {
+      "post": {
+        "summary": "Issue OAuth Token",
+        "description": "Creates access token for OAuth client credentials grant.",
+        "operationId": "oauth_token_issue",
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "grant_type": {
+                    "description": "Type of grant which for token will be issued",
+                    "type": "string",
+                    "example": "client_credentials"
+                  },
+                  "client_id": {
+                    "description": "Client Identifier",
+                    "type": "string"
+                  },
+                  "client_secret": {
+                    "description": "Client Secret",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "grant_type",
+                  "client_id",
+                  "client_secret"
+                ]
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "grant_type": {
+                    "description": "Type of grant which for token will be issued",
+                    "type": "string",
+                    "example": "client_credentials"
+                  },
+                  "client_id": {
+                    "description": "Client Identifier",
+                    "type": "string"
+                  },
+                  "client_secret": {
+                    "description": "Client Secret",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "grant_type",
+                  "client_id",
+                  "client_secret"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json; charset=UTF-8": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "description": "Access token (JWT format)",
+                      "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJvYXV0aCIsImF1ZCI6IkNsaWVudC1OYW1lLVdqZFRjSjQyIiwiaWF0IjoxNjgwMjYwNzQyLCJleHAiOjE2ODAyNjI1NDIsInN1YiI6ImRiZTg3ZDlmLWMxYWItNGM4ZC05YWJjLTQ1MWViMzA3MTM2NyIsIm9yZyI6ImRlZmF1bHQiLCJlbWwiOiJleGFtcGxlQHBpd2lrLnBybyJ9.XDfDhKN0RInyHQBhzJD8ul_ai047QaAnQQfFQRzsJqoom0rOCir7aO4GGaJsBdWDamaFUiRC15jTH7l-TANqkHd1TV4ujDQJoKRdUt7vCxd1NdH8S6hXfDUJhVjNYYs-CLb08Od2-CqfTuR8SA3CCZX-jQRCGZjeMe6AlSwV-wEt3zgKTs8tzxThKd3KH6uKTmJRmKK-zObEPx4mYCPjpz-32LNqD-XKV1Th21aElz0X18pmahREWCcA8qHYnxOrTVFO9pPuTOvsHx9Wo8m1zou5s9u9PzFapScO_Wi7n6QpMObaLrxtd3T1Bk0eIwi2ujYIeb7wPWYJdcB3qmfBkg"
+                    },
+                    "expires_in": {
+                      "type": "integer",
+                      "enum": [
+                        1800
+                      ],
+                      "description": "TTL of access token"
+                    },
+                    "token_type": {
+                      "type": "string",
+                      "enum": [
+                        "Bearer"
+                      ],
+                      "description": "Bearer token type"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error code"
+                    },
+                    "error_description": {
+                      "type": "string",
+                      "description": "Error description"
+                    },
+                    "hint": {
+                      "type": "string",
+                      "description": "Hint for error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message"
+                    }
+                  }
+                },
+                "examples": {
+                  "InvalidClientDetailed": {
+                    "value": {
+                      "error": "invalid_client",
+                      "error_description": "The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed.",
+                      "hint": "Check the `client_id` parameter",
+                      "message": "The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed."
+                    }
+                  },
+                  "InvalidClient": {
+                    "value": {
+                      "error": "invalid_client"
+                    }
+                  },
+                  "UnsupportedGrantType": {
+                    "value": {
+                      "error": "unsupported_grant_type",
+                      "error_description": "The authorization grant type is not supported by the authorization server.",
+                      "hint": "Check that all required parameters have been provided",
+                      "message": "The authorization grant type is not supported by the authorization server."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Client authentication failed",
+                      "enum": [
+                        "invalid_client"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "description": "Payment Required",
+                      "enum": [
+                        402
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error description for inactive license for organization",
+                      "example": "There is no active license for \"default\" organization"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "OAuth"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

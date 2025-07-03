@@ -1,0 +1,310 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/meta-sites/v1/apps-with-meta-sites": {
+      "get": {
+        "summary": "List apps & meta sites",
+        "description": "Get list of apps with meta sites. App with `demo` type will be always first on the list if exists (sorting method is irrelevant)\n\n\nFull example:\n```\n/api/meta-sites/v1/apps-with-meta-sites?offset=100&limit=10&search=nifty+marketing&action=edit\n```\nthis will list 10 apps and meta sites which I have access to (can execute `edit` action) starting on 101th matching search query \"nifty marketing\".\n",
+        "operationId": "list_apps_and_meta_sites_v1",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "offset",
+            "description": "Sets offset for list of items",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Limits the number of returned items",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000,
+              "default": 10
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "description": "Search phrase - search for name or id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "description": "Sort field - can be reversed by adding dash before field name e.g (-name)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "type",
+                "created_at",
+                "-name",
+                "-type",
+                "-created_at"
+              ],
+              "default": "name"
+            }
+          },
+          {
+            "in": "query",
+            "name": "action",
+            "description": "Action to which I have access (can execute given action)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "view",
+                "edit"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "meta",
+                    "data"
+                  ],
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "description": "Metadata of a listing",
+                      "required": [
+                        "total"
+                      ],
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of items",
+                          "example": 1
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "id",
+                          "attributes"
+                        ],
+                        "properties": {
+                          "type": {
+                            "description": "Resource type",
+                            "enum": [
+                              "ppms/app",
+                              "ppms/meta-site"
+                            ],
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "UUIDv4 identifier of an object",
+                            "example": "6edb1e3c-4c43-4760-ab76-682ad83146be"
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "required": [
+                              "name",
+                              "created_at"
+                            ],
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "App or Meta Site name",
+                                "example": "Example app"
+                              },
+                              "created_at": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Timestamp of object's creation",
+                                "readOnly": true
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "meta": {
+                      "total": 2
+                    },
+                    "data": [
+                      {
+                        "type": "ppms/app",
+                        "id": "6edb1e3c-4c43-4760-ab76-682ad83146be",
+                        "attributes": {
+                          "name": "Example site",
+                          "created_at": "2019-07-30T12:53:46Z"
+                        }
+                      },
+                      {
+                        "type": "ppms/meta-site",
+                        "id": "ac62ca6b-cfd6-4161-b414-e1061baa05b7",
+                        "attributes": {
+                          "name": "European landing pages",
+                          "created_at": "2019-02-21T02:30:12Z"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "required": [
+                                  "status",
+                                  "title"
+                                ],
+                                "properties": {
+                                  "status": {
+                                    "type": "string",
+                                    "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                    "example": "400"
+                                  },
+                                  "code": {
+                                    "type": "string",
+                                    "description": "an application-specific error code, expressed as a string value",
+                                    "example": "error.default"
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                    "example": "Invalid form"
+                                  },
+                                  "detail": {
+                                    "type": "string",
+                                    "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                    "example": "This field is invalid"
+                                  },
+                                  "source": {
+                                    "type": "object",
+                                    "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                    "properties": {
+                                      "pointer": {
+                                        "type": "string",
+                                        "example": "/data/attributes/name",
+                                        "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                      },
+                                      "parameter": {
+                                        "type": "string",
+                                        "example": "offset",
+                                        "description": "a string indicating which URI query parameter caused the error"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "example": {
+                        "status": "400",
+                        "code": "error.default",
+                        "title": "Invalid query parameter 'offset' - value should be a positive integer - got '-1'"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Meta sites"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

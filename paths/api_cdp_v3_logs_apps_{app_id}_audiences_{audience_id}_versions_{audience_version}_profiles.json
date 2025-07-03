@@ -1,0 +1,476 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/v3/logs/apps/{app_id}/audiences/{audience_id}/versions/{audience_version}/profiles": {
+      "get": {
+        "summary": "List profiles belonging to given audience",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "get-log-audience-version-profile-last-v3",
+        "description": "Returns profiles belonging to given audience, from newest members to oldest members.",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter entries by a fragment of their identifier (case insensitive)."
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "How many objects to skip (for use in pagination)",
+              "minimum": 0,
+              "default": 0,
+              "example": 10
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "How many objects should be returned",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 10,
+              "example": 20
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profile_type": {
+                  "type": "array",
+                  "description": "Return only profiles of selected types.",
+                  "items": {
+                    "type": "string",
+                    "description": "Profile type",
+                    "enum": [
+                      "user",
+                      "visitor"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "in": "path",
+            "name": "audience_id",
+            "description": "An audience UUID for which profiles are requested",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "ca5b925e-6888-46fe-a0bc-55907c5af050"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "audience_version",
+            "description": "An audience version for which profiles belong",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "example": 2
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of profiles in given audience",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "offset",
+                        "limit",
+                        "total",
+                        "items"
+                      ],
+                      "properties": {
+                        "offset": {
+                          "type": "integer",
+                          "description": "Current page offset.",
+                          "example": 0
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "description": "Current page size.",
+                          "example": 10
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of resources for the given query.",
+                          "example": 1
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "description": "Profile belonging to an audience with minimal data",
+                            "required": [
+                              "joined_at",
+                              "last_activity_at",
+                              "is_user",
+                              "identifier",
+                              "profile_id"
+                            ],
+                            "properties": {
+                              "joined_at": {
+                                "description": "The first time profile joined the audience",
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2022-10-17T09:46:16.343024Z"
+                              },
+                              "last_activity_at": {
+                                "description": "Last time the profile met audience conditions",
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2022-10-17T09:49:16.123456Z"
+                              },
+                              "is_user": {
+                                "description": "Whether the profile can be identified as a user or is just a visitor",
+                                "type": "boolean",
+                                "example": true
+                              },
+                              "identifier": {
+                                "description": "An identifier to display on a list (user ID or cookie ID)",
+                                "type": "string",
+                                "example": "user@example.com"
+                              },
+                              "profile_id": {
+                                "type": "integer",
+                                "format": "int64",
+                                "description": "ID of single profile",
+                                "example": 639204699
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Short, human-readable summary of the problem.",
+                              "default": "problem title"
+                            },
+                            "detail": {
+                              "type": "string",
+                              "description": "Human-readable explanation of the problem.",
+                              "default": "problem detail"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "errors": {
+                              "type": "array",
+                              "description": "Validation errors.",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "description": "JSON Pointer to the field that caused the error.",
+                                    "default": "#/field/subfield"
+                                  },
+                                  "detail": {
+                                    "type": "string",
+                                    "description": "Human-readable explanation of the problem.",
+                                    "default": "problem explanation"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "/problems/validation-error"
+                          ]
+                        },
+                        "title": {
+                          "type": "string",
+                          "default": "Validation error"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "default": "Your request is invalid. Please check 'errors' field for more details."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Module access denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "title": "Module access denied",
+                  "description": "Module is not available to your organization",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Short, human-readable summary of the problem.",
+                          "default": "problem title"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "description": "Human-readable explanation of the problem.",
+                          "default": "problem detail"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "/problems/module-access"
+                          ]
+                        },
+                        "title": {
+                          "type": "string",
+                          "default": "Module access denied"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "default": "Module is not available to your organization"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Short, human-readable summary of the problem.",
+                          "default": "problem title"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "description": "Human-readable explanation of the problem.",
+                          "default": "problem detail"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "/problems/not-found"
+                          ]
+                        },
+                        "title": {
+                          "type": "string",
+                          "default": "Not found"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "default": "Resource not found."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "title": "Internal error",
+                  "description": "Operation failed because of an internal error",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Short, human-readable summary of the problem.",
+                          "default": "problem title"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "description": "Human-readable explanation of the problem.",
+                          "default": "problem detail"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "/problems/internal-error"
+                          ]
+                        },
+                        "title": {
+                          "type": "string",
+                          "default": "Internal error"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "default": "Operation failed because of an internal error"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

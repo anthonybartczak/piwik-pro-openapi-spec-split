@@ -1,0 +1,1288 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/users/v2/{userId}": {
+      "get": {
+        "summary": "Get details of an user",
+        "operationId": "api_users_user_details_v2",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "Resource ID",
+                              "example": "985ed9d7-b652-47b8-b9cf-c17d62735261"
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "Resource type, unique across whole PPAS",
+                              "example": "ppms/user"
+                            },
+                            "attributes": {
+                              "type": "object"
+                            }
+                          }
+                        },
+                        {
+                          "properties": {
+                            "type": {
+                              "allOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "ppms/user"
+                                  ],
+                                  "description": "PPAS user resource type"
+                                }
+                              ]
+                            },
+                            "attributes": {
+                              "type": "object",
+                              "properties": {
+                                "email": {
+                                  "type": "string",
+                                  "description": "Valid user email",
+                                  "format": "email",
+                                  "example": "john@doe.com"
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "description": "User role",
+                                  "example": "USER",
+                                  "enum": [
+                                    "OWNER",
+                                    "USER"
+                                  ]
+                                },
+                                "organization": {
+                                  "type": "string",
+                                  "example": "organization_name"
+                                },
+                                "addedAt": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "Datetime with time zone in ISO-8601 format",
+                                  "example": "2018-06-25T07:28:52+01:00"
+                                },
+                                "language": {
+                                  "type": "string",
+                                  "format": "IETF-language-tag",
+                                  "description": "User Interface language with IETF language tag format",
+                                  "example": "en-US",
+                                  "default": "en-US"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "title"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                "example": "Invalid form"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data/attributes/name",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  },
+                                  "parameter": {
+                                    "type": "string",
+                                    "example": "offset",
+                                    "description": "a string indicating which URI query parameter caused the error"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "Invalid UUID": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "\"example\" is not a valid UUID.",
+                          "code": "error.default"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "title"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                "example": "Invalid form"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data/attributes/name",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  },
+                                  "parameter": {
+                                    "type": "string",
+                                    "example": "offset",
+                                    "description": "a string indicating which URI query parameter caused the error"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "Forbidden": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "403",
+                          "title": "Forbidden",
+                          "code": "error.default"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "title"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                "example": "Invalid form"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data/attributes/name",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  },
+                                  "parameter": {
+                                    "type": "string",
+                                    "example": "offset",
+                                    "description": "a string indicating which URI query parameter caused the error"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "User does not exist": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "404",
+                          "title": "User with id: 6e82f3aa-43a3-45e8-8caf-b9db9503d795 does not exist",
+                          "code": "users.error.user-does-not-exist"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "summary": "Delete user",
+        "operationId": "api_users_delete_v2",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "title"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                "example": "Invalid form"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data/attributes/name",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  },
+                                  "parameter": {
+                                    "type": "string",
+                                    "example": "offset",
+                                    "description": "a string indicating which URI query parameter caused the error"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "Invalid UUID": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "\"example\" is not a valid UUID.",
+                          "code": "error.default"
+                        }
+                      ]
+                    }
+                  },
+                  "Cannot delete last owner": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "Cannot delete last owner",
+                          "code": "users.error.cannot-delete-last-owner"
+                        }
+                      ]
+                    }
+                  },
+                  "Cannot delete own account": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "User can't delete own account.",
+                          "code": "users.error.cannot-delete-own-account"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "title"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                "example": "Invalid form"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data/attributes/name",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  },
+                                  "parameter": {
+                                    "type": "string",
+                                    "example": "offset",
+                                    "description": "a string indicating which URI query parameter caused the error"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "Forbidden": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "403",
+                          "title": "Forbidden",
+                          "code": "error.default"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "title"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                "example": "Invalid form"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data/attributes/name",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  },
+                                  "parameter": {
+                                    "type": "string",
+                                    "example": "offset",
+                                    "description": "a string indicating which URI query parameter caused the error"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "User does not exist": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "404",
+                          "title": "User with id: 6e82f3aa-43a3-45e8-8caf-b9db9503d795 does not exist",
+                          "code": "users.error.user-does-not-exist"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "title"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                "example": "Invalid form"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data/attributes/name",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  },
+                                  "parameter": {
+                                    "type": "string",
+                                    "example": "offset",
+                                    "description": "a string indicating which URI query parameter caused the error"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "Id mismatch": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "409",
+                          "code": "error",
+                          "detail": "The resource object's id (985ed9d7-b652-47b8-b9cf-c17d62735261) does not match url's lookup id (8209367f-691b-475e-84c3-d1c69f46075b)",
+                          "source": {
+                            "pointer": "/data"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "patch": {
+        "summary": "Edit user",
+        "operationId": "api_users_edit_v2",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "allOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "Resource ID",
+                            "example": "985ed9d7-b652-47b8-b9cf-c17d62735261"
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Resource type, unique across whole PPAS",
+                            "example": "ppms/user"
+                          },
+                          "attributes": {
+                            "type": "object"
+                          }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "type": {
+                            "allOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "ppms/user"
+                                ],
+                                "description": "PPAS user resource type"
+                              }
+                            ]
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "properties": {
+                              "role": {
+                                "type": "string",
+                                "description": "User role",
+                                "example": "USER",
+                                "enum": [
+                                  "OWNER",
+                                  "USER"
+                                ]
+                              },
+                              "language": {
+                                "type": "string",
+                                "format": "IETF-language-tag",
+                                "description": "User Interface language with IETF language tag format",
+                                "example": "en-US",
+                                "default": "en-US"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "title"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                "example": "Invalid form"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data/attributes/name",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  },
+                                  "parameter": {
+                                    "type": "string",
+                                    "example": "offset",
+                                    "description": "a string indicating which URI query parameter caused the error"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "Invalid UUID": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "\"example\" is not a valid UUID.",
+                          "code": "error.default"
+                        }
+                      ]
+                    }
+                  },
+                  "Cannot change own role": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "Cannot change own role",
+                          "code": "users.error.cannot-change-own-role"
+                        }
+                      ]
+                    }
+                  },
+                  "Unsupported language": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "Invalid form",
+                          "code": "users.error.unsupported-language",
+                          "detail": "Language \"pl\" is not supported (supported are ca, de, en, es, fi, fr, nl, sv)",
+                          "source": {
+                            "pointer": "/language"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "Unsupported language tag": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "Invalid form",
+                          "code": "users.error.unsupported-language-tag",
+                          "detail": "Invalid language - use IETF language tag format - for example: 'en-US'",
+                          "source": {
+                            "pointer": "/language"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "Unsupported language region": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "Invalid form",
+                          "code": "users.error.unsupported-language",
+                          "detail": "Region code 'EN' is not supported - use valid ISO 3166-1 alpha-2 code",
+                          "source": {
+                            "pointer": "/language"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "Invalid role": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "Invalid form",
+                          "code": "users.error.invalid-role",
+                          "detail": "Role \"invalid_role\" is not supported (supported are OWNER, USER)",
+                          "source": {
+                            "pointer": "/role"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "Invalid JSON API resource type": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "\"invalid/type\" is not a valid resource type, use \"ppms/user\" instead",
+                          "code": "error.json-api-resource-type"
+                        }
+                      ]
+                    }
+                  },
+                  "JSON API id not provided": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "Resource id is not provided - make sure you have id field in request payload data object",
+                          "code": "error.json-api-resource-id-not-provided"
+                        }
+                      ]
+                    }
+                  },
+                  "Invalid content type": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "\"application/json\" is not a valid JsonApi Content-Type header, use \"application/vnd.api+json\" instead",
+                          "code": "error.json-api-content-type"
+                        }
+                      ]
+                    }
+                  },
+                  "Invalid JSON API content": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "Invalid jsonapi message received",
+                          "code": "error.default"
+                        }
+                      ]
+                    }
+                  },
+                  "Invalid attributes": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "400",
+                          "title": "Invalid field 'attributes' - value should be an object - got 'int'",
+                          "code": "error.default"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "title"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                "example": "Invalid form"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data/attributes/name",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  },
+                                  "parameter": {
+                                    "type": "string",
+                                    "example": "offset",
+                                    "description": "a string indicating which URI query parameter caused the error"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "Forbidden": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "403",
+                          "title": "Forbidden",
+                          "code": "error.default"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "title"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                "example": "Invalid form"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data/attributes/name",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  },
+                                  "parameter": {
+                                    "type": "string",
+                                    "example": "offset",
+                                    "description": "a string indicating which URI query parameter caused the error"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "User does not exist": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "404",
+                          "title": "User with id: 6e82f3aa-43a3-45e8-8caf-b9db9503d795 does not exist",
+                          "code": "users.error.user-does-not-exist"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "status",
+                              "title"
+                            ],
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                "example": "400"
+                              },
+                              "code": {
+                                "type": "string",
+                                "description": "an application-specific error code, expressed as a string value",
+                                "example": "error.default"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n",
+                                "example": "Invalid form"
+                              },
+                              "detail": {
+                                "type": "string",
+                                "description": "a human-readable explanation specific to this occurrence of the problem. Like `title`, this field\u2019s value can be localized\n",
+                                "example": "This field is invalid"
+                              },
+                              "source": {
+                                "type": "object",
+                                "description": "an object containing references to the source of the error, optionally including any of the following members: [pointer, parameter]\n",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "example": "/data/attributes/name",
+                                    "description": "a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/name\" for a specific attribute]\n"
+                                  },
+                                  "parameter": {
+                                    "type": "string",
+                                    "example": "offset",
+                                    "description": "a string indicating which URI query parameter caused the error"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "Id mismatch": {
+                    "value": {
+                      "errors": [
+                        {
+                          "status": "409",
+                          "code": "error",
+                          "detail": "The resource object's id (985ed9d7-b652-47b8-b9cf-c17d62735261) does not match url's lookup id (8209367f-691b-475e-84c3-d1c69f46075b)",
+                          "source": {
+                            "pointer": "/data"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "userId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ]
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

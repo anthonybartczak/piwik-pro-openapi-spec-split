@@ -1,0 +1,202 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/user-groups/v1/{user_group_id}/users/excluded": {
+      "get": {
+        "summary": "Get users excluded from group",
+        "description": "Gets users excluded from given user group",
+        "operationId": "list_user_group_users_excluded_v1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_group_id",
+            "required": true,
+            "description": "UUIDv4 identifier of given user group",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "description": "Search phrase for searching users by email or user id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "description": "Sort field - can be reversed by adding dash before field name e.g (-email)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "email",
+                "-email"
+              ],
+              "default": "email"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Limits the number of returned items",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": 10
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "description": "Sets offset for list of items",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "description": "Metadata of a listing",
+                      "required": [
+                        "total"
+                      ],
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of items",
+                          "example": 1
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "User details",
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "UUIDv4 identifier of an object",
+                            "example": "6edb1e3c-4c43-4760-ab76-682ad83146be"
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Resource type",
+                            "enum": [
+                              "ppms/user"
+                            ]
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "required": [
+                              "email"
+                            ],
+                            "properties": {
+                              "email": {
+                                "type": "string",
+                                "format": "email",
+                                "description": "User email",
+                                "example": "example@example.com"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "tags": [
+          "User Groups"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

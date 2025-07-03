@@ -1,0 +1,158 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/users/v2/me/details": {
+      "get": {
+        "deprecated": true,
+        "description": "Please use <a href=\"#operation/api_users_me_details_v2\">Current user details</a> instead.<br><br>\nIt gets current user details.\n",
+        "summary": "Current user details",
+        "operationId": "deprecated_api_user_details_v2",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "Resource ID",
+                              "example": "985ed9d7-b652-47b8-b9cf-c17d62735261"
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "Resource type, unique across whole PPAS",
+                              "example": "ppms/user"
+                            },
+                            "attributes": {
+                              "type": "object"
+                            }
+                          }
+                        },
+                        {
+                          "properties": {
+                            "type": {
+                              "allOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "ppms/user"
+                                  ],
+                                  "description": "PPAS user resource type"
+                                }
+                              ]
+                            },
+                            "attributes": {
+                              "type": "object",
+                              "properties": {
+                                "email": {
+                                  "type": "string",
+                                  "description": "Valid user email",
+                                  "format": "email",
+                                  "example": "john@doe.com"
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "description": "User role",
+                                  "example": "USER",
+                                  "enum": [
+                                    "OWNER",
+                                    "USER"
+                                  ]
+                                },
+                                "organization": {
+                                  "type": "string",
+                                  "example": "organization_name"
+                                },
+                                "addedAt": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "Datetime with time zone in ISO-8601 format",
+                                  "example": "2018-06-25T07:28:52+01:00"
+                                },
+                                "language": {
+                                  "type": "string",
+                                  "format": "IETF-language-tag",
+                                  "description": "User Interface language with IETF language tag format",
+                                  "example": "en-US",
+                                  "default": "en-US"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

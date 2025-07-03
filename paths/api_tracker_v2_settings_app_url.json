@@ -1,0 +1,429 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/tracker/v2/settings/app/url": {
+      "get": {
+        "summary": "Get tracker settings of an app by it's url",
+        "description": "It gets tracker settings of an app that first matched against given url. Used mostly in log analytics for website autorecognition.",
+        "operationId": "api_get_app_by_url_tracker_settings_v2",
+        "parameters": [
+          {
+            "name": "app_url",
+            "in": "query",
+            "description": "App URL. The URL must meet the requirements of [RFC-3986](https://www.rfc-editor.org/rfc/rfc3986)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "id"
+                      ],
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "tracker/settings/app"
+                          ]
+                        },
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "UUIDv4 identifier of an object",
+                          "example": "6edb1e3c-4c43-4760-ab76-682ad83146be"
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "properties": {
+                            "anonymize_visitor_geolocation_level": {
+                              "type": "string",
+                              "description": "When enabled, some geolocation data will be removed from the events an session. For example, if you set to remove data at country level, the geolocation match will be as accurate as possible, but City and Region data will be removed in the process. Country and Continent data will be accurate. This transformed data will be used in aggregation.\n```\nInitial global value:\n  none\n```\n",
+                              "enum": [
+                                "none",
+                                "City",
+                                "Region",
+                                "Country",
+                                "Continent"
+                              ],
+                              "example": "Region"
+                            },
+                            "anonymize_visitor_ip_level": {
+                              "type": "integer",
+                              "description": "Anonymize \"n\" octets of Visitors IP addresses. All events and sessions that are processed will have ther IP transformed. For example, when you anonymize 2 last octetsm incoming IP 10.76.143.250 will be trasformed to 10.76.0.0. Such transformed IP will be used to aggregate data.\n```\nInitial global value:\n  0\n```\n",
+                              "enum": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4
+                              ],
+                              "example": 1
+                            },
+                            "campaign_content_params": {
+                              "type": "array",
+                              "description": "URL query parameters that could contain content of the campaign. Processor will search for the paramters listed in this setting and it will set dimension ``campaign_content`` to the first parameter that matches name.\n```\nInitial global value:\n  [\n    pk_content,\n    utm_content\n  ]\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "pk_content"
+                              ]
+                            },
+                            "campaign_id_params": {
+                              "type": "array",
+                              "description": "URL query parameters that could contain an ID of the campaign. Processor will search for the paramters listed in this setting and it will set dimension ``campaign_id`` to the first parameter that matches name.\n```\nInitial global value:\n  [\n    pk_cid,\n    utm_id\n  ]\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "pk_cid"
+                              ]
+                            },
+                            "campaign_keyword_params": {
+                              "type": "array",
+                              "description": "URL query parameters that could contain keywords for the campaign. Processor will search for the paramters listed in this setting and it will set dimension ``campaign_keyword`` to the first parameter that matches name.\n```\nInitial global value:\n  [\n    pk_medium,\n    utm_medium\n  ]\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "pk_medium"
+                              ]
+                            },
+                            "campaign_medium_params": {
+                              "type": "array",
+                              "description": "URL query parameters that could contain mediums for the campaign. Processor will search for the paramters listed in this setting and it will set dimension ``campaign_medium`` to the first parameter that matches name.\n```\nInitial global value:\n  [\n    pk_medium,\n    utm_medium\n  ]\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "pk_medium"
+                              ]
+                            },
+                            "campaign_name_params": {
+                              "type": "array",
+                              "description": "URL query parameters that could contain name of the campaign. Processor will search for the paramters listed in this setting and it will set dimension ``campaign_name`` to the first parameter that matches name.\n```\nInitial global value:\n  [\n    pk_campaign,\n    piwik_campaign,\n    pk_cpn,\n    utm_campaign\n  ]\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "pk_campaign"
+                              ]
+                            },
+                            "campaign_source_params": {
+                              "type": "array",
+                              "description": "URL query parameters that could contain sources for the campaign. Processor will search for the paramters listed in this setting and it will set dimension ``campaign_source`` to the first parameter that matches name.\n```\nInitial global value:\n  [\n    pk_source,\n    utm_source\n  ]\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "pk_source"
+                              ]
+                            },
+                            "create_new_visit_when_campaign_changes": {
+                              "type": "boolean",
+                              "description": "When enabled, a new session is created each time when campaign type or name changes during the session, even if the `visit_standard_length` did not expire.\n```\nInitial global value:\n  false\n```\n",
+                              "example": false
+                            },
+                            "create_new_visit_when_website_referrer_changes": {
+                              "type": "boolean",
+                              "description": "When enabled, a new session is created each time when refferrer type or name changes during the session, even if the `visit_standard_length` did not expire.\n```\nInitial global value:\n  false\n```\n",
+                              "example": false
+                            },
+                            "enable_fingerprinting_across_websites": {
+                              "type": "boolean",
+                              "description": "When this option is enabled tracker will try to generate unified visitor_id even when user visits different websites.\n```\nInitial global value:\n  false\n```\n",
+                              "example": false
+                            },
+                            "set_ip_tracking": {
+                              "type": "boolean",
+                              "description": "When disabled, JSTC will set `setIpTracking` to `false` and with each tracking request an additional `rmip=1` parameter will be sent.\nWith `rmip=1` query parameter sent to Tracker, tracker will remove all IP information from tracking request on early stage of request processing. IP address will not be stored anywhere, even in raw tracking request database (table `log`).\n```\nInitial global value for a new organization:\n  true\n```\n",
+                              "example": false
+                            },
+                            "exclude_crawlers": {
+                              "type": "boolean",
+                              "description": "When disabled, crawler bots will be tracked like the regular visitors.\n```\nInitial global value:\n  true\n```\n",
+                              "example": true
+                            },
+                            "exclude_unknown_urls": {
+                              "type": "boolean",
+                              "description": "When enabled, tracker discards all requests originating from urls absent in `urls` collection\n```\nInitial global value:\n  false\n```\n",
+                              "example": false
+                            },
+                            "excluded_ips": {
+                              "type": "array",
+                              "description": "List of IPs to blacklist from tracking. You can use wildcards, e.g. ``1.2.3.*`` or ``1.2.*.*``\n```\nInitial global value:\n  []\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "192.168.0.0",
+                                "172.16.0.0",
+                                "1.2.*.*"
+                              ]
+                            },
+                            "excluded_user_agents": {
+                              "type": "array",
+                              "description": "If the visitor's user agent string contains any of the strings you specify, the visitor will be excluded from tracking.\n```\nInitial global value:\n  []\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0",
+                                "Opera/9.80 (Windows NT 6.2; Win64; x64) Presto/2.12 Version/12.16"
+                              ]
+                            },
+                            "fingerprint_based_on_anonymized_ip": {
+                              "type": "boolean",
+                              "description": "When enabled, visitor geolocation calculation is based on anonymized IP instead of real one.\n```\nInitial global value:\n  false\n```\n",
+                              "example": true
+                            },
+                            "keep_url_fragment": {
+                              "type": "boolean",
+                              "description": "When disabled, everything after #, e.g. ``example.org/index.html#first_section`` will be tracked as ``example.org.index.html``\n```\nInitial global value:\n  true\n```\n",
+                              "example": true
+                            },
+                            "session_limit_exceeded_action": {
+                              "type": "string",
+                              "description": "Defines how tracker will behave when user session exceeds its limits, either time or event count. Defined behaviours are `split_and_exclude` - session will be splitted (ended) and all further events that would fit into this session will be excluded, `just_split` - session will be splitted into new one with the event which exceeded its limit.\n```\nInitial global value:\n  split_and_exclude\n```\n",
+                              "enum": [
+                                "split_and_exclude",
+                                "just_split"
+                              ],
+                              "example": "split_and_exclude"
+                            },
+                            "session_max_duration_seconds": {
+                              "type": "integer",
+                              "description": "Limits the session in term of time. The session can last only for defined time period, after which it will be splitted into new session. Max period is 12h and it result from session detection mechanism in PSA.\n```\nInitial global value:\n  43200\n```\n",
+                              "example": 21600,
+                              "minimum": 1,
+                              "maximum": 43200
+                            },
+                            "session_max_event_count": {
+                              "type": "integer",
+                              "description": "Limits the session in term of evens count. Thes session can contain only this much events, after reaching higher count it will be splitted into new session. Max is 65535, which is unlikely to reach by a human.\n```\nInitial global value:\n  5000\n```\n",
+                              "example": 1000,
+                              "minimum": 1,
+                              "maximum": 65535
+                            },
+                            "site_search_category_params": {
+                              "type": "array",
+                              "description": "URL query parameters that are used for site search category in an app. If you want to have this parameters removed from URLs in reports enable ``strip_site_search_query_parameters`` setting.\n```\nInitial global value:\n  []\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "category",
+                                "cat",
+                                "c"
+                              ]
+                            },
+                            "site_search_query_params": {
+                              "type": "array",
+                              "description": "URL query parameters that are used for site search in an app. If you want to have this parameters removed from URLs in reports enable ``strip_site_search_query_parameters`` setting.\n```\nInitial global value:\n  [\n    q,\n    query,\n    s,\n    search,\n    searchword,\n    keyword\n  ]\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "s",
+                                "search"
+                              ]
+                            },
+                            "strip_site_search_query_parameters": {
+                              "type": "boolean",
+                              "description": "When enabled, all of parameters set in `site_search_query_params` and `site_search_category_params` will be removed from report URLs.\n```\nInitial global value:\n  false\n```\n",
+                              "example": false
+                            },
+                            "tracking_fingerprint_disabled": {
+                              "type": "boolean",
+                              "description": "Enabling this, will make tracker to use fingerprint from cookie. If you want to use this setting make sure to enable `trust_visitors_cookies`.\n```\nInitial global value:\n  false\n```\n",
+                              "example": false
+                            },
+                            "trust_visitors_cookies": {
+                              "type": "boolean",
+                              "deprecated": true,
+                              "description": "DEPRECATED! Use `use_session_hash` / `use_anonymous_session_hash` instead.\n\nWhen enabled, session events wont be matched by a device fingerprint. Only vistor side generated `_id` paramater will be taken into account.\n```\nInitial global value:\n  false\n```\n",
+                              "example": false
+                            },
+                            "use_session_hash": {
+                              "type": "boolean",
+                              "description": "When enabled, session events that are tracked non-anonymously will be matched by a Session Hash. When disabled only vistor side generated `_id` paramater will be taken into account.\n```\nInitial global value:\n  true\n```\n",
+                              "example": true
+                            },
+                            "use_anonymous_session_hash": {
+                              "type": "boolean",
+                              "description": "When enabled, session events that are tracked anonymously will be matched by a Session Hash. When disabled only vistor side generated `_id` paramater will be taken into account.\n```\nInitial global value:\n  true\n```\n",
+                              "example": true
+                            },
+                            "url_query_parameter_to_exclude_from_url": {
+                              "type": "array",
+                              "description": "URL query parameters excluded from tracking, like: ``gclid``, ``fb_xd_fragment``, ``fb_comment_id``. Regular expressions such as ``/^sess.*|.*[dD]ate$/`` are supported.\n```\nInitial global value:\n  [\n    gclid,\n    fbclid,\n    fb_xd_fragment,\n    fb_comment_id,\n    phpsessid,\n    jsessionid,\n    sessionid,\n    aspsessionid,\n    doing_wp_cron,\n    sid,\n    pk_vid\n  ]\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "pl_medium",
+                                "pk_source",
+                                "fb_comment_id",
+                                "/^sess.*|.*[dD]ate$/"
+                              ]
+                            },
+                            "urls": {
+                              "type": "array",
+                              "description": "List of app valid ([RFC-3986](https://www.rfc-editor.org/rfc/rfc3986)) URL's. Used i.a. to detect referrers and to exclude traffic if `exclude_unknown_urls` is enabled.\n```\nThis value is created when a new website is added.\n```\n",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "http://example.com/",
+                                "http://example.com/app",
+                                "deep-links://supported.com/"
+                              ]
+                            },
+                            "updated_at": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Timestamp of object's last modification",
+                              "readOnly": true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "access token not authorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "errors": [
+                      {
+                        "status": "403",
+                        "code": "not_authenticated",
+                        "title": "Authentication credentials were not provided."
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "errors": [
+                      {
+                        "status": "404",
+                        "code": "error.resource-not-found",
+                        "title": "App with given url 'http://example.com' doesn't exist"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tracker Settings"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

@@ -1,0 +1,219 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/tracker/v2/settings/app/{app_id}/{setting}": {
+      "delete": {
+        "summary": "Delete given tracker setting of an app",
+        "description": "It deletes given tracker setting of an app. Then global setting will be used instead.",
+        "operationId": "api_delete_app_tracker_setting_v2",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "description": "App UUIDv4",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "setting",
+            "in": "path",
+            "description": "Tracker setting name",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "anonymize_visitor_geolocation_level",
+                "anonymize_visitor_ip_level",
+                "campaign_content_params",
+                "campaign_id_params",
+                "campaign_keyword_params",
+                "campaign_medium_params",
+                "campaign_name_params",
+                "campaign_source_params",
+                "create_new_visit_when_campaign_changes",
+                "create_new_visit_when_website_referrer_changes",
+                "enable_fingerprinting_across_websites",
+                "set_ip_tracking",
+                "exclude_crawlers",
+                "exclude_unknown_urls",
+                "excluded_ips",
+                "excluded_user_agents",
+                "fingerprint_based_on_anonymized_ip",
+                "keep_url_fragment",
+                "session_limit_exceeded_action",
+                "session_max_duration_seconds",
+                "session_max_event_count",
+                "site_search_category_params",
+                "site_search_query_params",
+                "strip_site_search_query_parameters",
+                "tracking_fingerprint_disabled",
+                "trust_visitors_cookies",
+                "use_session_hash",
+                "use_anonymous_session_hash",
+                "url_query_parameter_to_exclude_from_url",
+                "urls"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "errors": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "status",
+                                "code",
+                                "title"
+                              ],
+                              "properties": {
+                                "status": {
+                                  "type": "string",
+                                  "description": "the HTTP status code applicable to this problem, expressed as a string value",
+                                  "example": "400"
+                                },
+                                "code": {
+                                  "type": "string",
+                                  "description": "an application-specific error code, expressed as a string value",
+                                  "example": "error.default"
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "description": "a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization\n"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "errors": [
+                      {
+                        "status": "400",
+                        "code": "error.default",
+                        "title": "\"invalid\" is not valid UUID."
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "access token not authorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "errors": [
+                      {
+                        "status": "403",
+                        "code": "not_authenticated",
+                        "title": "Authentication credentials were not provided."
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tracker Settings"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

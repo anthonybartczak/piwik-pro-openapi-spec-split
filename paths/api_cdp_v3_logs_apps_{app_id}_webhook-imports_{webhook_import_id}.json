@@ -1,0 +1,606 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/v3/logs/apps/{app_id}/webhook-imports/{webhook_import_id}": {
+      "get": {
+        "summary": "Fetch webhook import requests",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "get-log-import-webhook-requests-last-v3",
+        "description": "Returns webhook import requests from the last 30 days, newest to oldest.",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter entries by a fragment of their identifier (case insensitive)."
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "How many objects should be returned",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 10,
+              "example": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "How many objects to skip (for use in pagination)",
+              "minimum": 0,
+              "default": 0,
+              "example": 10
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profile_type": {
+                  "type": "array",
+                  "description": "Return only webhook import requests that affected profiles of selected types.",
+                  "items": {
+                    "type": "string",
+                    "description": "Profile type",
+                    "enum": [
+                      "user",
+                      "visitor"
+                    ]
+                  }
+                },
+                "status": {
+                  "type": "array",
+                  "description": "Return only webhook import requests that ended with selected statuses.",
+                  "items": {
+                    "type": "string",
+                    "description": "Webhook import log status",
+                    "enum": [
+                      "success",
+                      "error"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "in": "path",
+            "name": "webhook_import_id",
+            "description": "An webhook import UUID for which last log entries are requested",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "e898ae47-61cd-4c9d-9d67-e5a930eb9f39"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of webhook import requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "offset",
+                        "limit",
+                        "total",
+                        "items"
+                      ],
+                      "properties": {
+                        "offset": {
+                          "type": "integer",
+                          "description": "Current page offset.",
+                          "example": 0
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "description": "Current page size.",
+                          "example": 10
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of resources for the given query.",
+                          "example": 1
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "description": "Single entry in webhook import Requests Log",
+                            "required": [
+                              "time",
+                              "profile_identifier_type",
+                              "profile_identifier_value",
+                              "success",
+                              "request",
+                              "response"
+                            ],
+                            "properties": {
+                              "time": {
+                                "type": "string",
+                                "format": "datetime",
+                                "description": "Time when webhook import request was received",
+                                "example": "2023-05-26T16:58:12.195361Z"
+                              },
+                              "profile_identifier_type": {
+                                "type": "string",
+                                "description": "Type of dominant identifier",
+                                "enum": [
+                                  "cookie_id",
+                                  "user_id"
+                                ],
+                                "example": "cookie_id"
+                              },
+                              "profile_identifier_value": {
+                                "type": "string",
+                                "description": "Dominant identifier value",
+                                "example": "aa2720bcb1ddce1b"
+                              },
+                              "success": {
+                                "type": "boolean",
+                                "description": "Whether webhook import request succeeded",
+                                "example": true
+                              },
+                              "error": {
+                                "type": "object",
+                                "description": "webhook import request error, present if the request failed",
+                                "required": [
+                                  "code",
+                                  "message"
+                                ],
+                                "properties": {
+                                  "code": {
+                                    "type": "string",
+                                    "enum": [
+                                      "payload-too-large",
+                                      "validation-error",
+                                      "module-disabled",
+                                      "client-error",
+                                      "server-error",
+                                      "other"
+                                    ],
+                                    "description": "Error type"
+                                  },
+                                  "message": {
+                                    "type": "string",
+                                    "description": "Human-readable error message",
+                                    "example": "Webhook not yet defined"
+                                  }
+                                }
+                              },
+                              "request": {
+                                "type": "object",
+                                "description": "webhook import request",
+                                "required": [
+                                  "method",
+                                  "url",
+                                  "headers",
+                                  "body"
+                                ],
+                                "properties": {
+                                  "method": {
+                                    "type": "string",
+                                    "enum": [
+                                      "POST",
+                                      "GET"
+                                    ],
+                                    "description": "HTTP method of the request",
+                                    "example": "POST"
+                                  },
+                                  "url": {
+                                    "type": "string",
+                                    "description": "URL of the webhook",
+                                    "example": "https://organization.piwik.pro/api/cdp/profiles/v1/public/app/3929d56c-cd62-4001-a4fc-013f5f954691/webhook/09e107ec60874f0b"
+                                  },
+                                  "headers": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "minItems": 2,
+                                      "maxItems": 2,
+                                      "description": "Two-element array with header name and value"
+                                    },
+                                    "description": "Headers sent with the request",
+                                    "example": [
+                                      [
+                                        "Content-Type",
+                                        "application/json"
+                                      ],
+                                      [
+                                        "Content-Length",
+                                        "472"
+                                      ]
+                                    ]
+                                  },
+                                  "body": {
+                                    "type": "string",
+                                    "description": "Body of the request",
+                                    "example": "{\"user\":\"tom@example.com\",\"user_score\":102.55}"
+                                  }
+                                }
+                              },
+                              "response": {
+                                "type": "object",
+                                "description": "Response to webhook import request, present if the request has not timed out",
+                                "required": [
+                                  "time_ms",
+                                  "status",
+                                  "headers",
+                                  "body"
+                                ],
+                                "properties": {
+                                  "time_ms": {
+                                    "type": "integer",
+                                    "description": "Time between receiving the request and sending a response back in milliseconds",
+                                    "example": 146
+                                  },
+                                  "status": {
+                                    "type": "integer",
+                                    "description": "Response status code",
+                                    "example": 200
+                                  },
+                                  "headers": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "minItems": 2,
+                                      "maxItems": 2,
+                                      "description": "Two-element array with header name and value"
+                                    },
+                                    "description": "Headers of the response",
+                                    "example": [
+                                      [
+                                        "Content-Type",
+                                        "application/json"
+                                      ],
+                                      [
+                                        "Content-Length",
+                                        "472"
+                                      ]
+                                    ]
+                                  },
+                                  "body": {
+                                    "type": "string",
+                                    "description": "Body of the response",
+                                    "example": "{\"user\":\"tom@example.com\",\"user_score\":102.55}"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Short, human-readable summary of the problem.",
+                              "default": "problem title"
+                            },
+                            "detail": {
+                              "type": "string",
+                              "description": "Human-readable explanation of the problem.",
+                              "default": "problem detail"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "errors": {
+                              "type": "array",
+                              "description": "Validation errors.",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "pointer": {
+                                    "type": "string",
+                                    "description": "JSON Pointer to the field that caused the error.",
+                                    "default": "#/field/subfield"
+                                  },
+                                  "detail": {
+                                    "type": "string",
+                                    "description": "Human-readable explanation of the problem.",
+                                    "default": "problem explanation"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "/problems/validation-error"
+                          ]
+                        },
+                        "title": {
+                          "type": "string",
+                          "default": "Validation error"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "default": "Your request is invalid. Please check 'errors' field for more details."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Module access denied",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "title": "Module access denied",
+                  "description": "Module is not available to your organization",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Short, human-readable summary of the problem.",
+                          "default": "problem title"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "description": "Human-readable explanation of the problem.",
+                          "default": "problem detail"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "/problems/module-access"
+                          ]
+                        },
+                        "title": {
+                          "type": "string",
+                          "default": "Module access denied"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "default": "Module is not available to your organization"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Short, human-readable summary of the problem.",
+                          "default": "problem title"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "description": "Human-readable explanation of the problem.",
+                          "default": "problem detail"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "/problems/not-found"
+                          ]
+                        },
+                        "title": {
+                          "type": "string",
+                          "default": "Not found"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "default": "Resource not found."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "title": "Internal error",
+                  "description": "Operation failed because of an internal error",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Short, human-readable summary of the problem.",
+                          "default": "problem title"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "description": "Human-readable explanation of the problem.",
+                          "default": "problem detail"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "/problems/internal-error"
+                          ]
+                        },
+                        "title": {
+                          "type": "string",
+                          "default": "Internal error"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "default": "Operation failed because of an internal error"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

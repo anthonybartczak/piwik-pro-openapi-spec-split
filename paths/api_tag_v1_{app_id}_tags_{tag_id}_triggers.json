@@ -1,0 +1,746 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/tag/v1/{app_id}/tags/{tag_id}/triggers": {
+      "get": {
+        "summary": "List of triggers for a given tag",
+        "tags": [
+          "Tag Manager"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page[limit]",
+            "required": false,
+            "description": "Limits the number of returned items",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "example": 10
+          },
+          {
+            "in": "query",
+            "name": "page[offset]",
+            "required": false,
+            "description": "Sets offset for list of items",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "example": 20
+          },
+          {
+            "in": "query",
+            "name": "filter[name]",
+            "required": false,
+            "description": "Filter triggers by name",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "example": "All page views"
+          },
+          {
+            "in": "query",
+            "name": "filter[trigger_type]",
+            "required": false,
+            "description": "Filter triggers by type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "page_view",
+                "page_load",
+                "dom_ready",
+                "leave_content",
+                "page_scroll",
+                "time_on_website",
+                "event",
+                "history",
+                "debounced_history",
+                "form_submission",
+                "click",
+                "capturing_click",
+                "element_presence",
+                "cdp_audience_detection",
+                "abandoned"
+              ],
+              "description": "Trigger type"
+            },
+            "example": "url"
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "description": "Comma-separated sort list with given attributes: name, created_at, updated_at",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "name",
+                  "-name",
+                  "created_at",
+                  "-created_at",
+                  "updated_at",
+                  "-updated_at"
+                ]
+              },
+              "minItems": 1
+            },
+            "example": [
+              "name",
+              "-created_at",
+              "updated_at"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of triggers for a given tag",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "description": "Triggers list response",
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "title": "JSON:API 1.0 list response data",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "title": "UUID",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "trigger"
+                            ],
+                            "description": "Trigger resource type"
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "Trigger meta data",
+                            "properties": {
+                              "has_abandoned_conditions": {
+                                "type": "boolean",
+                                "description": "Flag describing whether trigger has abandoned conditions (true), otherwise (false)"
+                              },
+                              "has_conditions_with_abandoned_variable": {
+                                "type": "boolean",
+                                "description": "Flag describing whether trigger has condition with abandoned variable (true), otherwise (false)"
+                              }
+                            },
+                            "required": [
+                              "has_abandoned_conditions",
+                              "has_conditions_with_abandoned_variable"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "description": "Trigger attributes",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "trigger_type": {
+                                "type": "string",
+                                "enum": [
+                                  "page_view",
+                                  "page_load",
+                                  "dom_ready",
+                                  "leave_content",
+                                  "page_scroll",
+                                  "time_on_website",
+                                  "event",
+                                  "history",
+                                  "debounced_history",
+                                  "form_submission",
+                                  "click",
+                                  "capturing_click",
+                                  "element_presence",
+                                  "cdp_audience_detection",
+                                  "abandoned"
+                                ],
+                                "description": "Trigger type"
+                              },
+                              "is_published": {
+                                "type": "boolean",
+                                "description": "Flag describing whether trigger is published (true) or not published (false)"
+                              },
+                              "created_at": {
+                                "title": "DateTime",
+                                "description": "ISO 8601",
+                                "type": "string",
+                                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                              },
+                              "updated_at": {
+                                "title": "DateTime",
+                                "description": "ISO 8601",
+                                "type": "string",
+                                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\+[0-9]{2}:[0-9]{2}$"
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "trigger_type",
+                              "is_published",
+                              "created_at",
+                              "updated_at"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "meta",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "description": "Meta information about resources",
+                      "properties": {
+                        "total": {
+                          "description": "Total number of elements",
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "total"
+                      ]
+                    },
+                    "links": {
+                      "type": "object",
+                      "description": "Pagination links",
+                      "properties": {
+                        "self": {
+                          "description": "Link to current page",
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "first": {
+                          "description": "Link to first page",
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "title": "null",
+                              "description": "",
+                              "enum": [
+                                null
+                              ]
+                            }
+                          ]
+                        },
+                        "last": {
+                          "description": "Link to last page",
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "title": "null",
+                              "description": "",
+                              "enum": [
+                                null
+                              ]
+                            }
+                          ]
+                        },
+                        "prev": {
+                          "description": "Link to previous page",
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "title": "null",
+                              "description": "",
+                              "enum": [
+                                null
+                              ]
+                            }
+                          ]
+                        },
+                        "next": {
+                          "description": "Link to next page",
+                          "oneOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "title": "null",
+                              "description": "",
+                              "enum": [
+                                null
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "self"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta",
+                    "links"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "meta": {
+                    "total": 2
+                  },
+                  "links": {
+                    "self": "/api/tag/v1/triggers/?sort=name&page[offset]=0&page[limit]=10",
+                    "first": "/api/tag/v1/triggers/?sort=name&page[offset]=0&page[limit]=10",
+                    "last": "/api/tag/v1/triggers/?sort=name&page[offset]=0&page[limit]=10",
+                    "prev": null,
+                    "next": null
+                  },
+                  "data": [
+                    {
+                      "type": "trigger",
+                      "id": "252eebdd-99a6-4942-9805-7a94c717d2fa",
+                      "meta": {
+                        "has_abandoned_conditions": false,
+                        "has_conditions_with_abandoned_variable": false
+                      },
+                      "attributes": {
+                        "name": "Trigger Page view",
+                        "trigger_type": "page_view",
+                        "is_published": true,
+                        "created_at": "2019-11-30T09:17:17+00:00",
+                        "updated_at": "2020-05-05T07:47:08+00:00"
+                      }
+                    },
+                    {
+                      "type": "trigger",
+                      "id": "57a653c9-07c0-4f9a-85f6-1cda14eb5e3e",
+                      "meta": {
+                        "has_abandoned_conditions": false,
+                        "has_conditions_with_abandoned_variable": false
+                      },
+                      "attributes": {
+                        "name": "Trigger page view for custom campaign",
+                        "trigger_type": "page_view",
+                        "is_published": false,
+                        "created_at": "2020-03-09T12:17:57+00:00",
+                        "updated_at": "2020-05-05T07:47:08+00:00"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request parameter",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INVALID_URI_PARAMETER_ERROR",
+                      "detail": "Application identifier should be of type UUID",
+                      "source": {
+                        "parameter": "app_id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "UNAUTHORIZED_ERROR",
+                      "detail": "Access token not authorized"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "NOT_FOUND_ERROR",
+                      "detail": "There is no application with given identifier: 5c39070d-9e0b-40a2-ae56-392f05711f74",
+                      "source": {
+                        "parameter": "app_id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "description": "An application-specific error code, expressed as a string value."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "A human-readable explanation specific to this occurrence of the problem."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "An object containing references to the source of the error.",
+                            "properties": {
+                              "pointer": {
+                                "type": "string",
+                                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document."
+                              },
+                              "parameter": {
+                                "type": "string",
+                                "description": "A string indicating which URI parameter caused the error."
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "meta": {
+                            "type": "object",
+                            "description": "An object containing additional application-specific information about error.",
+                            "properties": {
+                              "keyword": {
+                                "type": "string"
+                              },
+                              "keyword_args": {
+                                "type": "object"
+                              }
+                            },
+                            "additionalProperties": false
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "detail"
+                        ]
+                      },
+                      "minItems": 1
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "errors"
+                  ]
+                },
+                "example": {
+                  "errors": [
+                    {
+                      "code": "INTERNAL_SERVER_ERROR",
+                      "detail": "MySQL server has gone away"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "app_id",
+          "required": true,
+          "description": "Application identifier",
+          "schema": {
+            "title": "UUID",
+            "type": "string",
+            "format": "uuid"
+          },
+          "example": "1f74dda5-b598-41d6-a9e4-f501ef4379e1"
+        },
+        {
+          "in": "path",
+          "name": "tag_id",
+          "required": true,
+          "description": "Tag identifier",
+          "schema": {
+            "title": "UUID",
+            "type": "string",
+            "format": "uuid"
+          },
+          "example": "5c39070d-9e0b-40a2-ae56-392f05711f74"
+        }
+      ]
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}
