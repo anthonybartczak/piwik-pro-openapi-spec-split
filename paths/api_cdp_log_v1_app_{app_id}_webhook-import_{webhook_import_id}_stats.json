@@ -1,0 +1,241 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/log/v1/app/{app_id}/webhook-import/{webhook_import_id}/stats": {
+      "get": {
+        "summary": "Fetch webhook import requests statistics",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "get-log-import-webhook-requests-stats",
+        "description": "webhook import requests statistics",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          },
+          {
+            "in": "path",
+            "name": "webhook_import_id",
+            "description": "An webhook import UUID for which stats are requested",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "47fceca0-b5b8-4578-a8b0-76d08d6012ee"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "timezone",
+            "description": "Aligns buckets to start of interval in the specified timezone",
+            "schema": {
+              "type": "string",
+              "example": "UTC+2",
+              "default": "UTC"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Statistics of an webhook import",
+                  "required": [
+                    "total",
+                    "time_series"
+                  ],
+                  "properties": {
+                    "total": {
+                      "type": "object",
+                      "required": [
+                        "success",
+                        "error"
+                      ],
+                      "properties": {
+                        "success": {
+                          "type": "integer",
+                          "description": "Count of the successful responses to webhook import requests",
+                          "example": 843
+                        },
+                        "error": {
+                          "type": "integer",
+                          "description": "Count of the respones to webhook import requests that finished with an error",
+                          "example": 73
+                        }
+                      }
+                    },
+                    "time_series": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "time",
+                          "success",
+                          "error"
+                        ],
+                        "properties": {
+                          "time": {
+                            "type": "string",
+                            "format": "datetime",
+                            "description": "Bucket start time",
+                            "example": "2023-09-15T00:00:00Z"
+                          },
+                          "success": {
+                            "type": "integer",
+                            "description": "Count of the successful responses to webhook import requests within the time bucket",
+                            "example": 39
+                          },
+                          "error": {
+                            "type": "integer",
+                            "description": "Count of the respones to webhook import requests that finished with an error within the time bucket",
+                            "example": 4
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "An array of statistics of recent webhook import requests"
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "401": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Access token is missing or invalid"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Resource not found (bad ID or resource deleted)"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

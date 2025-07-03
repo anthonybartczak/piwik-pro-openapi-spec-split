@@ -1,0 +1,214 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/analytics/v1/manage/annotation/system/": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "List System Annotations",
+        "description": "Returns a list all System Annotations available for a website.\nPlease note that each request must be authenticated.\n",
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "query",
+            "description": "Start date for the query (inclusive). You can specify mulitple dates which will be paired with corresponding `date_to` parameters. For example `?date_from=2020-01-01&date_to=2020-01-10&date_from=2021-06-01&date_to=2021-07-01` will create two ranges: `[2020-01-01; 2020-01-10]` and `[2021-06-01; 2021-07-01]`.\nNumber of `date_from` parameters must match number of `date_to` parameters.\n",
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date",
+                "example": "2021-05-01"
+              }
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "description": "End date for the query (inclusive). You can specify mulitple dates which will be paired with corresponding `date_to` parameters. Read more in `date_from` parameter description.",
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date",
+                "example": "2021-05-01"
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "description": "Number of rows to return."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            },
+            "description": "Number of rows to skip before beginning to return rows."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "meta",
+                    "data"
+                  ],
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "total"
+                          ],
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of results.",
+                              "example": 1
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "attributes",
+                          "id"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "description": "Type of the object.",
+                            "enum": [
+                              "SystemAnnotation"
+                            ]
+                          },
+                          "id": {
+                            "type": "string",
+                            "description": "ID of a annotation.",
+                            "readOnly": true,
+                            "format": "uuid",
+                            "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                          },
+                          "attributes": {
+                            "required": [
+                              "content",
+                              "id",
+                              "date"
+                            ],
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "date": {
+                                    "description": "Date of the annotation.",
+                                    "type": "string",
+                                    "example": "2021-05-01"
+                                  },
+                                  "content": {
+                                    "description": "Content of the annotation.",
+                                    "type": "string",
+                                    "maxLength": 150,
+                                    "example": "Launch of a new campaign!"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

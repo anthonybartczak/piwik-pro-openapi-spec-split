@@ -1,0 +1,206 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/integration/gads/v1/app/{app_id}/customer/{customer_id}/user-list": {
+      "get": {
+        "summary": "Fetch user lists",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "get-integration-gads-app-user-lists",
+        "description": "Returns a list of user lists CDP can send data to.",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          },
+          {
+            "name": "customer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "description": "Customer ID",
+              "type": "string",
+              "pattern": "^\\d{10}$",
+              "example": "7762745113"
+            }
+          },
+          {
+            "name": "manager_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "description": "Manager ID (login customer ID)",
+              "type": "string",
+              "pattern": "^\\d{10}$",
+              "example": "3792543821"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "name"
+                    ],
+                    "properties": {
+                      "id": {
+                        "description": "User list ID",
+                        "type": "string",
+                        "pattern": "^\\d{1,10}$",
+                        "example": "7762745113"
+                      },
+                      "name": {
+                        "description": "User list name",
+                        "type": "string",
+                        "example": "My user list"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "An array of user lists"
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "401": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Access token is missing or invalid"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Resource not found (bad ID or resource deleted)"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

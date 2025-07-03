@@ -1,0 +1,542 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/analytics/v1/manage/custom-dimensions/": {
+      "post": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Create custom dimension",
+        "description": "Configure new custom dimension.\n",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "allOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "attributes",
+                          "id"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "description": "Type of the object.",
+                            "enum": [
+                              "CustomDimension"
+                            ]
+                          },
+                          "id": {
+                            "type": "string",
+                            "description": "ID of a Custom Dimension.",
+                            "readOnly": true,
+                            "format": "uuid",
+                            "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                          },
+                          "attributes": {
+                            "required": [
+                              "name",
+                              "active",
+                              "case_sensitive",
+                              "scope",
+                              "website_id",
+                              "tracking_id"
+                            ],
+                            "properties": {
+                              "website_id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "ID of the website.",
+                                "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the custom dimension.",
+                                "example": "Visitor hair color"
+                              },
+                              "active": {
+                                "type": "boolean",
+                                "description": "Specifies if custom dimension is active or not."
+                              },
+                              "case_sensitive": {
+                                "type": "boolean",
+                                "description": "Specifies if custom dimension is case sensitive or not."
+                              },
+                              "tracking_id": {
+                                "type": "integer",
+                                "description": "Tracking id of custom dimension.",
+                                "minimum": 1,
+                                "readOnly": true
+                              },
+                              "extractions": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "target": {
+                                      "type": "string",
+                                      "description": "What value should be extracted.",
+                                      "enum": [
+                                        "page_title_regex",
+                                        "page_url_regex",
+                                        "page_query_parameter"
+                                      ]
+                                    },
+                                    "pattern": {
+                                      "type": "string",
+                                      "description": "Pattern for regexes or exact match on query param.",
+                                      "example": "/foo/(.*)/bar"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "attributes": {
+                            "type": "object",
+                            "required": [
+                              "scope",
+                              "slot"
+                            ],
+                            "properties": {
+                              "scope": {
+                                "type": "string",
+                                "description": "Scope in which custom dimension is set.",
+                                "enum": [
+                                  "session",
+                                  "event"
+                                ],
+                                "readOnly": false
+                              },
+                              "slot": {
+                                "type": "integer",
+                                "description": "Slot number for custom dimension.",
+                                "minimum": 1,
+                                "readOnly": true
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "attributes",
+                            "id"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "description": "Type of the object.",
+                              "enum": [
+                                "CustomDimension"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "ID of a Custom Dimension.",
+                              "readOnly": true,
+                              "format": "uuid",
+                              "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                            },
+                            "attributes": {
+                              "required": [
+                                "name",
+                                "active",
+                                "case_sensitive",
+                                "scope",
+                                "website_id",
+                                "tracking_id"
+                              ],
+                              "properties": {
+                                "website_id": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "ID of the website.",
+                                  "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "Name of the custom dimension.",
+                                  "example": "Visitor hair color"
+                                },
+                                "active": {
+                                  "type": "boolean",
+                                  "description": "Specifies if custom dimension is active or not."
+                                },
+                                "case_sensitive": {
+                                  "type": "boolean",
+                                  "description": "Specifies if custom dimension is case sensitive or not."
+                                },
+                                "tracking_id": {
+                                  "type": "integer",
+                                  "description": "Tracking id of custom dimension.",
+                                  "minimum": 1,
+                                  "readOnly": true
+                                },
+                                "extractions": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "target": {
+                                        "type": "string",
+                                        "description": "What value should be extracted.",
+                                        "enum": [
+                                          "page_title_regex",
+                                          "page_url_regex",
+                                          "page_query_parameter"
+                                        ]
+                                      },
+                                      "pattern": {
+                                        "type": "string",
+                                        "description": "Pattern for regexes or exact match on query param.",
+                                        "example": "/foo/(.*)/bar"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "attributes": {
+                              "type": "object",
+                              "required": [
+                                "scope",
+                                "slot"
+                              ],
+                              "properties": {
+                                "scope": {
+                                  "type": "string",
+                                  "description": "Scope in which custom dimension is set.",
+                                  "enum": [
+                                    "session",
+                                    "event"
+                                  ],
+                                  "readOnly": true
+                                },
+                                "slot": {
+                                  "type": "integer",
+                                  "description": "Slot number for custom dimension.",
+                                  "minimum": 1,
+                                  "readOnly": true
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "List custom dimensions",
+        "description": "Returns a list all custom dimensions available for a website.\n",
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "query",
+            "required": true,
+            "description": "ID of the website.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "description": "Number of rows to return."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            },
+            "description": "Number of rows to skip before beginning to return rows."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "total"
+                          ],
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of results.",
+                              "example": 1
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "attributes",
+                              "id"
+                            ],
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "description": "Type of the object.",
+                                "enum": [
+                                  "CustomDimension"
+                                ]
+                              },
+                              "id": {
+                                "type": "string",
+                                "description": "ID of a Custom Dimension.",
+                                "readOnly": true,
+                                "format": "uuid",
+                                "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                              },
+                              "attributes": {
+                                "required": [
+                                  "name",
+                                  "active",
+                                  "case_sensitive",
+                                  "scope",
+                                  "website_id",
+                                  "tracking_id"
+                                ],
+                                "properties": {
+                                  "website_id": {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "description": "ID of the website.",
+                                    "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the custom dimension.",
+                                    "example": "Visitor hair color"
+                                  },
+                                  "active": {
+                                    "type": "boolean",
+                                    "description": "Specifies if custom dimension is active or not."
+                                  },
+                                  "case_sensitive": {
+                                    "type": "boolean",
+                                    "description": "Specifies if custom dimension is case sensitive or not."
+                                  },
+                                  "tracking_id": {
+                                    "type": "integer",
+                                    "description": "Tracking id of custom dimension.",
+                                    "minimum": 1,
+                                    "readOnly": true
+                                  },
+                                  "extractions": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "target": {
+                                          "type": "string",
+                                          "description": "What value should be extracted.",
+                                          "enum": [
+                                            "page_title_regex",
+                                            "page_url_regex",
+                                            "page_query_parameter"
+                                          ]
+                                        },
+                                        "pattern": {
+                                          "type": "string",
+                                          "description": "Pattern for regexes or exact match on query param.",
+                                          "example": "/foo/(.*)/bar"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "attributes": {
+                                "type": "object",
+                                "required": [
+                                  "scope",
+                                  "slot"
+                                ],
+                                "properties": {
+                                  "scope": {
+                                    "type": "string",
+                                    "description": "Scope in which custom dimension is set.",
+                                    "enum": [
+                                      "session",
+                                      "event"
+                                    ],
+                                    "readOnly": true
+                                  },
+                                  "slot": {
+                                    "type": "integer",
+                                    "description": "Slot number for custom dimension.",
+                                    "minimum": 1,
+                                    "readOnly": true
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

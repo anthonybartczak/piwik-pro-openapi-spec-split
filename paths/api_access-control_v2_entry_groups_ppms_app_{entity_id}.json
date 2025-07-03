@@ -1,0 +1,234 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/access-control/v2/entry/groups/ppms/app/{entity_id}": {
+      "get": {
+        "summary": "Permissions",
+        "deprecated": true,
+        "description": "Please use <a href=\"#operation/list_app_permissions_for_user_v2\">Users permissions for a given app</a> instead.<br><br> Lists all users (but not owners) and their permissions for a given app. List contains both explicit permission of a user and implicit highest permission inherited from user groups which user belongs to.\n",
+        "operationId": "_legacy_get_permission_groups_v2",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Limits the number of returned items",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "description": "Sets offset for list of items",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "description": "UUIDv4 identifier of given entity",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "description": "Search phrase - search for e-mail or id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "meta",
+                    "data"
+                  ],
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "description": "Metadata of a listing",
+                      "required": [
+                        "total"
+                      ],
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of items",
+                          "example": 1
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "type",
+                          "attributes"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "Resource ID",
+                            "example": "985ed9d7-b652-47b8-b9cf-c17d62735261"
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Resource type",
+                            "enum": [
+                              "ppms/permissions/group"
+                            ]
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "required": [
+                              "email",
+                              "group_permissions",
+                              "permissions"
+                            ],
+                            "properties": {
+                              "email": {
+                                "type": "string",
+                                "format": "email",
+                                "description": "User email",
+                                "example": "example@example.com"
+                              },
+                              "group_permissions": {
+                                "type": "object",
+                                "required": [
+                                  "group_names",
+                                  "permission"
+                                ],
+                                "properties": {
+                                  "group_names": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "example": "Managers"
+                                    }
+                                  },
+                                  "permission": {
+                                    "type": "string",
+                                    "description": "Permission for `ppms/app` (for example `edit-publish` contains actions `view`, `edit` and `publish`)",
+                                    "enum": [
+                                      "no-access",
+                                      "view",
+                                      "edit",
+                                      "edit-publish",
+                                      "manage"
+                                    ],
+                                    "example": "manage"
+                                  }
+                                }
+                              },
+                              "permissions": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "description": "Permission for `ppms/app` (for example `edit-publish` contains actions `view`, `edit` and `publish`)",
+                                  "enum": [
+                                    "no-access",
+                                    "view",
+                                    "edit",
+                                    "edit-publish",
+                                    "manage"
+                                  ],
+                                  "example": "manage"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "tags": [
+          "Access Control"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

@@ -1,0 +1,528 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/analytics/v1/manage/annotation/user/{id}/": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Get user annotation",
+        "description": "Returns a definition of a specific user annotation.\nPlease note that each request must be authenticated.\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the object.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+          },
+          {
+            "name": "website_id",
+            "in": "query",
+            "required": true,
+            "description": "ID of the website.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "attributes",
+                            "id"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "description": "Type of the object.",
+                              "enum": [
+                                "UserAnnotation"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "ID of a annotation.",
+                              "format": "uuid",
+                              "readOnly": true,
+                              "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                            },
+                            "attributes": {
+                              "type": "object",
+                              "allOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "date": {
+                                      "description": "Date of the annotation.",
+                                      "type": "string",
+                                      "example": "2021-05-01"
+                                    },
+                                    "content": {
+                                      "description": "Content of the annotation.",
+                                      "type": "string",
+                                      "maxLength": 150,
+                                      "example": "Launch of a new campaign!"
+                                    }
+                                  }
+                                }
+                              ],
+                              "required": [
+                                "content",
+                                "website_id",
+                                "date"
+                              ],
+                              "properties": {
+                                "visibility": {
+                                  "enum": [
+                                    "private",
+                                    "public"
+                                  ],
+                                  "default": "private",
+                                  "description": "Determines whether the annotation should be visible only to the author or to everyone with access to the website.\n",
+                                  "type": "string"
+                                },
+                                "website_id": {
+                                  "description": "ID of the website.",
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "required": [
+                        "type",
+                        "attributes"
+                      ],
+                      "properties": {
+                        "attributes": {
+                          "required": [
+                            "content",
+                            "website_id",
+                            "date",
+                            "is_author",
+                            "author",
+                            "visibility"
+                          ],
+                          "properties": {
+                            "website_id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "ID of the website.",
+                              "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                            },
+                            "author": {
+                              "type": "object",
+                              "description": "Author of the object.",
+                              "properties": {
+                                "email": {
+                                  "type": "string",
+                                  "description": "Email address of the author.",
+                                  "example": "foo@bar.com"
+                                }
+                              },
+                              "required": [
+                                "email"
+                              ],
+                              "readOnly": true
+                            },
+                            "is_author": {
+                              "type": "boolean",
+                              "description": "Flag that says whether the current user is the author.",
+                              "readOnly": true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Update user annotation",
+        "description": "Update an existing user annotation.\nPlease note that each request must be authenticated.\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the object.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "allOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "attributes",
+                          "id"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "description": "Type of the object.",
+                            "enum": [
+                              "UserAnnotation"
+                            ]
+                          },
+                          "id": {
+                            "type": "string",
+                            "description": "ID of a annotation.",
+                            "format": "uuid",
+                            "readOnly": true,
+                            "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "date": {
+                                    "description": "Date of the annotation.",
+                                    "type": "string",
+                                    "example": "2021-05-01"
+                                  },
+                                  "content": {
+                                    "description": "Content of the annotation.",
+                                    "type": "string",
+                                    "maxLength": 150,
+                                    "example": "Launch of a new campaign!"
+                                  }
+                                }
+                              }
+                            ],
+                            "required": [
+                              "content",
+                              "website_id",
+                              "date"
+                            ],
+                            "properties": {
+                              "visibility": {
+                                "enum": [
+                                  "private",
+                                  "public"
+                                ],
+                                "default": "private",
+                                "description": "Determines whether the annotation should be visible only to the author or to everyone with access to the website.\n",
+                                "type": "string"
+                              },
+                              "website_id": {
+                                "description": "ID of the website.",
+                                "type": "string",
+                                "format": "uuid",
+                                "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "required": [
+                      "type",
+                      "attributes",
+                      "id"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of a annotation.",
+                        "format": "uuid",
+                        "readOnly": false,
+                        "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "attributes",
+                            "id"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "description": "Type of the object.",
+                              "enum": [
+                                "UserAnnotation"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "ID of a annotation.",
+                              "format": "uuid",
+                              "readOnly": true,
+                              "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                            },
+                            "attributes": {
+                              "type": "object",
+                              "allOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "date": {
+                                      "description": "Date of the annotation.",
+                                      "type": "string",
+                                      "example": "2021-05-01"
+                                    },
+                                    "content": {
+                                      "description": "Content of the annotation.",
+                                      "type": "string",
+                                      "maxLength": 150,
+                                      "example": "Launch of a new campaign!"
+                                    }
+                                  }
+                                }
+                              ],
+                              "required": [
+                                "content",
+                                "website_id",
+                                "date"
+                              ],
+                              "properties": {
+                                "visibility": {
+                                  "enum": [
+                                    "private",
+                                    "public"
+                                  ],
+                                  "default": "private",
+                                  "description": "Determines whether the annotation should be visible only to the author or to everyone with access to the website.\n",
+                                  "type": "string"
+                                },
+                                "website_id": {
+                                  "description": "ID of the website.",
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "required": [
+                        "type",
+                        "attributes"
+                      ],
+                      "properties": {
+                        "attributes": {
+                          "required": [
+                            "content",
+                            "website_id",
+                            "date",
+                            "is_author",
+                            "author",
+                            "visibility"
+                          ],
+                          "properties": {
+                            "website_id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "ID of the website.",
+                              "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                            },
+                            "author": {
+                              "type": "object",
+                              "description": "Author of the object.",
+                              "properties": {
+                                "email": {
+                                  "type": "string",
+                                  "description": "Email address of the author.",
+                                  "example": "foo@bar.com"
+                                }
+                              },
+                              "required": [
+                                "email"
+                              ],
+                              "readOnly": true
+                            },
+                            "is_author": {
+                              "type": "boolean",
+                              "description": "Flag that says whether the current user is the author.",
+                              "readOnly": true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Delete user annotation",
+        "description": "Delete the specified user annotation.\nPlease note that each request must be authenticated.\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the object.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+          },
+          {
+            "name": "website_id",
+            "in": "query",
+            "required": true,
+            "description": "ID of the website.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

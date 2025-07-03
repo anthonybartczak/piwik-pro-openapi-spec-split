@@ -1,0 +1,1650 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/settings/v1/app/{app_id}/audience": {
+      "post": {
+        "summary": "Create audience",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "post-audience",
+        "description": "Create a new Audience",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "description": "Audience object used for adding and updating audiences",
+                "type": "object",
+                "required": [
+                  "name",
+                  "description",
+                  "definition",
+                  "membership_duration_days"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "definition": {
+                    "description": "Audience definition",
+                    "type": "object",
+                    "required": [
+                      "operator",
+                      "conditions"
+                    ],
+                    "properties": {
+                      "operator": {
+                        "type": "string",
+                        "const": "and",
+                        "description": "Logical operator to be used between conditions."
+                      },
+                      "conditions": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 10,
+                        "description": "List of conditions. Maximum number of conditions (sum of profile and event conditions) is 10.",
+                        "items": {
+                          "type": "object",
+                          "description": "Definition of condition",
+                          "required": [
+                            "operator",
+                            "conditions"
+                          ],
+                          "properties": {
+                            "operator": {
+                              "type": "string",
+                              "const": "or",
+                              "description": "Logical operator to be used between conditions.",
+                              "example": "or"
+                            },
+                            "conditions": {
+                              "type": "array",
+                              "description": "List of conditions.",
+                              "minItems": 1,
+                              "maxItems": 10,
+                              "items": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "description": "Audience definition condition based on profile attributes",
+                                    "required": [
+                                      "condition_type",
+                                      "column_id",
+                                      "condition"
+                                    ],
+                                    "properties": {
+                                      "condition_type": {
+                                        "type": "string",
+                                        "const": "profile"
+                                      },
+                                      "column_id": {
+                                        "type": "string",
+                                        "description": "Event attribute to compare.",
+                                        "example": "country_iso_code"
+                                      },
+                                      "column_meta": {
+                                        "type": "object",
+                                        "description": "Column metadata (readonly).",
+                                        "properties": {
+                                          "column_name": {
+                                            "type": "string",
+                                            "description": "Name of the column.",
+                                            "example": "Browser Type"
+                                          },
+                                          "column_type": {
+                                            "description": "Type of the column.",
+                                            "type": "string",
+                                            "enum": [
+                                              "number",
+                                              "string",
+                                              "ipv4",
+                                              "ipv6",
+                                              "bool",
+                                              "int",
+                                              "uuid",
+                                              "hex",
+                                              "datetime"
+                                            ],
+                                            "example": "string"
+                                          },
+                                          "column_unit": {
+                                            "type": "string",
+                                            "description": "Unit of the column.",
+                                            "enum": [
+                                              "currency",
+                                              "url",
+                                              "days",
+                                              "pixels",
+                                              "none",
+                                              "millisecond",
+                                              ""
+                                            ],
+                                            "example": "currency"
+                                          },
+                                          "column_category": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "string",
+                                              "example": "Device"
+                                            },
+                                            "description": "Categories of the column."
+                                          },
+                                          "analytics_column_id": {
+                                            "type": "string",
+                                            "description": "Name of the column in Analytics module. Used to calculate audience count.",
+                                            "example": "goal_revenue"
+                                          },
+                                          "analytics_transformation_id": {
+                                            "type": "string",
+                                            "description": "Transformation name used in Analytics module to calculate audience count. Currently one option available.",
+                                            "enum": [
+                                              "sum"
+                                            ],
+                                            "example": "sum"
+                                          },
+                                          "value_selectors": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "string",
+                                              "enum": [
+                                                "first",
+                                                "last",
+                                                "any"
+                                              ]
+                                            },
+                                            "minItems": 0,
+                                            "example": [
+                                              "first"
+                                            ],
+                                            "description": "List of value selectors possible for given column."
+                                          },
+                                          "extractions": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "string",
+                                              "enum": [
+                                                "first",
+                                                "last",
+                                                "all"
+                                              ]
+                                            },
+                                            "minItems": 0,
+                                            "example": [
+                                              "first"
+                                            ],
+                                            "description": "List of extractions possible for given column."
+                                          },
+                                          "aggregation": {
+                                            "type": "string",
+                                            "description": "Aggregation for attribute values.",
+                                            "enum": [
+                                              "first",
+                                              "last",
+                                              "first_last",
+                                              "list",
+                                              "list_unique",
+                                              "min",
+                                              "max",
+                                              "sum"
+                                            ],
+                                            "example": "first"
+                                          },
+                                          "scope": {
+                                            "type": "string",
+                                            "description": "Defines the scope of dimension.",
+                                            "enum": [
+                                              "event",
+                                              "profile"
+                                            ],
+                                            "example": "event"
+                                          }
+                                        }
+                                      },
+                                      "value_selector": {
+                                        "type": "string",
+                                        "enum": [
+                                          "first",
+                                          "last",
+                                          "any",
+                                          "na"
+                                        ]
+                                      },
+                                      "condition": {
+                                        "type": "object",
+                                        "description": "Filtering criteria.",
+                                        "required": [
+                                          "operator",
+                                          "value"
+                                        ],
+                                        "properties": {
+                                          "operator": {
+                                            "type": "string",
+                                            "description": "<p>\n  Filtering operator. Available choices depend on attribute type.\n</p>\n<p>\n  number operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  string operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>contains</code>,\n  <code>not_contains</code>,\n  <code>icontains</code>,\n  <code>not_icontains</code>,\n  <code>starts_with</code>,\n  <code>ends_with</code>,\n  <code>matches</code>,\n  <code>not_matches</code>.\n</p>\n<p>\n  ipv4 operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  ipv6 operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  bool operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  int operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  uuid operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  hex operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  relative time operators:\n  <code>before_last</code>\n  <code>in_the_last</code>\n  <code>in_the_next</code>\n  <code>after_next</code>\n</p>\n<p>\n  absolute time operators:\n  <code>earlier_than</code>\n  <code>later_than</code>\n</p>\n",
+                                            "enum": [
+                                              "eq",
+                                              "neq",
+                                              "gt",
+                                              "gte",
+                                              "lt",
+                                              "lte",
+                                              "contains",
+                                              "not_contains",
+                                              "icontains",
+                                              "not_icontains",
+                                              "starts_with",
+                                              "ends_with",
+                                              "matches",
+                                              "not_matches",
+                                              "before_last",
+                                              "in_the_last",
+                                              "in_the_next",
+                                              "after_next",
+                                              "earlier_than",
+                                              "later_than"
+                                            ],
+                                            "example": "eq"
+                                          },
+                                          "value": {
+                                            "oneOf": [
+                                              {
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "number"
+                                              },
+                                              {
+                                                "type": "boolean"
+                                              },
+                                              {
+                                                "type": "object",
+                                                "properties": {
+                                                  "unit": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                      "seconds",
+                                                      "minutes",
+                                                      "hours",
+                                                      "days"
+                                                    ]
+                                                  },
+                                                  "value": {
+                                                    "type": "integer",
+                                                    "description": "Relative time value, which should be:\n- If unit is `seconds`, between `1` and `2592000` (30 days in seconds).\n- If unit is `minutes`, between `1` and `43200` (30 days in minutes).\n- If unit is `hours`, between `1` and `720` (30 days in hours).\n- If unit is `days`, between `1` and `30`.\n"
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "type": "object",
+                                                "properties": {
+                                                  "unit": {
+                                                    "type": "string",
+                                                    "const": "datetime"
+                                                  },
+                                                  "value": {
+                                                    "type": "string",
+                                                    "format": "datetime",
+                                                    "description": "Datetime describing an absolute point in time, e.g. \"2023-08-02T23:05:00Z\""
+                                                  }
+                                                }
+                                              }
+                                            ],
+                                            "description": "Filtering value with type matching specified column.",
+                                            "examples": [
+                                              "pl",
+                                              {
+                                                "value": 5,
+                                                "unit": "days"
+                                              },
+                                              {
+                                                "value": "2019-08-19T00:00:00Z",
+                                                "unit": "datetime"
+                                              }
+                                            ]
+                                          },
+                                          "label": {
+                                            "description": "Filtering value to display.",
+                                            "example": "Poland"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "description": "Audience definition condition based on event attributes (behavioral)",
+                                    "required": [
+                                      "condition_type",
+                                      "times",
+                                      "condition"
+                                    ],
+                                    "properties": {
+                                      "condition_type": {
+                                        "type": "string",
+                                        "const": "event"
+                                      },
+                                      "times": {
+                                        "type": "object",
+                                        "description": "How many times given event occurred",
+                                        "required": [
+                                          "operator",
+                                          "value"
+                                        ],
+                                        "properties": {
+                                          "operator": {
+                                            "type": "string",
+                                            "description": "Whether an event should appear exactly, more often than, etc. X times. If event should not occur, the operator should be 'eq'.",
+                                            "enum": [
+                                              "eq",
+                                              "gt",
+                                              "gte",
+                                              "lt",
+                                              "lte"
+                                            ],
+                                            "example": "is"
+                                          },
+                                          "value": {
+                                            "type": "integer",
+                                            "description": "How many times an event should occur. '0' means an event should not occur at all.",
+                                            "minimum": 0,
+                                            "maximum": 50,
+                                            "example": 2
+                                          }
+                                        }
+                                      },
+                                      "during": {
+                                        "oneOf": [
+                                          {
+                                            "type": "object",
+                                            "description": "Time limit for behavioral condition to occur in minutes",
+                                            "required": [
+                                              "seconds",
+                                              "unit"
+                                            ],
+                                            "properties": {
+                                              "seconds": {
+                                                "type": "integer",
+                                                "description": "Time limit for behavioral condition is always expressed in seconds, regardless of the unit",
+                                                "minimum": 60,
+                                                "maximum": 2592000,
+                                                "multipleOf": 60,
+                                                "example": 3600
+                                              },
+                                              "unit": {
+                                                "type": "string",
+                                                "const": "minutes",
+                                                "example": "minutes"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "description": "Time limit for behavioral condition to occur in hours",
+                                            "required": [
+                                              "seconds",
+                                              "unit"
+                                            ],
+                                            "properties": {
+                                              "seconds": {
+                                                "type": "integer",
+                                                "description": "Time limit for behavioral condition is always expressed in seconds, regardless of the unit",
+                                                "minimum": 3600,
+                                                "maximum": 2592000,
+                                                "multipleOf": 3600,
+                                                "example": 3600
+                                              },
+                                              "unit": {
+                                                "type": "string",
+                                                "const": "hours",
+                                                "example": "hours"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "object",
+                                            "description": "Time limit for behavioral condition to occur in days",
+                                            "required": [
+                                              "seconds",
+                                              "unit"
+                                            ],
+                                            "properties": {
+                                              "seconds": {
+                                                "type": "integer",
+                                                "description": "Time limit for behavioral condition is always expressed in seconds, regardless of the unit",
+                                                "minimum": 86400,
+                                                "maximum": 2592000,
+                                                "multipleOf": 86400,
+                                                "example": 86400
+                                              },
+                                              "unit": {
+                                                "type": "string",
+                                                "const": "days",
+                                                "example": "days"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "condition": {
+                                        "type": "object",
+                                        "required": [
+                                          "operator",
+                                          "conditions"
+                                        ],
+                                        "properties": {
+                                          "operator": {
+                                            "type": "string",
+                                            "const": "and",
+                                            "example": "and"
+                                          },
+                                          "conditions": {
+                                            "type": "array",
+                                            "description": "Set of behavioral condition's sub-conditions",
+                                            "minItems": 1,
+                                            "maxItems": 5,
+                                            "items": {
+                                              "type": "object",
+                                              "description": "Internal behavioral audience condition",
+                                              "required": [
+                                                "column_id",
+                                                "condition"
+                                              ],
+                                              "properties": {
+                                                "column_id": {
+                                                  "type": "string",
+                                                  "description": "Event attribute to compare.",
+                                                  "example": "country_iso_code"
+                                                },
+                                                "column_meta": {
+                                                  "type": "object",
+                                                  "description": "Column metadata (readonly).",
+                                                  "properties": {
+                                                    "column_name": {
+                                                      "type": "string",
+                                                      "description": "Name of the column.",
+                                                      "example": "Browser Type"
+                                                    },
+                                                    "column_type": {
+                                                      "description": "Type of the column.",
+                                                      "type": "string",
+                                                      "enum": [
+                                                        "number",
+                                                        "string",
+                                                        "ipv4",
+                                                        "ipv6",
+                                                        "bool",
+                                                        "int",
+                                                        "uuid",
+                                                        "hex",
+                                                        "datetime"
+                                                      ],
+                                                      "example": "string"
+                                                    },
+                                                    "column_unit": {
+                                                      "type": "string",
+                                                      "description": "Unit of the column.",
+                                                      "enum": [
+                                                        "currency",
+                                                        "url",
+                                                        "days",
+                                                        "pixels",
+                                                        "none",
+                                                        "millisecond",
+                                                        ""
+                                                      ],
+                                                      "example": "currency"
+                                                    },
+                                                    "column_category": {
+                                                      "type": "array",
+                                                      "items": {
+                                                        "type": "string",
+                                                        "example": "Device"
+                                                      },
+                                                      "description": "Categories of the column."
+                                                    },
+                                                    "analytics_column_id": {
+                                                      "type": "string",
+                                                      "description": "Name of the column in Analytics module. Used to calculate audience count.",
+                                                      "example": "goal_revenue"
+                                                    },
+                                                    "analytics_transformation_id": {
+                                                      "type": "string",
+                                                      "description": "Transformation name used in Analytics module to calculate audience count. Currently one option available.",
+                                                      "enum": [
+                                                        "sum"
+                                                      ],
+                                                      "example": "sum"
+                                                    },
+                                                    "value_selectors": {
+                                                      "type": "array",
+                                                      "items": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                          "first",
+                                                          "last",
+                                                          "any"
+                                                        ]
+                                                      },
+                                                      "minItems": 0,
+                                                      "example": [
+                                                        "first"
+                                                      ],
+                                                      "description": "List of value selectors possible for given column."
+                                                    },
+                                                    "extractions": {
+                                                      "type": "array",
+                                                      "items": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                          "first",
+                                                          "last",
+                                                          "all"
+                                                        ]
+                                                      },
+                                                      "minItems": 0,
+                                                      "example": [
+                                                        "first"
+                                                      ],
+                                                      "description": "List of extractions possible for given column."
+                                                    },
+                                                    "aggregation": {
+                                                      "type": "string",
+                                                      "description": "Aggregation for attribute values.",
+                                                      "enum": [
+                                                        "first",
+                                                        "last",
+                                                        "first_last",
+                                                        "list",
+                                                        "list_unique",
+                                                        "min",
+                                                        "max",
+                                                        "sum"
+                                                      ],
+                                                      "example": "first"
+                                                    },
+                                                    "scope": {
+                                                      "type": "string",
+                                                      "description": "Defines the scope of dimension.",
+                                                      "enum": [
+                                                        "event",
+                                                        "profile"
+                                                      ],
+                                                      "example": "event"
+                                                    }
+                                                  }
+                                                },
+                                                "condition": {
+                                                  "type": "object",
+                                                  "description": "Filtering criteria.",
+                                                  "required": [
+                                                    "operator",
+                                                    "value"
+                                                  ],
+                                                  "properties": {
+                                                    "operator": {
+                                                      "type": "string",
+                                                      "description": "<p>\n  Filtering operator. Available choices depend on attribute type.\n</p>\n<p>\n  number operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  string operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>contains</code>,\n  <code>not_contains</code>,\n  <code>icontains</code>,\n  <code>not_icontains</code>,\n  <code>starts_with</code>,\n  <code>ends_with</code>,\n  <code>matches</code>,\n  <code>not_matches</code>.\n</p>\n<p>\n  ipv4 operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  ipv6 operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  bool operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  int operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  uuid operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  hex operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  relative time operators:\n  <code>before_last</code>\n  <code>in_the_last</code>\n  <code>in_the_next</code>\n  <code>after_next</code>\n</p>\n<p>\n  absolute time operators:\n  <code>earlier_than</code>\n  <code>later_than</code>\n</p>\n",
+                                                      "enum": [
+                                                        "eq",
+                                                        "neq",
+                                                        "gt",
+                                                        "gte",
+                                                        "lt",
+                                                        "lte",
+                                                        "contains",
+                                                        "not_contains",
+                                                        "icontains",
+                                                        "not_icontains",
+                                                        "starts_with",
+                                                        "ends_with",
+                                                        "matches",
+                                                        "not_matches",
+                                                        "before_last",
+                                                        "in_the_last",
+                                                        "in_the_next",
+                                                        "after_next",
+                                                        "earlier_than",
+                                                        "later_than"
+                                                      ],
+                                                      "example": "eq"
+                                                    },
+                                                    "value": {
+                                                      "oneOf": [
+                                                        {
+                                                          "type": "string"
+                                                        },
+                                                        {
+                                                          "type": "number"
+                                                        },
+                                                        {
+                                                          "type": "boolean"
+                                                        }
+                                                      ],
+                                                      "description": "Filtering value with type matching specified column.",
+                                                      "example": "pl"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "membership_duration_days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 540
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Full audience object",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "app_id",
+                    "created_at",
+                    "updated_at",
+                    "name",
+                    "description",
+                    "membership_duration_days",
+                    "definition",
+                    "author",
+                    "is_author",
+                    "version"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "ID of the audience"
+                    },
+                    "app_id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "ID of the app"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Audience creation date"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Latest audience update date"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the audience"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the audience"
+                    },
+                    "membership_duration_days": {
+                      "type": "integer",
+                      "description": "Time (in days) after which profiles are removed from an audience"
+                    },
+                    "definition": {
+                      "description": "Audience definition",
+                      "type": "object",
+                      "required": [
+                        "operator",
+                        "conditions"
+                      ],
+                      "properties": {
+                        "operator": {
+                          "type": "string",
+                          "const": "and",
+                          "description": "Logical operator to be used between conditions."
+                        },
+                        "conditions": {
+                          "type": "array",
+                          "minItems": 1,
+                          "maxItems": 10,
+                          "description": "List of conditions. Maximum number of conditions (sum of profile and event conditions) is 10.",
+                          "items": {
+                            "type": "object",
+                            "description": "Definition of condition",
+                            "required": [
+                              "operator",
+                              "conditions"
+                            ],
+                            "properties": {
+                              "operator": {
+                                "type": "string",
+                                "const": "or",
+                                "description": "Logical operator to be used between conditions.",
+                                "example": "or"
+                              },
+                              "conditions": {
+                                "type": "array",
+                                "description": "List of conditions.",
+                                "minItems": 1,
+                                "maxItems": 10,
+                                "items": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "description": "Audience definition condition based on profile attributes",
+                                      "required": [
+                                        "condition_type",
+                                        "column_id",
+                                        "condition"
+                                      ],
+                                      "properties": {
+                                        "condition_type": {
+                                          "type": "string",
+                                          "const": "profile"
+                                        },
+                                        "column_id": {
+                                          "type": "string",
+                                          "description": "Event attribute to compare.",
+                                          "example": "country_iso_code"
+                                        },
+                                        "column_meta": {
+                                          "type": "object",
+                                          "description": "Column metadata (readonly).",
+                                          "properties": {
+                                            "column_name": {
+                                              "type": "string",
+                                              "description": "Name of the column.",
+                                              "example": "Browser Type"
+                                            },
+                                            "column_type": {
+                                              "description": "Type of the column.",
+                                              "type": "string",
+                                              "enum": [
+                                                "number",
+                                                "string",
+                                                "ipv4",
+                                                "ipv6",
+                                                "bool",
+                                                "int",
+                                                "uuid",
+                                                "hex",
+                                                "datetime"
+                                              ],
+                                              "example": "string"
+                                            },
+                                            "column_unit": {
+                                              "type": "string",
+                                              "description": "Unit of the column.",
+                                              "enum": [
+                                                "currency",
+                                                "url",
+                                                "days",
+                                                "pixels",
+                                                "none",
+                                                "millisecond",
+                                                ""
+                                              ],
+                                              "example": "currency"
+                                            },
+                                            "column_category": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string",
+                                                "example": "Device"
+                                              },
+                                              "description": "Categories of the column."
+                                            },
+                                            "analytics_column_id": {
+                                              "type": "string",
+                                              "description": "Name of the column in Analytics module. Used to calculate audience count.",
+                                              "example": "goal_revenue"
+                                            },
+                                            "analytics_transformation_id": {
+                                              "type": "string",
+                                              "description": "Transformation name used in Analytics module to calculate audience count. Currently one option available.",
+                                              "enum": [
+                                                "sum"
+                                              ],
+                                              "example": "sum"
+                                            },
+                                            "value_selectors": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "first",
+                                                  "last",
+                                                  "any"
+                                                ]
+                                              },
+                                              "minItems": 0,
+                                              "example": [
+                                                "first"
+                                              ],
+                                              "description": "List of value selectors possible for given column."
+                                            },
+                                            "extractions": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "first",
+                                                  "last",
+                                                  "all"
+                                                ]
+                                              },
+                                              "minItems": 0,
+                                              "example": [
+                                                "first"
+                                              ],
+                                              "description": "List of extractions possible for given column."
+                                            },
+                                            "aggregation": {
+                                              "type": "string",
+                                              "description": "Aggregation for attribute values.",
+                                              "enum": [
+                                                "first",
+                                                "last",
+                                                "first_last",
+                                                "list",
+                                                "list_unique",
+                                                "min",
+                                                "max",
+                                                "sum"
+                                              ],
+                                              "example": "first"
+                                            },
+                                            "scope": {
+                                              "type": "string",
+                                              "description": "Defines the scope of dimension.",
+                                              "enum": [
+                                                "event",
+                                                "profile"
+                                              ],
+                                              "example": "event"
+                                            }
+                                          }
+                                        },
+                                        "value_selector": {
+                                          "type": "string",
+                                          "enum": [
+                                            "first",
+                                            "last",
+                                            "any",
+                                            "na"
+                                          ]
+                                        },
+                                        "condition": {
+                                          "type": "object",
+                                          "description": "Filtering criteria.",
+                                          "required": [
+                                            "operator",
+                                            "value"
+                                          ],
+                                          "properties": {
+                                            "operator": {
+                                              "type": "string",
+                                              "description": "<p>\n  Filtering operator. Available choices depend on attribute type.\n</p>\n<p>\n  number operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  string operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>contains</code>,\n  <code>not_contains</code>,\n  <code>icontains</code>,\n  <code>not_icontains</code>,\n  <code>starts_with</code>,\n  <code>ends_with</code>,\n  <code>matches</code>,\n  <code>not_matches</code>.\n</p>\n<p>\n  ipv4 operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  ipv6 operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  bool operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  int operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  uuid operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  hex operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  relative time operators:\n  <code>before_last</code>\n  <code>in_the_last</code>\n  <code>in_the_next</code>\n  <code>after_next</code>\n</p>\n<p>\n  absolute time operators:\n  <code>earlier_than</code>\n  <code>later_than</code>\n</p>\n",
+                                              "enum": [
+                                                "eq",
+                                                "neq",
+                                                "gt",
+                                                "gte",
+                                                "lt",
+                                                "lte",
+                                                "contains",
+                                                "not_contains",
+                                                "icontains",
+                                                "not_icontains",
+                                                "starts_with",
+                                                "ends_with",
+                                                "matches",
+                                                "not_matches",
+                                                "before_last",
+                                                "in_the_last",
+                                                "in_the_next",
+                                                "after_next",
+                                                "earlier_than",
+                                                "later_than"
+                                              ],
+                                              "example": "eq"
+                                            },
+                                            "value": {
+                                              "oneOf": [
+                                                {
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "boolean"
+                                                },
+                                                {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "unit": {
+                                                      "type": "string",
+                                                      "enum": [
+                                                        "seconds",
+                                                        "minutes",
+                                                        "hours",
+                                                        "days"
+                                                      ]
+                                                    },
+                                                    "value": {
+                                                      "type": "integer",
+                                                      "description": "Relative time value, which should be:\n- If unit is `seconds`, between `1` and `2592000` (30 days in seconds).\n- If unit is `minutes`, between `1` and `43200` (30 days in minutes).\n- If unit is `hours`, between `1` and `720` (30 days in hours).\n- If unit is `days`, between `1` and `30`.\n"
+                                                    }
+                                                  }
+                                                },
+                                                {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "unit": {
+                                                      "type": "string",
+                                                      "const": "datetime"
+                                                    },
+                                                    "value": {
+                                                      "type": "string",
+                                                      "format": "datetime",
+                                                      "description": "Datetime describing an absolute point in time, e.g. \"2023-08-02T23:05:00Z\""
+                                                    }
+                                                  }
+                                                }
+                                              ],
+                                              "description": "Filtering value with type matching specified column.",
+                                              "examples": [
+                                                "pl",
+                                                {
+                                                  "value": 5,
+                                                  "unit": "days"
+                                                },
+                                                {
+                                                  "value": "2019-08-19T00:00:00Z",
+                                                  "unit": "datetime"
+                                                }
+                                              ]
+                                            },
+                                            "label": {
+                                              "description": "Filtering value to display.",
+                                              "example": "Poland"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "type": "object",
+                                      "description": "Audience definition condition based on event attributes (behavioral)",
+                                      "required": [
+                                        "condition_type",
+                                        "times",
+                                        "condition"
+                                      ],
+                                      "properties": {
+                                        "condition_type": {
+                                          "type": "string",
+                                          "const": "event"
+                                        },
+                                        "times": {
+                                          "type": "object",
+                                          "description": "How many times given event occurred",
+                                          "required": [
+                                            "operator",
+                                            "value"
+                                          ],
+                                          "properties": {
+                                            "operator": {
+                                              "type": "string",
+                                              "description": "Whether an event should appear exactly, more often than, etc. X times. If event should not occur, the operator should be 'eq'.",
+                                              "enum": [
+                                                "eq",
+                                                "gt",
+                                                "gte",
+                                                "lt",
+                                                "lte"
+                                              ],
+                                              "example": "is"
+                                            },
+                                            "value": {
+                                              "type": "integer",
+                                              "description": "How many times an event should occur. '0' means an event should not occur at all.",
+                                              "minimum": 0,
+                                              "maximum": 50,
+                                              "example": 2
+                                            }
+                                          }
+                                        },
+                                        "during": {
+                                          "oneOf": [
+                                            {
+                                              "type": "object",
+                                              "description": "Time limit for behavioral condition to occur in minutes",
+                                              "required": [
+                                                "seconds",
+                                                "unit"
+                                              ],
+                                              "properties": {
+                                                "seconds": {
+                                                  "type": "integer",
+                                                  "description": "Time limit for behavioral condition is always expressed in seconds, regardless of the unit",
+                                                  "minimum": 60,
+                                                  "maximum": 2592000,
+                                                  "multipleOf": 60,
+                                                  "example": 3600
+                                                },
+                                                "unit": {
+                                                  "type": "string",
+                                                  "const": "minutes",
+                                                  "example": "minutes"
+                                                }
+                                              }
+                                            },
+                                            {
+                                              "type": "object",
+                                              "description": "Time limit for behavioral condition to occur in hours",
+                                              "required": [
+                                                "seconds",
+                                                "unit"
+                                              ],
+                                              "properties": {
+                                                "seconds": {
+                                                  "type": "integer",
+                                                  "description": "Time limit for behavioral condition is always expressed in seconds, regardless of the unit",
+                                                  "minimum": 3600,
+                                                  "maximum": 2592000,
+                                                  "multipleOf": 3600,
+                                                  "example": 3600
+                                                },
+                                                "unit": {
+                                                  "type": "string",
+                                                  "const": "hours",
+                                                  "example": "hours"
+                                                }
+                                              }
+                                            },
+                                            {
+                                              "type": "object",
+                                              "description": "Time limit for behavioral condition to occur in days",
+                                              "required": [
+                                                "seconds",
+                                                "unit"
+                                              ],
+                                              "properties": {
+                                                "seconds": {
+                                                  "type": "integer",
+                                                  "description": "Time limit for behavioral condition is always expressed in seconds, regardless of the unit",
+                                                  "minimum": 86400,
+                                                  "maximum": 2592000,
+                                                  "multipleOf": 86400,
+                                                  "example": 86400
+                                                },
+                                                "unit": {
+                                                  "type": "string",
+                                                  "const": "days",
+                                                  "example": "days"
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        },
+                                        "condition": {
+                                          "type": "object",
+                                          "required": [
+                                            "operator",
+                                            "conditions"
+                                          ],
+                                          "properties": {
+                                            "operator": {
+                                              "type": "string",
+                                              "const": "and",
+                                              "example": "and"
+                                            },
+                                            "conditions": {
+                                              "type": "array",
+                                              "description": "Set of behavioral condition's sub-conditions",
+                                              "minItems": 1,
+                                              "maxItems": 5,
+                                              "items": {
+                                                "type": "object",
+                                                "description": "Internal behavioral audience condition",
+                                                "required": [
+                                                  "column_id",
+                                                  "condition"
+                                                ],
+                                                "properties": {
+                                                  "column_id": {
+                                                    "type": "string",
+                                                    "description": "Event attribute to compare.",
+                                                    "example": "country_iso_code"
+                                                  },
+                                                  "column_meta": {
+                                                    "type": "object",
+                                                    "description": "Column metadata (readonly).",
+                                                    "properties": {
+                                                      "column_name": {
+                                                        "type": "string",
+                                                        "description": "Name of the column.",
+                                                        "example": "Browser Type"
+                                                      },
+                                                      "column_type": {
+                                                        "description": "Type of the column.",
+                                                        "type": "string",
+                                                        "enum": [
+                                                          "number",
+                                                          "string",
+                                                          "ipv4",
+                                                          "ipv6",
+                                                          "bool",
+                                                          "int",
+                                                          "uuid",
+                                                          "hex",
+                                                          "datetime"
+                                                        ],
+                                                        "example": "string"
+                                                      },
+                                                      "column_unit": {
+                                                        "type": "string",
+                                                        "description": "Unit of the column.",
+                                                        "enum": [
+                                                          "currency",
+                                                          "url",
+                                                          "days",
+                                                          "pixels",
+                                                          "none",
+                                                          "millisecond",
+                                                          ""
+                                                        ],
+                                                        "example": "currency"
+                                                      },
+                                                      "column_category": {
+                                                        "type": "array",
+                                                        "items": {
+                                                          "type": "string",
+                                                          "example": "Device"
+                                                        },
+                                                        "description": "Categories of the column."
+                                                      },
+                                                      "analytics_column_id": {
+                                                        "type": "string",
+                                                        "description": "Name of the column in Analytics module. Used to calculate audience count.",
+                                                        "example": "goal_revenue"
+                                                      },
+                                                      "analytics_transformation_id": {
+                                                        "type": "string",
+                                                        "description": "Transformation name used in Analytics module to calculate audience count. Currently one option available.",
+                                                        "enum": [
+                                                          "sum"
+                                                        ],
+                                                        "example": "sum"
+                                                      },
+                                                      "value_selectors": {
+                                                        "type": "array",
+                                                        "items": {
+                                                          "type": "string",
+                                                          "enum": [
+                                                            "first",
+                                                            "last",
+                                                            "any"
+                                                          ]
+                                                        },
+                                                        "minItems": 0,
+                                                        "example": [
+                                                          "first"
+                                                        ],
+                                                        "description": "List of value selectors possible for given column."
+                                                      },
+                                                      "extractions": {
+                                                        "type": "array",
+                                                        "items": {
+                                                          "type": "string",
+                                                          "enum": [
+                                                            "first",
+                                                            "last",
+                                                            "all"
+                                                          ]
+                                                        },
+                                                        "minItems": 0,
+                                                        "example": [
+                                                          "first"
+                                                        ],
+                                                        "description": "List of extractions possible for given column."
+                                                      },
+                                                      "aggregation": {
+                                                        "type": "string",
+                                                        "description": "Aggregation for attribute values.",
+                                                        "enum": [
+                                                          "first",
+                                                          "last",
+                                                          "first_last",
+                                                          "list",
+                                                          "list_unique",
+                                                          "min",
+                                                          "max",
+                                                          "sum"
+                                                        ],
+                                                        "example": "first"
+                                                      },
+                                                      "scope": {
+                                                        "type": "string",
+                                                        "description": "Defines the scope of dimension.",
+                                                        "enum": [
+                                                          "event",
+                                                          "profile"
+                                                        ],
+                                                        "example": "event"
+                                                      }
+                                                    }
+                                                  },
+                                                  "condition": {
+                                                    "type": "object",
+                                                    "description": "Filtering criteria.",
+                                                    "required": [
+                                                      "operator",
+                                                      "value"
+                                                    ],
+                                                    "properties": {
+                                                      "operator": {
+                                                        "type": "string",
+                                                        "description": "<p>\n  Filtering operator. Available choices depend on attribute type.\n</p>\n<p>\n  number operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  string operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>contains</code>,\n  <code>not_contains</code>,\n  <code>icontains</code>,\n  <code>not_icontains</code>,\n  <code>starts_with</code>,\n  <code>ends_with</code>,\n  <code>matches</code>,\n  <code>not_matches</code>.\n</p>\n<p>\n  ipv4 operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  ipv6 operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  bool operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  int operators:\n  <code>eq</code>,\n  <code>neq</code>,\n  <code>gt</code>,\n  <code>gte</code>,\n  <code>lt</code>,\n  <code>lte</code>.\n</p>\n<p>\n  uuid operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  hex operators:\n  <code>eq</code>,\n  <code>neq</code>.\n</p>\n<p>\n  relative time operators:\n  <code>before_last</code>\n  <code>in_the_last</code>\n  <code>in_the_next</code>\n  <code>after_next</code>\n</p>\n<p>\n  absolute time operators:\n  <code>earlier_than</code>\n  <code>later_than</code>\n</p>\n",
+                                                        "enum": [
+                                                          "eq",
+                                                          "neq",
+                                                          "gt",
+                                                          "gte",
+                                                          "lt",
+                                                          "lte",
+                                                          "contains",
+                                                          "not_contains",
+                                                          "icontains",
+                                                          "not_icontains",
+                                                          "starts_with",
+                                                          "ends_with",
+                                                          "matches",
+                                                          "not_matches",
+                                                          "before_last",
+                                                          "in_the_last",
+                                                          "in_the_next",
+                                                          "after_next",
+                                                          "earlier_than",
+                                                          "later_than"
+                                                        ],
+                                                        "example": "eq"
+                                                      },
+                                                      "value": {
+                                                        "oneOf": [
+                                                          {
+                                                            "type": "string"
+                                                          },
+                                                          {
+                                                            "type": "number"
+                                                          },
+                                                          {
+                                                            "type": "boolean"
+                                                          }
+                                                        ],
+                                                        "description": "Filtering value with type matching specified column.",
+                                                        "example": "pl"
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "author": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "User who created this audience"
+                    },
+                    "is_author": {
+                      "type": "boolean",
+                      "description": "Whether the audience was created by the user who issues the request"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "description": "Version number, incremented on every update of definition or membership_duration_days",
+                      "minimum": 1
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "401": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Access token is missing or invalid"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Resource not found (bad ID or resource deleted)"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      },
+      "get": {
+        "summary": "List audiences",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "get-audiences",
+        "description": "List Audiences",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "description": "Audience object without definition",
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "app_id",
+                      "created_at",
+                      "updated_at",
+                      "name",
+                      "description",
+                      "membership_duration_days",
+                      "author",
+                      "is_author",
+                      "version"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "ID of the audience"
+                      },
+                      "app_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "ID of the app"
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Audience creation date"
+                      },
+                      "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Latest audience update date"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the audience"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of the audience"
+                      },
+                      "membership_duration_days": {
+                        "type": "integer",
+                        "description": "Time (in days) after which profiles are removed from an audience"
+                      },
+                      "author": {
+                        "type": "object",
+                        "properties": {
+                          "email": {
+                            "type": "string"
+                          }
+                        },
+                        "description": "User who created this audience"
+                      },
+                      "is_author": {
+                        "type": "boolean",
+                        "description": "Whether the audience was created by the user who issues the request"
+                      },
+                      "version": {
+                        "type": "integer",
+                        "description": "Version number, incremented on every update of definition or membership_duration_days",
+                        "minimum": 1
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "401": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Access token is missing or invalid"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Resource not found (bad ID or resource deleted)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

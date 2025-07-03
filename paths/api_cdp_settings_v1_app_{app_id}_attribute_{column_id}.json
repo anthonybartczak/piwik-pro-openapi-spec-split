@@ -1,0 +1,531 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/settings/v1/app/{app_id}/attribute/{column_id}": {
+      "put": {
+        "summary": "Update custom attribute",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "put-settings-app-custom-attribute",
+        "description": "Updates name of the existing custom attribute",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          },
+          {
+            "in": "path",
+            "name": "column_id",
+            "description": "Column ID of an attribute",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "custom_attribute_1"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "description": "Name of the attribute.",
+                    "example": "Age of the user"
+                  },
+                  "event_data_key": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "description": "Determines from which key in an event the attribute will be populated.\nThe value can be either:\n* known analytics event data key (e.g. `analytics.source_medium`)\n* custom event data key (`^[a-z0-9_]{1,255}$`, e.g. `user_score`) - can be used to update attributes via API\n\nIf an attribute with the given `event_data_key` already exists, its type must match;\notherwise, an appropriate error will be returned.\n"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "column_id",
+                            "event_data_key",
+                            "immutable",
+                            "column_meta"
+                          ],
+                          "properties": {
+                            "column_id": {
+                              "type": "string",
+                              "description": "Unique ID of column."
+                            },
+                            "event_data_key": {
+                              "type": "string",
+                              "description": "Key of the imported data value or name of Tracker event dimension to populate attribute.",
+                              "example": "user_age"
+                            },
+                            "immutable": {
+                              "type": "boolean",
+                              "example": false,
+                              "description": "A flag indicating whether the attribute is immutable.\n\nIf `immutable` is set to `true`, the attribute is considered\nread-only and cannot be modified. If set to `false`, the\nattribute can be modified.\n"
+                            },
+                            "column_meta": {
+                              "type": "object",
+                              "description": "Column metadata (readonly).",
+                              "properties": {
+                                "column_name": {
+                                  "type": "string",
+                                  "description": "Name of the column.",
+                                  "example": "Browser Type"
+                                },
+                                "column_type": {
+                                  "description": "Type of the column.",
+                                  "type": "string",
+                                  "enum": [
+                                    "number",
+                                    "string",
+                                    "ipv4",
+                                    "ipv6",
+                                    "bool",
+                                    "int",
+                                    "uuid",
+                                    "hex",
+                                    "datetime"
+                                  ],
+                                  "example": "string"
+                                },
+                                "column_unit": {
+                                  "type": "string",
+                                  "description": "Unit of the column.",
+                                  "enum": [
+                                    "currency",
+                                    "url",
+                                    "days",
+                                    "pixels",
+                                    "none",
+                                    "millisecond",
+                                    ""
+                                  ],
+                                  "example": "currency"
+                                },
+                                "column_category": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "example": "Device"
+                                  },
+                                  "description": "Categories of the column."
+                                },
+                                "analytics_column_id": {
+                                  "type": "string",
+                                  "description": "Name of the column in Analytics module. Used to calculate audience count.",
+                                  "example": "goal_revenue"
+                                },
+                                "analytics_transformation_id": {
+                                  "type": "string",
+                                  "description": "Transformation name used in Analytics module to calculate audience count. Currently one option available.",
+                                  "enum": [
+                                    "sum"
+                                  ],
+                                  "example": "sum"
+                                },
+                                "value_selectors": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "first",
+                                      "last",
+                                      "any"
+                                    ]
+                                  },
+                                  "minItems": 0,
+                                  "example": [
+                                    "first"
+                                  ],
+                                  "description": "List of value selectors possible for given column."
+                                },
+                                "extractions": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "first",
+                                      "last",
+                                      "all"
+                                    ]
+                                  },
+                                  "minItems": 0,
+                                  "example": [
+                                    "first"
+                                  ],
+                                  "description": "List of extractions possible for given column."
+                                },
+                                "aggregation": {
+                                  "type": "string",
+                                  "description": "Aggregation for attribute values.",
+                                  "enum": [
+                                    "first",
+                                    "last",
+                                    "first_last",
+                                    "list",
+                                    "list_unique",
+                                    "min",
+                                    "max",
+                                    "sum"
+                                  ],
+                                  "example": "first"
+                                },
+                                "scope": {
+                                  "type": "string",
+                                  "description": "Defines the scope of dimension.",
+                                  "enum": [
+                                    "event",
+                                    "profile"
+                                  ],
+                                  "example": "event"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "column_id": {
+                              "example": "custom_attribute_3"
+                            },
+                            "column_meta": {
+                              "allOf": [
+                                {
+                                  "type": "object",
+                                  "description": "Column metadata (readonly).",
+                                  "properties": {
+                                    "column_name": {
+                                      "type": "string",
+                                      "description": "Name of the column.",
+                                      "example": "Browser Type"
+                                    },
+                                    "column_type": {
+                                      "description": "Type of the column.",
+                                      "type": "string",
+                                      "enum": [
+                                        "number",
+                                        "string",
+                                        "ipv4",
+                                        "ipv6",
+                                        "bool",
+                                        "int",
+                                        "uuid",
+                                        "hex",
+                                        "datetime"
+                                      ],
+                                      "example": "string"
+                                    },
+                                    "column_unit": {
+                                      "type": "string",
+                                      "description": "Unit of the column.",
+                                      "enum": [
+                                        "currency",
+                                        "url",
+                                        "days",
+                                        "pixels",
+                                        "none",
+                                        "millisecond",
+                                        ""
+                                      ],
+                                      "example": "currency"
+                                    },
+                                    "column_category": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "example": "Device"
+                                      },
+                                      "description": "Categories of the column."
+                                    },
+                                    "analytics_column_id": {
+                                      "type": "string",
+                                      "description": "Name of the column in Analytics module. Used to calculate audience count.",
+                                      "example": "goal_revenue"
+                                    },
+                                    "analytics_transformation_id": {
+                                      "type": "string",
+                                      "description": "Transformation name used in Analytics module to calculate audience count. Currently one option available.",
+                                      "enum": [
+                                        "sum"
+                                      ],
+                                      "example": "sum"
+                                    },
+                                    "value_selectors": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": [
+                                          "first",
+                                          "last",
+                                          "any"
+                                        ]
+                                      },
+                                      "minItems": 0,
+                                      "example": [
+                                        "first"
+                                      ],
+                                      "description": "List of value selectors possible for given column."
+                                    },
+                                    "extractions": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": [
+                                          "first",
+                                          "last",
+                                          "all"
+                                        ]
+                                      },
+                                      "minItems": 0,
+                                      "example": [
+                                        "first"
+                                      ],
+                                      "description": "List of extractions possible for given column."
+                                    },
+                                    "aggregation": {
+                                      "type": "string",
+                                      "description": "Aggregation for attribute values.",
+                                      "enum": [
+                                        "first",
+                                        "last",
+                                        "first_last",
+                                        "list",
+                                        "list_unique",
+                                        "min",
+                                        "max",
+                                        "sum"
+                                      ],
+                                      "example": "first"
+                                    },
+                                    "scope": {
+                                      "type": "string",
+                                      "description": "Defines the scope of dimension.",
+                                      "enum": [
+                                        "event",
+                                        "profile"
+                                      ],
+                                      "example": "event"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "column_name": {
+                                      "example": "User's Age"
+                                    },
+                                    "column_type": {
+                                      "example": "number"
+                                    },
+                                    "column_unit": {
+                                      "example": ""
+                                    },
+                                    "column_category": {
+                                      "example": [
+                                        "Custom attribute"
+                                      ]
+                                    },
+                                    "analytics_column_id": {
+                                      "example": null
+                                    },
+                                    "analytics_transformation_id": {
+                                      "example": null
+                                    },
+                                    "value_selectors": {
+                                      "example": [
+                                        "first"
+                                      ]
+                                    },
+                                    "extractions": {
+                                      "example": [
+                                        "first"
+                                      ]
+                                    },
+                                    "aggregation": {
+                                      "example": [
+                                        "first"
+                                      ]
+                                    },
+                                    "scope": {
+                                      "example": "profile"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "column_meta": {
+                          "properties": {
+                            "column_name": {
+                              "example": "Age of the user"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "401": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Access token is missing or invalid"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Resource not found (bad ID or resource deleted)"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

@@ -1,0 +1,539 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/analytics/v1/manage/goals/": {
+      "post": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Create goal",
+        "description": "Create a new goal.\nPlease note that each request must be authenticated.\n",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "attributes",
+                      "id"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "description": "Type of the object.",
+                        "enum": [
+                          "Goal"
+                        ]
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Id of a goal.",
+                        "readOnly": true,
+                        "format": "uuid",
+                        "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                      },
+                      "attributes": {
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "trigger",
+                          "revenue",
+                          "website_id"
+                        ],
+                        "properties": {
+                          "website_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "ID of the website.",
+                            "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the goal.",
+                            "example": "User entered contact page"
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the goal.",
+                            "example": "Goal is triggered when user enters contact page"
+                          },
+                          "trigger": {
+                            "type": "string",
+                            "enum": [
+                              "url",
+                              "title",
+                              "event_name",
+                              "event_category",
+                              "event_action",
+                              "file",
+                              "external_website",
+                              "manually"
+                            ],
+                            "description": "Trigger for the goal.",
+                            "example": "url"
+                          },
+                          "pattern_type": {
+                            "type": "string",
+                            "enum": [
+                              "contains",
+                              "exact",
+                              "regex"
+                            ],
+                            "description": "Condition operator for goal trigger. Required for non-manual triggers.",
+                            "example": "contains"
+                          },
+                          "pattern": {
+                            "type": "string",
+                            "description": "Condition value for goal trigger. Required for non-manual triggers.",
+                            "example": "Contact"
+                          },
+                          "allow_multiple": {
+                            "type": "boolean",
+                            "description": "Specifies if goal can be converted more than once per visit.",
+                            "example": false
+                          },
+                          "case_sensitive": {
+                            "type": "boolean",
+                            "description": "If set to true the pattern matching will consider uppercase and lowercase characters as distinct.",
+                            "example": false
+                          },
+                          "revenue": {
+                            "type": "string",
+                            "format": "monetary",
+                            "description": "Goal revenue value.",
+                            "example": "10.22"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "attributes",
+                            "id"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "description": "Type of the object.",
+                              "enum": [
+                                "Goal"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "Id of a goal.",
+                              "readOnly": true,
+                              "format": "uuid",
+                              "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                            },
+                            "attributes": {
+                              "type": "object",
+                              "required": [
+                                "name",
+                                "trigger",
+                                "revenue",
+                                "website_id"
+                              ],
+                              "properties": {
+                                "website_id": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "ID of the website.",
+                                  "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "Name of the goal.",
+                                  "example": "User entered contact page"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Description of the goal.",
+                                  "example": "Goal is triggered when user enters contact page"
+                                },
+                                "trigger": {
+                                  "type": "string",
+                                  "enum": [
+                                    "url",
+                                    "title",
+                                    "event_name",
+                                    "event_category",
+                                    "event_action",
+                                    "file",
+                                    "external_website",
+                                    "manually"
+                                  ],
+                                  "description": "Trigger for the goal.",
+                                  "example": "url"
+                                },
+                                "pattern_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "contains",
+                                    "exact",
+                                    "regex"
+                                  ],
+                                  "description": "Condition operator for goal trigger. Required for non-manual triggers.",
+                                  "example": "contains"
+                                },
+                                "pattern": {
+                                  "type": "string",
+                                  "description": "Condition value for goal trigger. Required for non-manual triggers.",
+                                  "example": "Contact"
+                                },
+                                "allow_multiple": {
+                                  "type": "boolean",
+                                  "description": "Specifies if goal can be converted more than once per visit.",
+                                  "example": false
+                                },
+                                "case_sensitive": {
+                                  "type": "boolean",
+                                  "description": "If set to true the pattern matching will consider uppercase and lowercase characters as distinct.",
+                                  "example": false
+                                },
+                                "revenue": {
+                                  "type": "string",
+                                  "format": "monetary",
+                                  "description": "Goal revenue value.",
+                                  "example": "10.22"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "required": [
+                        "type",
+                        "attributes"
+                      ],
+                      "properties": {
+                        "attributes": {
+                          "required": [
+                            "website_id",
+                            "description",
+                            "pattern_type",
+                            "pattern",
+                            "allow_multiple",
+                            "case_sensitive"
+                          ],
+                          "properties": {
+                            "website_id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "ID of the website.",
+                              "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "List goals",
+        "description": "Returns a list all goals available for a website.\nPlease note that each request must be authenticated.\n",
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "query",
+            "required": true,
+            "description": "ID of the website.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "description": "Number of rows to return."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            },
+            "description": "Number of rows to skip before beginning to return rows."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "total"
+                          ],
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of results.",
+                              "example": 1
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "attributes",
+                              "id"
+                            ],
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "description": "Type of the object.",
+                                "enum": [
+                                  "Goal"
+                                ]
+                              },
+                              "id": {
+                                "type": "string",
+                                "description": "Id of a goal.",
+                                "readOnly": true,
+                                "format": "uuid",
+                                "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                              },
+                              "attributes": {
+                                "type": "object",
+                                "required": [
+                                  "name",
+                                  "trigger",
+                                  "revenue",
+                                  "website_id"
+                                ],
+                                "properties": {
+                                  "website_id": {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "description": "ID of the website.",
+                                    "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the goal.",
+                                    "example": "User entered contact page"
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Description of the goal.",
+                                    "example": "Goal is triggered when user enters contact page"
+                                  },
+                                  "trigger": {
+                                    "type": "string",
+                                    "enum": [
+                                      "url",
+                                      "title",
+                                      "event_name",
+                                      "event_category",
+                                      "event_action",
+                                      "file",
+                                      "external_website",
+                                      "manually"
+                                    ],
+                                    "description": "Trigger for the goal.",
+                                    "example": "url"
+                                  },
+                                  "pattern_type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "contains",
+                                      "exact",
+                                      "regex"
+                                    ],
+                                    "description": "Condition operator for goal trigger. Required for non-manual triggers.",
+                                    "example": "contains"
+                                  },
+                                  "pattern": {
+                                    "type": "string",
+                                    "description": "Condition value for goal trigger. Required for non-manual triggers.",
+                                    "example": "Contact"
+                                  },
+                                  "allow_multiple": {
+                                    "type": "boolean",
+                                    "description": "Specifies if goal can be converted more than once per visit.",
+                                    "example": false
+                                  },
+                                  "case_sensitive": {
+                                    "type": "boolean",
+                                    "description": "If set to true the pattern matching will consider uppercase and lowercase characters as distinct.",
+                                    "example": false
+                                  },
+                                  "revenue": {
+                                    "type": "string",
+                                    "format": "monetary",
+                                    "description": "Goal revenue value.",
+                                    "example": "10.22"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "required": [
+                          "type",
+                          "attributes"
+                        ],
+                        "properties": {
+                          "attributes": {
+                            "required": [
+                              "website_id",
+                              "description",
+                              "pattern_type",
+                              "pattern",
+                              "allow_multiple",
+                              "case_sensitive"
+                            ],
+                            "properties": {
+                              "website_id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "ID of the website.",
+                                "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/access-control/v2/global/actions": {
+      "get": {
+        "summary": "Global actions",
+        "description": "It gets actions without specific entity context for a given user.",
+        "operationId": "get_global_actions_v2",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "description": "Resource type",
+                            "enum": [
+                              "ppms/app",
+                              "ppms/user",
+                              "ppms/meta-site"
+                            ],
+                            "type": "string"
+                          },
+                          "type": {
+                            "description": "Resource type",
+                            "enum": [
+                              "ppms/permissions/global"
+                            ],
+                            "type": "string"
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "properties": {
+                              "permissions": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "List of global actions for authorized user"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "data": [
+                      {
+                        "id": "ppms/app",
+                        "type": "ppms/permissions/global",
+                        "attributes": {
+                          "permissions": [
+                            "add"
+                          ]
+                        }
+                      },
+                      {
+                        "id": "ppms/user",
+                        "type": "ppms/permissions/global",
+                        "attributes": {
+                          "permissions": [
+                            "list",
+                            "add",
+                            "demote_app_manager",
+                            "demote_meta_site_manager"
+                          ]
+                        }
+                      },
+                      {
+                        "id": "ppms/meta-site",
+                        "type": "ppms/permissions/global",
+                        "attributes": {
+                          "permissions": [
+                            "add",
+                            "delete"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Access Control"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

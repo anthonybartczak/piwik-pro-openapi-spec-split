@@ -1,0 +1,223 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/profiles/public/v1/app/{app_id}/update-profile": {
+      "post": {
+        "summary": "Create or update profile attributes",
+        "security": [],
+        "operationId": "post-profile-attributes",
+        "description": "A single request can be used to create or update multiple profile attributes.\nThe data payload should consist of a key-value map where each attribute's name is denoted by a key, along with its corresponding value.\nIt will exclusively impact the app associated with the provided `app_id` in the URL path.\n\nProvided data must have at least one identifier:\n\n  - ``user_id``\n  - ``cookie_id``\n",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "User's custom attributes",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Profile attributes object for creating and updating user custom attributes.",
+                "required": [
+                  "identifiers",
+                  "attributes"
+                ],
+                "properties": {
+                  "identifiers": {
+                    "description": "Identifiers associated with a user.",
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "user_id"
+                        ],
+                        "properties": {
+                          "user_id": {
+                            "description": "User ID identifier",
+                            "type": "string",
+                            "example": "tom1987@bob.com"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "cookie_id"
+                        ],
+                        "properties": {
+                          "cookie_id": {
+                            "type": "string",
+                            "description": "Cookie ID identifier",
+                            "example": "176a5215ff7b62e3",
+                            "format": "hex"
+                          }
+                        }
+                      }
+                    ],
+                    "example": {
+                      "user_id": "tom1987@bob.com",
+                      "cookie_id": "176a5215ff7b62e3"
+                    }
+                  },
+                  "attributes": {
+                    "type": "object",
+                    "description": "Attributes of the occurred event.",
+                    "additionalProperties": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "A string that follows the ISO 8601 date-time notation, such as `2023-07-21T17:32:28Z`."
+                        }
+                      ]
+                    },
+                    "example": {
+                      "occupation": "unicorn",
+                      "mood": "happy",
+                      "contract_end": "2023-07-21T17:32:28Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Request accepted and waiting for processing."
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Given organization was not found"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

@@ -1,0 +1,2114 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/settings/v1/app/{app_id}/activation": {
+      "get": {
+        "summary": "List activations",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "get-settings-activations",
+        "description": "Get all activations.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "audience_id",
+            "description": "When provided, only activations with this audience will be returned",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "aaa1550f-b5a5-4626-a4ac-2f99ff8148fe"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "description": "Activation for display in activation lists. Contains only the most basic information needed for display and filtering.",
+                    "readOnly": true,
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "name",
+                      "status",
+                      "required_consents",
+                      "created_at",
+                      "updated_at",
+                      "author",
+                      "is_author",
+                      "type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "description": "Activation ID",
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "ca2f7459-e6e6-466b-a4a9-d9af89682c3b"
+                      },
+                      "name": {
+                        "description": "Activation name",
+                        "type": "string",
+                        "example": "My activation"
+                      },
+                      "status": {
+                        "description": "Activation status.\n`active` enables profiles activation, `inactive` disables profile activation.\nIf activation has no audience associated with it, Activation API will always return `inactive`.\n",
+                        "type": "string",
+                        "enum": [
+                          "active",
+                          "inactive"
+                        ],
+                        "example": "active"
+                      },
+                      "required_consents": {
+                        "description": "Consent types a profile must contain to be activated",
+                        "type": "array",
+                        "items": {
+                          "description": "Actions a visitor may give consent for",
+                          "type": "string",
+                          "enum": [
+                            "analytics",
+                            "ab_testing_and_personalization",
+                            "conversion_tracking",
+                            "marketing_automation",
+                            "remarketing",
+                            "user_feedback",
+                            "custom_consent"
+                          ]
+                        },
+                        "example": [
+                          "ab_testing_and_personalization",
+                          "remarketing"
+                        ]
+                      },
+                      "created_at": {
+                        "description": "Activation creation time",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2020-07-14T13:30:07Z"
+                      },
+                      "updated_at": {
+                        "description": "Activation last update time",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2020-07-14T13:30:07Z"
+                      },
+                      "author": {
+                        "description": "Author of an activation",
+                        "required": [
+                          "email"
+                        ],
+                        "type": "object",
+                        "properties": {
+                          "email": {
+                            "description": "Email (login) of an author",
+                            "type": "string",
+                            "format": "email",
+                            "example": "author@piwik.pro"
+                          }
+                        }
+                      },
+                      "is_author": {
+                        "description": "Whether the current user is the author of this activation",
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "type": {
+                        "description": "Type of activation",
+                        "type": "string",
+                        "enum": [
+                          "webhook",
+                          "gads_customer_match"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "An array of activations matching given criteria"
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "401": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Access token is missing or invalid"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Resource not found (bad ID or resource deleted)"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      },
+      "post": {
+        "summary": "Create activation",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "post-settings-activation",
+        "description": "Create new activation.",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Activation update object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "allOf": [
+                      {
+                        "description": "Common parts of all type of activation update objects",
+                        "required": [
+                          "name",
+                          "description",
+                          "status",
+                          "trigger",
+                          "audience_id",
+                          "required_consents",
+                          "multiple",
+                          "multiple_user_ids"
+                        ],
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "description": "Activation name",
+                            "type": "string",
+                            "maxLength": 100,
+                            "example": "My activation"
+                          },
+                          "description": {
+                            "description": "Activation description",
+                            "type": "string",
+                            "maxLength": 200,
+                            "example": "Description of my activation"
+                          },
+                          "status": {
+                            "description": "Activation status.\n`active` enables profiles activation, `inactive` disables profile activation.\nIf activation has no audience associated with it, Activation API will always return `inactive`.\n",
+                            "type": "string",
+                            "enum": [
+                              "active",
+                              "inactive"
+                            ],
+                            "example": "active"
+                          },
+                          "trigger": {
+                            "description": "Signal that triggers an activation.\n`onjoin` makes joining an audience trigger activation.\n`onleave` makes leaving an audience trigger activation.\n",
+                            "type": "string",
+                            "enum": [
+                              "onjoin",
+                              "onleave"
+                            ],
+                            "example": "onjoin"
+                          },
+                          "audience_id": {
+                            "description": "ID of an audience to be activated",
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0d454742-0e95-4321-a200-fd9d1c4b8031"
+                          },
+                          "required_consents": {
+                            "description": "Consent types a profile must contain to be activated",
+                            "type": "array",
+                            "items": {
+                              "description": "Actions a visitor may give consent for",
+                              "type": "string",
+                              "enum": [
+                                "analytics",
+                                "ab_testing_and_personalization",
+                                "conversion_tracking",
+                                "marketing_automation",
+                                "remarketing",
+                                "user_feedback",
+                                "custom_consent"
+                              ]
+                            },
+                            "example": [
+                              "ab_testing_and_personalization",
+                              "remarketing"
+                            ]
+                          },
+                          "multiple": {
+                            "description": "Whether one profile can be activated multiple times",
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "multiple_user_ids": {
+                            "description": "Whether a profile containing more than one user ID can be activated",
+                            "type": "boolean",
+                            "example": false
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "webhook_url",
+                          "webhook_body_template"
+                        ],
+                        "properties": {
+                          "type": {
+                            "description": "Type of activation",
+                            "type": "string",
+                            "const": "webhook"
+                          },
+                          "webhook_url": {
+                            "description": "Webhook URL pointing at some external system",
+                            "type": "string",
+                            "example": "http://domain.tld/path.php?c=param"
+                          },
+                          "webhook_body_attributes": {
+                            "type": "array",
+                            "description": "Profile's attributes used in a simple webhook request. Used for constructing body template on front-end.",
+                            "items": {
+                              "description": "An attribute that is used by an activation",
+                              "required": [
+                                "key",
+                                "value"
+                              ],
+                              "type": "object",
+                              "properties": {
+                                "key": {
+                                  "description": "Key (parameter) name used to pass an attribute to a webhook",
+                                  "type": "string",
+                                  "example": "lang"
+                                },
+                                "value": {
+                                  "description": "Name (column_id) of profile attribute used as a source for this attribute's value",
+                                  "type": "string",
+                                  "example": "device_type"
+                                },
+                                "column_meta": {
+                                  "type": "object",
+                                  "description": "Column metadata (readonly).",
+                                  "properties": {
+                                    "column_name": {
+                                      "type": "string",
+                                      "description": "Name of the column.",
+                                      "example": "Browser Type"
+                                    },
+                                    "column_type": {
+                                      "description": "Type of the column.",
+                                      "type": "string",
+                                      "enum": [
+                                        "number",
+                                        "string",
+                                        "ipv4",
+                                        "ipv6",
+                                        "bool",
+                                        "int",
+                                        "uuid",
+                                        "hex",
+                                        "datetime"
+                                      ],
+                                      "example": "string"
+                                    },
+                                    "column_unit": {
+                                      "type": "string",
+                                      "description": "Unit of the column.",
+                                      "enum": [
+                                        "currency",
+                                        "url",
+                                        "days",
+                                        "pixels",
+                                        "none",
+                                        "millisecond",
+                                        ""
+                                      ],
+                                      "example": "currency"
+                                    },
+                                    "column_category": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "example": "Device"
+                                      },
+                                      "description": "Categories of the column."
+                                    },
+                                    "analytics_column_id": {
+                                      "type": "string",
+                                      "description": "Name of the column in Analytics module. Used to calculate audience count.",
+                                      "example": "goal_revenue"
+                                    },
+                                    "analytics_transformation_id": {
+                                      "type": "string",
+                                      "description": "Transformation name used in Analytics module to calculate audience count. Currently one option available.",
+                                      "enum": [
+                                        "sum"
+                                      ],
+                                      "example": "sum"
+                                    },
+                                    "value_selectors": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": [
+                                          "first",
+                                          "last",
+                                          "any"
+                                        ]
+                                      },
+                                      "minItems": 0,
+                                      "example": [
+                                        "first"
+                                      ],
+                                      "description": "List of value selectors possible for given column."
+                                    },
+                                    "extractions": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": [
+                                          "first",
+                                          "last",
+                                          "all"
+                                        ]
+                                      },
+                                      "minItems": 0,
+                                      "example": [
+                                        "first"
+                                      ],
+                                      "description": "List of extractions possible for given column."
+                                    },
+                                    "aggregation": {
+                                      "type": "string",
+                                      "description": "Aggregation for attribute values.",
+                                      "enum": [
+                                        "first",
+                                        "last",
+                                        "first_last",
+                                        "list",
+                                        "list_unique",
+                                        "min",
+                                        "max",
+                                        "sum"
+                                      ],
+                                      "example": "first"
+                                    },
+                                    "scope": {
+                                      "type": "string",
+                                      "description": "Defines the scope of dimension.",
+                                      "enum": [
+                                        "event",
+                                        "profile"
+                                      ],
+                                      "example": "event"
+                                    }
+                                  }
+                                },
+                                "extraction": {
+                                  "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                  "type": "string",
+                                  "enum": [
+                                    "all",
+                                    "first",
+                                    "last"
+                                  ],
+                                  "example": "first"
+                                },
+                                "custom_value": {
+                                  "description": "Custom value that can be provided manually for given attribute",
+                                  "type": "string",
+                                  "example": "my custom value"
+                                }
+                              }
+                            }
+                          },
+                          "webhook_body_template": {
+                            "description": "Template of a webhook request body with attribute placeholders. Backend fills this template with profile attributes and sends it to webhook_url.",
+                            "type": "string",
+                            "example": "{\n  \"const\": \"hello there\",\n  \"text\": \"Hi {user_id:first}! Thanks for making a {total_revenue} dollar purchase.\"\n}\n"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "description": "Common parts of all type of activation update objects",
+                        "required": [
+                          "name",
+                          "description",
+                          "status",
+                          "trigger",
+                          "audience_id",
+                          "required_consents",
+                          "multiple",
+                          "multiple_user_ids"
+                        ],
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "description": "Activation name",
+                            "type": "string",
+                            "maxLength": 100,
+                            "example": "My activation"
+                          },
+                          "description": {
+                            "description": "Activation description",
+                            "type": "string",
+                            "maxLength": 200,
+                            "example": "Description of my activation"
+                          },
+                          "status": {
+                            "description": "Activation status.\n`active` enables profiles activation, `inactive` disables profile activation.\nIf activation has no audience associated with it, Activation API will always return `inactive`.\n",
+                            "type": "string",
+                            "enum": [
+                              "active",
+                              "inactive"
+                            ],
+                            "example": "active"
+                          },
+                          "trigger": {
+                            "description": "Signal that triggers an activation.\n`onjoin` makes joining an audience trigger activation.\n`onleave` makes leaving an audience trigger activation.\n",
+                            "type": "string",
+                            "enum": [
+                              "onjoin",
+                              "onleave"
+                            ],
+                            "example": "onjoin"
+                          },
+                          "audience_id": {
+                            "description": "ID of an audience to be activated",
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0d454742-0e95-4321-a200-fd9d1c4b8031"
+                          },
+                          "required_consents": {
+                            "description": "Consent types a profile must contain to be activated",
+                            "type": "array",
+                            "items": {
+                              "description": "Actions a visitor may give consent for",
+                              "type": "string",
+                              "enum": [
+                                "analytics",
+                                "ab_testing_and_personalization",
+                                "conversion_tracking",
+                                "marketing_automation",
+                                "remarketing",
+                                "user_feedback",
+                                "custom_consent"
+                              ]
+                            },
+                            "example": [
+                              "ab_testing_and_personalization",
+                              "remarketing"
+                            ]
+                          },
+                          "multiple": {
+                            "description": "Whether one profile can be activated multiple times",
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "multiple_user_ids": {
+                            "description": "Whether a profile containing more than one user ID can be activated",
+                            "type": "boolean",
+                            "example": false
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "gads_customer_id",
+                          "gads_user_list_id",
+                          "gads_user_list_action",
+                          "gads_identifier_sources"
+                        ],
+                        "properties": {
+                          "type": {
+                            "description": "Type of activation",
+                            "type": "string",
+                            "const": "gads_customer_match"
+                          },
+                          "gads_customer_id": {
+                            "description": "Google Ads customer ID",
+                            "type": "string",
+                            "pattern": "^\\d{10}$",
+                            "example": "7133587890"
+                          },
+                          "gads_customer_name": {
+                            "description": "Google Ads customer name",
+                            "type": "string",
+                            "example": "Computers LLC"
+                          },
+                          "gads_manager_id": {
+                            "description": "Google Ads customer's manager ID (login customer ID)",
+                            "type": "string",
+                            "pattern": "^\\d{10}$",
+                            "example": "3792543821"
+                          },
+                          "gads_manager_name": {
+                            "description": "Google Ads customer's manager name (login customer name)",
+                            "type": "string",
+                            "example": "Marketing Agency LLC"
+                          },
+                          "gads_user_list_id": {
+                            "description": "Google Ads user list ID",
+                            "type": "string",
+                            "pattern": "^\\d{1,10}$",
+                            "example": "5225082591"
+                          },
+                          "gads_user_list_name": {
+                            "description": "Google Ads user list name",
+                            "type": "string",
+                            "example": "Big spenders"
+                          },
+                          "gads_user_list_action": {
+                            "description": "What to do with the profile.\n`add` adds profile to the user list, `remove` removes profile from the user list.\n",
+                            "type": "string",
+                            "enum": [
+                              "add",
+                              "remove"
+                            ],
+                            "example": "add"
+                          },
+                          "gads_identifier_sources": {
+                            "description": "Object describing source of identifiers sent to Google Ads.\nAt last one of email, phone, complete address (first name, last name, country code, zip code) must be provided.\n",
+                            "type": "object",
+                            "properties": {
+                              "email_address_attribute": {
+                                "description": "Attribute from which email will be taken and its extraction",
+                                "example": {
+                                  "column_id": "user_id",
+                                  "extraction": "last"
+                                },
+                                "required": [
+                                  "column_id"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                  "column_id": {
+                                    "description": "Attribute from which given identifier will be taken",
+                                    "type": "string"
+                                  },
+                                  "extraction": {
+                                    "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                    "type": "string",
+                                    "enum": [
+                                      "first",
+                                      "last"
+                                    ]
+                                  }
+                                }
+                              },
+                              "phone_number_attribute": {
+                                "description": "Attribute from which phone number will be taken",
+                                "example": {
+                                  "column_id": "session_custom_dimension_1"
+                                },
+                                "required": [
+                                  "column_id"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                  "column_id": {
+                                    "description": "Attribute from which given identifier will be taken",
+                                    "type": "string"
+                                  },
+                                  "extraction": {
+                                    "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                    "type": "string",
+                                    "enum": [
+                                      "first",
+                                      "last"
+                                    ]
+                                  }
+                                }
+                              },
+                              "first_name_attribute": {
+                                "description": "Attribute from which first name will be taken",
+                                "example": {
+                                  "column_id": "session_custom_dimension_2",
+                                  "extraction": "first"
+                                },
+                                "required": [
+                                  "column_id"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                  "column_id": {
+                                    "description": "Attribute from which given identifier will be taken",
+                                    "type": "string"
+                                  },
+                                  "extraction": {
+                                    "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                    "type": "string",
+                                    "enum": [
+                                      "first",
+                                      "last"
+                                    ]
+                                  }
+                                }
+                              },
+                              "last_name_attribute": {
+                                "description": "Attribute from which last name will be taken",
+                                "example": {
+                                  "column_id": "session_custom_dimension_3"
+                                },
+                                "required": [
+                                  "column_id"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                  "column_id": {
+                                    "description": "Attribute from which given identifier will be taken",
+                                    "type": "string"
+                                  },
+                                  "extraction": {
+                                    "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                    "type": "string",
+                                    "enum": [
+                                      "first",
+                                      "last"
+                                    ]
+                                  }
+                                }
+                              },
+                              "country_code_attribute": {
+                                "description": "Attribute from which country code will be taken",
+                                "example": {
+                                  "column_id": "session_custom_dimension_4"
+                                },
+                                "required": [
+                                  "column_id"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                  "column_id": {
+                                    "description": "Attribute from which given identifier will be taken",
+                                    "type": "string"
+                                  },
+                                  "extraction": {
+                                    "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                    "type": "string",
+                                    "enum": [
+                                      "first",
+                                      "last"
+                                    ]
+                                  }
+                                }
+                              },
+                              "zip_code_attribute": {
+                                "description": "Attribute from which zip code will be taken",
+                                "example": {
+                                  "column_id": "session_custom_dimension_5"
+                                },
+                                "required": [
+                                  "column_id"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                  "column_id": {
+                                    "description": "Attribute from which given identifier will be taken",
+                                    "type": "string"
+                                  },
+                                  "extraction": {
+                                    "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                    "type": "string",
+                                    "enum": [
+                                      "first",
+                                      "last"
+                                    ]
+                                  }
+                                }
+                              }
+                            },
+                            "example": {
+                              "email_address_attribute": {
+                                "column_id": "user_id",
+                                "extraction": "last"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "description": "Common parts of all type of activation update objects",
+                        "required": [
+                          "name",
+                          "description",
+                          "status",
+                          "trigger",
+                          "audience_id",
+                          "required_consents",
+                          "multiple",
+                          "multiple_user_ids"
+                        ],
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "description": "Activation name",
+                            "type": "string",
+                            "maxLength": 100,
+                            "example": "My activation"
+                          },
+                          "description": {
+                            "description": "Activation description",
+                            "type": "string",
+                            "maxLength": 200,
+                            "example": "Description of my activation"
+                          },
+                          "status": {
+                            "description": "Activation status.\n`active` enables profiles activation, `inactive` disables profile activation.\nIf activation has no audience associated with it, Activation API will always return `inactive`.\n",
+                            "type": "string",
+                            "enum": [
+                              "active",
+                              "inactive"
+                            ],
+                            "example": "active"
+                          },
+                          "trigger": {
+                            "description": "Signal that triggers an activation.\n`onjoin` makes joining an audience trigger activation.\n`onleave` makes leaving an audience trigger activation.\n",
+                            "type": "string",
+                            "enum": [
+                              "onjoin",
+                              "onleave"
+                            ],
+                            "example": "onjoin"
+                          },
+                          "audience_id": {
+                            "description": "ID of an audience to be activated",
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "0d454742-0e95-4321-a200-fd9d1c4b8031"
+                          },
+                          "required_consents": {
+                            "description": "Consent types a profile must contain to be activated",
+                            "type": "array",
+                            "items": {
+                              "description": "Actions a visitor may give consent for",
+                              "type": "string",
+                              "enum": [
+                                "analytics",
+                                "ab_testing_and_personalization",
+                                "conversion_tracking",
+                                "marketing_automation",
+                                "remarketing",
+                                "user_feedback",
+                                "custom_consent"
+                              ]
+                            },
+                            "example": [
+                              "ab_testing_and_personalization",
+                              "remarketing"
+                            ]
+                          },
+                          "multiple": {
+                            "description": "Whether one profile can be activated multiple times",
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "multiple_user_ids": {
+                            "description": "Whether a profile containing more than one user ID can be activated",
+                            "type": "boolean",
+                            "example": false
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "type",
+                          "gads_customer_id",
+                          "gads_conversion_action_id",
+                          "gads_identifier_sources",
+                          "gads_timestamp_source",
+                          "gads_conversion_value",
+                          "gads_conversion_currency_code"
+                        ],
+                        "properties": {
+                          "type": {
+                            "description": "Type of activation",
+                            "type": "string",
+                            "const": "gads_click_conversion"
+                          },
+                          "gads_customer_id": {
+                            "description": "Google Ads customer ID",
+                            "type": "string",
+                            "pattern": "^\\d{10}$",
+                            "example": "7133587890"
+                          },
+                          "gads_customer_name": {
+                            "description": "Google Ads customer name",
+                            "type": "string",
+                            "example": "Computers LLC"
+                          },
+                          "gads_manager_id": {
+                            "description": "Google Ads customer's manager ID (login customer ID)",
+                            "type": "string",
+                            "pattern": "^\\d{10}$",
+                            "example": "3792543821"
+                          },
+                          "gads_manager_name": {
+                            "description": "Google Ads customer's manager name (login customer name)",
+                            "type": "string",
+                            "example": "Marketing Agency LLC"
+                          },
+                          "gads_conversion_action_id": {
+                            "description": "Google Ads conversion action ID",
+                            "type": "string",
+                            "pattern": "^\\d{1,10}$",
+                            "example": "6976871753"
+                          },
+                          "gads_conversion_action_name": {
+                            "description": "Google Ads conversion action name",
+                            "type": "string",
+                            "example": "Placed an order"
+                          },
+                          "gads_identifier_sources": {
+                            "description": "Object describing source of click conversion identifiers sent to Google Ads.\n",
+                            "type": "object",
+                            "required": [
+                              "gclid_attribute"
+                            ],
+                            "properties": {
+                              "gclid_attribute": {
+                                "description": "Attribute from which gclid will be taken and its extraction",
+                                "example": {
+                                  "column_id": "campaign_gclid",
+                                  "extraction": "last"
+                                },
+                                "required": [
+                                  "column_id"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                  "column_id": {
+                                    "description": "Attribute from which given identifier will be taken",
+                                    "type": "string"
+                                  },
+                                  "extraction": {
+                                    "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                    "type": "string",
+                                    "enum": [
+                                      "first",
+                                      "last"
+                                    ]
+                                  }
+                                }
+                              }
+                            },
+                            "example": {
+                              "gclid_attribute": {
+                                "column_id": "campaign_gclid",
+                                "extraction": "last"
+                              }
+                            }
+                          },
+                          "gads_timestamp_source": {
+                            "description": "Source of conversion timestamp. Must be a datetime attribute.",
+                            "required": [
+                              "column_id"
+                            ],
+                            "type": "object",
+                            "properties": {
+                              "column_id": {
+                                "description": "Attribute from which given identifier will be taken",
+                                "type": "string"
+                              },
+                              "extraction": {
+                                "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                "type": "string",
+                                "enum": [
+                                  "first",
+                                  "last"
+                                ]
+                              }
+                            }
+                          },
+                          "gads_conversion_value": {
+                            "description": "Google Ads monetary conversion value",
+                            "type": "number",
+                            "example": 5
+                          },
+                          "gads_conversion_currency_code": {
+                            "description": "ISO 4217 three-letter currency code",
+                            "type": "string",
+                            "example": "USD"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Activation with all type-specific data",
+                  "oneOf": [
+                    {
+                      "allOf": [
+                        {
+                          "description": "Common parts of all types of activation",
+                          "required": [
+                            "id",
+                            "name",
+                            "description",
+                            "status",
+                            "trigger",
+                            "required_consents",
+                            "multiple",
+                            "multiple_user_ids",
+                            "created_at",
+                            "updated_at",
+                            "author",
+                            "is_author"
+                          ],
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "description": "Activation ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "example": "ca2f7459-e6e6-466b-a4a9-d9af89682c3b"
+                            },
+                            "name": {
+                              "description": "Activation name",
+                              "type": "string",
+                              "example": "My activation"
+                            },
+                            "description": {
+                              "description": "Activation description",
+                              "type": "string",
+                              "example": "Description of my activation"
+                            },
+                            "status": {
+                              "description": "Activation status.\n`active` enables profiles activation, `inactive` disables profile activation.\nIf activation has no audience associated with it, Activation API will always return `inactive`.\n",
+                              "type": "string",
+                              "enum": [
+                                "active",
+                                "inactive"
+                              ],
+                              "example": "active"
+                            },
+                            "trigger": {
+                              "description": "Signal that triggers an activation.\n`onjoin` makes joining an audience trigger activation.\n`onleave` makes leaving an audience trigger activation.\n",
+                              "type": "string",
+                              "enum": [
+                                "onjoin",
+                                "onleave"
+                              ],
+                              "example": "onjoin"
+                            },
+                            "audience": {
+                              "description": "Audience to be activated. Might be missing if the related `audience` gets removed.",
+                              "required": [
+                                "id",
+                                "name"
+                              ],
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "description": "ID of an audience that is activated",
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "example": "aaa1550f-b5a5-4626-a4ac-2f99ff8148fe"
+                                },
+                                "name": {
+                                  "description": "Name of an audience that is activated",
+                                  "type": "string",
+                                  "example": "My audience"
+                                }
+                              }
+                            },
+                            "required_consents": {
+                              "description": "Consent types a profile must contain to be activated",
+                              "type": "array",
+                              "items": {
+                                "description": "Actions a visitor may give consent for",
+                                "type": "string",
+                                "enum": [
+                                  "analytics",
+                                  "ab_testing_and_personalization",
+                                  "conversion_tracking",
+                                  "marketing_automation",
+                                  "remarketing",
+                                  "user_feedback",
+                                  "custom_consent"
+                                ]
+                              },
+                              "example": [
+                                "ab_testing_and_personalization",
+                                "remarketing"
+                              ]
+                            },
+                            "multiple": {
+                              "description": "Whether one profile can be activated multiple times",
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "multiple_user_ids": {
+                              "description": "Whether a profile containing more than one user ID can be activated",
+                              "type": "boolean",
+                              "example": false
+                            },
+                            "created_at": {
+                              "description": "Activation creation time",
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2020-07-14T13:30:07Z"
+                            },
+                            "updated_at": {
+                              "description": "Activation last update time",
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2020-07-14T13:30:07Z"
+                            },
+                            "author": {
+                              "description": "Author of an activation",
+                              "required": [
+                                "email"
+                              ],
+                              "type": "object",
+                              "properties": {
+                                "email": {
+                                  "description": "Email (login) of an author",
+                                  "type": "string",
+                                  "format": "email",
+                                  "example": "author@piwik.pro"
+                                }
+                              }
+                            },
+                            "is_author": {
+                              "description": "Whether the current user is the author of this activation",
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "webhook_url",
+                            "webhook_body_template"
+                          ],
+                          "properties": {
+                            "type": {
+                              "description": "Type of activation",
+                              "type": "string",
+                              "const": "webhook"
+                            },
+                            "webhook_url": {
+                              "description": "Webhook URL pointing at some external system",
+                              "type": "string",
+                              "example": "http://domain.tld/path.php?c=param"
+                            },
+                            "webhook_body_attributes": {
+                              "type": "array",
+                              "description": "Profile's attributes used in a simple webhook request. Used for constructing body template on front-end.",
+                              "items": {
+                                "description": "An attribute that is used by an activation",
+                                "required": [
+                                  "key",
+                                  "value"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                  "key": {
+                                    "description": "Key (parameter) name used to pass an attribute to a webhook",
+                                    "type": "string",
+                                    "example": "lang"
+                                  },
+                                  "value": {
+                                    "description": "Name (column_id) of profile attribute used as a source for this attribute's value",
+                                    "type": "string",
+                                    "example": "device_type"
+                                  },
+                                  "column_meta": {
+                                    "type": "object",
+                                    "description": "Column metadata (readonly).",
+                                    "properties": {
+                                      "column_name": {
+                                        "type": "string",
+                                        "description": "Name of the column.",
+                                        "example": "Browser Type"
+                                      },
+                                      "column_type": {
+                                        "description": "Type of the column.",
+                                        "type": "string",
+                                        "enum": [
+                                          "number",
+                                          "string",
+                                          "ipv4",
+                                          "ipv6",
+                                          "bool",
+                                          "int",
+                                          "uuid",
+                                          "hex",
+                                          "datetime"
+                                        ],
+                                        "example": "string"
+                                      },
+                                      "column_unit": {
+                                        "type": "string",
+                                        "description": "Unit of the column.",
+                                        "enum": [
+                                          "currency",
+                                          "url",
+                                          "days",
+                                          "pixels",
+                                          "none",
+                                          "millisecond",
+                                          ""
+                                        ],
+                                        "example": "currency"
+                                      },
+                                      "column_category": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string",
+                                          "example": "Device"
+                                        },
+                                        "description": "Categories of the column."
+                                      },
+                                      "analytics_column_id": {
+                                        "type": "string",
+                                        "description": "Name of the column in Analytics module. Used to calculate audience count.",
+                                        "example": "goal_revenue"
+                                      },
+                                      "analytics_transformation_id": {
+                                        "type": "string",
+                                        "description": "Transformation name used in Analytics module to calculate audience count. Currently one option available.",
+                                        "enum": [
+                                          "sum"
+                                        ],
+                                        "example": "sum"
+                                      },
+                                      "value_selectors": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string",
+                                          "enum": [
+                                            "first",
+                                            "last",
+                                            "any"
+                                          ]
+                                        },
+                                        "minItems": 0,
+                                        "example": [
+                                          "first"
+                                        ],
+                                        "description": "List of value selectors possible for given column."
+                                      },
+                                      "extractions": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string",
+                                          "enum": [
+                                            "first",
+                                            "last",
+                                            "all"
+                                          ]
+                                        },
+                                        "minItems": 0,
+                                        "example": [
+                                          "first"
+                                        ],
+                                        "description": "List of extractions possible for given column."
+                                      },
+                                      "aggregation": {
+                                        "type": "string",
+                                        "description": "Aggregation for attribute values.",
+                                        "enum": [
+                                          "first",
+                                          "last",
+                                          "first_last",
+                                          "list",
+                                          "list_unique",
+                                          "min",
+                                          "max",
+                                          "sum"
+                                        ],
+                                        "example": "first"
+                                      },
+                                      "scope": {
+                                        "type": "string",
+                                        "description": "Defines the scope of dimension.",
+                                        "enum": [
+                                          "event",
+                                          "profile"
+                                        ],
+                                        "example": "event"
+                                      }
+                                    }
+                                  },
+                                  "extraction": {
+                                    "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                    "type": "string",
+                                    "enum": [
+                                      "all",
+                                      "first",
+                                      "last"
+                                    ],
+                                    "example": "first"
+                                  },
+                                  "custom_value": {
+                                    "description": "Custom value that can be provided manually for given attribute",
+                                    "type": "string",
+                                    "example": "my custom value"
+                                  }
+                                }
+                              }
+                            },
+                            "webhook_body_template": {
+                              "description": "Template of a webhook request body with attribute placeholders. Backend fills this template with profile attributes and sends it to webhook_url.",
+                              "type": "string",
+                              "example": "{\n  \"const\": \"hello there\",\n  \"text\": \"Hi {user_id:first}! Thanks for making a {total_revenue} dollar purchase.\"\n}\n"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "description": "Common parts of all types of activation",
+                          "required": [
+                            "id",
+                            "name",
+                            "description",
+                            "status",
+                            "trigger",
+                            "required_consents",
+                            "multiple",
+                            "multiple_user_ids",
+                            "created_at",
+                            "updated_at",
+                            "author",
+                            "is_author"
+                          ],
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "description": "Activation ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "example": "ca2f7459-e6e6-466b-a4a9-d9af89682c3b"
+                            },
+                            "name": {
+                              "description": "Activation name",
+                              "type": "string",
+                              "example": "My activation"
+                            },
+                            "description": {
+                              "description": "Activation description",
+                              "type": "string",
+                              "example": "Description of my activation"
+                            },
+                            "status": {
+                              "description": "Activation status.\n`active` enables profiles activation, `inactive` disables profile activation.\nIf activation has no audience associated with it, Activation API will always return `inactive`.\n",
+                              "type": "string",
+                              "enum": [
+                                "active",
+                                "inactive"
+                              ],
+                              "example": "active"
+                            },
+                            "trigger": {
+                              "description": "Signal that triggers an activation.\n`onjoin` makes joining an audience trigger activation.\n`onleave` makes leaving an audience trigger activation.\n",
+                              "type": "string",
+                              "enum": [
+                                "onjoin",
+                                "onleave"
+                              ],
+                              "example": "onjoin"
+                            },
+                            "audience": {
+                              "description": "Audience to be activated. Might be missing if the related `audience` gets removed.",
+                              "required": [
+                                "id",
+                                "name"
+                              ],
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "description": "ID of an audience that is activated",
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "example": "aaa1550f-b5a5-4626-a4ac-2f99ff8148fe"
+                                },
+                                "name": {
+                                  "description": "Name of an audience that is activated",
+                                  "type": "string",
+                                  "example": "My audience"
+                                }
+                              }
+                            },
+                            "required_consents": {
+                              "description": "Consent types a profile must contain to be activated",
+                              "type": "array",
+                              "items": {
+                                "description": "Actions a visitor may give consent for",
+                                "type": "string",
+                                "enum": [
+                                  "analytics",
+                                  "ab_testing_and_personalization",
+                                  "conversion_tracking",
+                                  "marketing_automation",
+                                  "remarketing",
+                                  "user_feedback",
+                                  "custom_consent"
+                                ]
+                              },
+                              "example": [
+                                "ab_testing_and_personalization",
+                                "remarketing"
+                              ]
+                            },
+                            "multiple": {
+                              "description": "Whether one profile can be activated multiple times",
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "multiple_user_ids": {
+                              "description": "Whether a profile containing more than one user ID can be activated",
+                              "type": "boolean",
+                              "example": false
+                            },
+                            "created_at": {
+                              "description": "Activation creation time",
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2020-07-14T13:30:07Z"
+                            },
+                            "updated_at": {
+                              "description": "Activation last update time",
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2020-07-14T13:30:07Z"
+                            },
+                            "author": {
+                              "description": "Author of an activation",
+                              "required": [
+                                "email"
+                              ],
+                              "type": "object",
+                              "properties": {
+                                "email": {
+                                  "description": "Email (login) of an author",
+                                  "type": "string",
+                                  "format": "email",
+                                  "example": "author@piwik.pro"
+                                }
+                              }
+                            },
+                            "is_author": {
+                              "description": "Whether the current user is the author of this activation",
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "gads_customer_id",
+                            "gads_user_list_id",
+                            "gads_user_list_action",
+                            "gads_identifier_sources"
+                          ],
+                          "properties": {
+                            "type": {
+                              "description": "Type of activation",
+                              "type": "string",
+                              "const": "gads_customer_match"
+                            },
+                            "gads_customer_id": {
+                              "description": "Google Ads customer ID",
+                              "type": "string",
+                              "pattern": "^\\d{10}$",
+                              "example": "7133587890"
+                            },
+                            "gads_customer_name": {
+                              "description": "Google Ads customer name",
+                              "type": "string",
+                              "example": "Computers LLC"
+                            },
+                            "gads_manager_id": {
+                              "description": "Google Ads customer's manager ID (login customer ID)",
+                              "type": "string",
+                              "pattern": "^\\d{10}$",
+                              "example": "3792543821"
+                            },
+                            "gads_manager_name": {
+                              "description": "Google Ads customer's manager name (login customer name)",
+                              "type": "string",
+                              "example": "Marketing Agency LLC"
+                            },
+                            "gads_user_list_id": {
+                              "description": "Google Ads user list ID",
+                              "type": "string",
+                              "pattern": "^\\d{1,10}$",
+                              "example": "5225082591"
+                            },
+                            "gads_user_list_name": {
+                              "description": "Google Ads user list name",
+                              "type": "string",
+                              "example": "Big spenders"
+                            },
+                            "gads_user_list_action": {
+                              "description": "What to do with the profile.\n`add` adds profile to the user list, `remove` removes profile from the user list.\n",
+                              "type": "string",
+                              "enum": [
+                                "add",
+                                "remove"
+                              ],
+                              "example": "add"
+                            },
+                            "gads_identifier_sources": {
+                              "description": "Object describing source of identifiers sent to Google Ads.\nAt last one of email, phone, complete address (first name, last name, country code, zip code) must be provided.\n",
+                              "type": "object",
+                              "properties": {
+                                "email_address_attribute": {
+                                  "description": "Attribute from which email will be taken and its extraction",
+                                  "example": {
+                                    "column_id": "user_id",
+                                    "extraction": "last"
+                                  },
+                                  "required": [
+                                    "column_id"
+                                  ],
+                                  "type": "object",
+                                  "properties": {
+                                    "column_id": {
+                                      "description": "Attribute from which given identifier will be taken",
+                                      "type": "string"
+                                    },
+                                    "extraction": {
+                                      "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                      "type": "string",
+                                      "enum": [
+                                        "first",
+                                        "last"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "phone_number_attribute": {
+                                  "description": "Attribute from which phone number will be taken",
+                                  "example": {
+                                    "column_id": "session_custom_dimension_1"
+                                  },
+                                  "required": [
+                                    "column_id"
+                                  ],
+                                  "type": "object",
+                                  "properties": {
+                                    "column_id": {
+                                      "description": "Attribute from which given identifier will be taken",
+                                      "type": "string"
+                                    },
+                                    "extraction": {
+                                      "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                      "type": "string",
+                                      "enum": [
+                                        "first",
+                                        "last"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "first_name_attribute": {
+                                  "description": "Attribute from which first name will be taken",
+                                  "example": {
+                                    "column_id": "session_custom_dimension_2",
+                                    "extraction": "first"
+                                  },
+                                  "required": [
+                                    "column_id"
+                                  ],
+                                  "type": "object",
+                                  "properties": {
+                                    "column_id": {
+                                      "description": "Attribute from which given identifier will be taken",
+                                      "type": "string"
+                                    },
+                                    "extraction": {
+                                      "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                      "type": "string",
+                                      "enum": [
+                                        "first",
+                                        "last"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "last_name_attribute": {
+                                  "description": "Attribute from which last name will be taken",
+                                  "example": {
+                                    "column_id": "session_custom_dimension_3"
+                                  },
+                                  "required": [
+                                    "column_id"
+                                  ],
+                                  "type": "object",
+                                  "properties": {
+                                    "column_id": {
+                                      "description": "Attribute from which given identifier will be taken",
+                                      "type": "string"
+                                    },
+                                    "extraction": {
+                                      "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                      "type": "string",
+                                      "enum": [
+                                        "first",
+                                        "last"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "country_code_attribute": {
+                                  "description": "Attribute from which country code will be taken",
+                                  "example": {
+                                    "column_id": "session_custom_dimension_4"
+                                  },
+                                  "required": [
+                                    "column_id"
+                                  ],
+                                  "type": "object",
+                                  "properties": {
+                                    "column_id": {
+                                      "description": "Attribute from which given identifier will be taken",
+                                      "type": "string"
+                                    },
+                                    "extraction": {
+                                      "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                      "type": "string",
+                                      "enum": [
+                                        "first",
+                                        "last"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "zip_code_attribute": {
+                                  "description": "Attribute from which zip code will be taken",
+                                  "example": {
+                                    "column_id": "session_custom_dimension_5"
+                                  },
+                                  "required": [
+                                    "column_id"
+                                  ],
+                                  "type": "object",
+                                  "properties": {
+                                    "column_id": {
+                                      "description": "Attribute from which given identifier will be taken",
+                                      "type": "string"
+                                    },
+                                    "extraction": {
+                                      "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                      "type": "string",
+                                      "enum": [
+                                        "first",
+                                        "last"
+                                      ]
+                                    }
+                                  }
+                                }
+                              },
+                              "example": {
+                                "email_address_attribute": {
+                                  "column_id": "user_id",
+                                  "extraction": "last"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "description": "Common parts of all types of activation",
+                          "required": [
+                            "id",
+                            "name",
+                            "description",
+                            "status",
+                            "trigger",
+                            "required_consents",
+                            "multiple",
+                            "multiple_user_ids",
+                            "created_at",
+                            "updated_at",
+                            "author",
+                            "is_author"
+                          ],
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "description": "Activation ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "example": "ca2f7459-e6e6-466b-a4a9-d9af89682c3b"
+                            },
+                            "name": {
+                              "description": "Activation name",
+                              "type": "string",
+                              "example": "My activation"
+                            },
+                            "description": {
+                              "description": "Activation description",
+                              "type": "string",
+                              "example": "Description of my activation"
+                            },
+                            "status": {
+                              "description": "Activation status.\n`active` enables profiles activation, `inactive` disables profile activation.\nIf activation has no audience associated with it, Activation API will always return `inactive`.\n",
+                              "type": "string",
+                              "enum": [
+                                "active",
+                                "inactive"
+                              ],
+                              "example": "active"
+                            },
+                            "trigger": {
+                              "description": "Signal that triggers an activation.\n`onjoin` makes joining an audience trigger activation.\n`onleave` makes leaving an audience trigger activation.\n",
+                              "type": "string",
+                              "enum": [
+                                "onjoin",
+                                "onleave"
+                              ],
+                              "example": "onjoin"
+                            },
+                            "audience": {
+                              "description": "Audience to be activated. Might be missing if the related `audience` gets removed.",
+                              "required": [
+                                "id",
+                                "name"
+                              ],
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "description": "ID of an audience that is activated",
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "example": "aaa1550f-b5a5-4626-a4ac-2f99ff8148fe"
+                                },
+                                "name": {
+                                  "description": "Name of an audience that is activated",
+                                  "type": "string",
+                                  "example": "My audience"
+                                }
+                              }
+                            },
+                            "required_consents": {
+                              "description": "Consent types a profile must contain to be activated",
+                              "type": "array",
+                              "items": {
+                                "description": "Actions a visitor may give consent for",
+                                "type": "string",
+                                "enum": [
+                                  "analytics",
+                                  "ab_testing_and_personalization",
+                                  "conversion_tracking",
+                                  "marketing_automation",
+                                  "remarketing",
+                                  "user_feedback",
+                                  "custom_consent"
+                                ]
+                              },
+                              "example": [
+                                "ab_testing_and_personalization",
+                                "remarketing"
+                              ]
+                            },
+                            "multiple": {
+                              "description": "Whether one profile can be activated multiple times",
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "multiple_user_ids": {
+                              "description": "Whether a profile containing more than one user ID can be activated",
+                              "type": "boolean",
+                              "example": false
+                            },
+                            "created_at": {
+                              "description": "Activation creation time",
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2020-07-14T13:30:07Z"
+                            },
+                            "updated_at": {
+                              "description": "Activation last update time",
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2020-07-14T13:30:07Z"
+                            },
+                            "author": {
+                              "description": "Author of an activation",
+                              "required": [
+                                "email"
+                              ],
+                              "type": "object",
+                              "properties": {
+                                "email": {
+                                  "description": "Email (login) of an author",
+                                  "type": "string",
+                                  "format": "email",
+                                  "example": "author@piwik.pro"
+                                }
+                              }
+                            },
+                            "is_author": {
+                              "description": "Whether the current user is the author of this activation",
+                              "type": "boolean",
+                              "example": false
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "gads_customer_id",
+                            "gads_conversion_action_id",
+                            "gads_identifier_sources",
+                            "gads_timestamp_source",
+                            "gads_conversion_value",
+                            "gads_conversion_currency_code"
+                          ],
+                          "properties": {
+                            "type": {
+                              "description": "Type of activation",
+                              "type": "string",
+                              "const": "gads_click_conversion"
+                            },
+                            "gads_customer_id": {
+                              "description": "Google Ads customer ID",
+                              "type": "string",
+                              "pattern": "^\\d{10}$",
+                              "example": "7133587890"
+                            },
+                            "gads_customer_name": {
+                              "description": "Google Ads customer name",
+                              "type": "string",
+                              "example": "Computers LLC"
+                            },
+                            "gads_manager_id": {
+                              "description": "Google Ads customer's manager ID (login customer ID)",
+                              "type": "string",
+                              "pattern": "^\\d{10}$",
+                              "example": "3792543821"
+                            },
+                            "gads_manager_name": {
+                              "description": "Google Ads customer's manager name (login customer name)",
+                              "type": "string",
+                              "example": "Marketing Agency LLC"
+                            },
+                            "gads_conversion_action_id": {
+                              "description": "Google Ads conversion action ID",
+                              "type": "string",
+                              "pattern": "^\\d{1,10}$",
+                              "example": "6976871753"
+                            },
+                            "gads_conversion_action_name": {
+                              "description": "Google Ads conversion action name",
+                              "type": "string",
+                              "example": "Placed an order"
+                            },
+                            "gads_identifier_sources": {
+                              "description": "Object describing source of click conversion identifiers sent to Google Ads.\n",
+                              "type": "object",
+                              "required": [
+                                "gclid_attribute"
+                              ],
+                              "properties": {
+                                "gclid_attribute": {
+                                  "description": "Attribute from which gclid will be taken and its extraction",
+                                  "example": {
+                                    "column_id": "campaign_gclid",
+                                    "extraction": "last"
+                                  },
+                                  "required": [
+                                    "column_id"
+                                  ],
+                                  "type": "object",
+                                  "properties": {
+                                    "column_id": {
+                                      "description": "Attribute from which given identifier will be taken",
+                                      "type": "string"
+                                    },
+                                    "extraction": {
+                                      "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                      "type": "string",
+                                      "enum": [
+                                        "first",
+                                        "last"
+                                      ]
+                                    }
+                                  }
+                                }
+                              },
+                              "example": {
+                                "gclid_attribute": {
+                                  "column_id": "campaign_gclid",
+                                  "extraction": "last"
+                                }
+                              }
+                            },
+                            "gads_timestamp_source": {
+                              "description": "Source of conversion timestamp. Must be a datetime attribute.",
+                              "required": [
+                                "column_id"
+                              ],
+                              "type": "object",
+                              "properties": {
+                                "column_id": {
+                                  "description": "Attribute from which given identifier will be taken",
+                                  "type": "string"
+                                },
+                                "extraction": {
+                                  "description": "How to extract value from source attribute. Should be skipped when profile attribute stores only one value.",
+                                  "type": "string",
+                                  "enum": [
+                                    "first",
+                                    "last"
+                                  ]
+                                }
+                              }
+                            },
+                            "gads_conversion_value": {
+                              "description": "Google Ads monetary conversion value",
+                              "type": "number",
+                              "example": 5
+                            },
+                            "gads_conversion_currency_code": {
+                              "description": "ISO 4217 three-letter currency code",
+                              "type": "string",
+                              "example": "USD"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Created activation object"
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "401": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Access token is missing or invalid"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Resource not found (bad ID or resource deleted)"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "app_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the app.",
+            "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+          }
+        }
+      ]
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

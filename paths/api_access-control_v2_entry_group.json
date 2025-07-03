@@ -1,0 +1,146 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/access-control/v2/entry/group": {
+      "post": {
+        "summary": "Permission set",
+        "deprecated": true,
+        "description": "Please use <a href=\"#operation/set_app_permission_for_user_v2\">Set user permission for a given app</a> instead.<br><br> It sets permission for a given entity (ppms/user or ppms/app).\n",
+        "operationId": "_legacy_set_permission_group_v2",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "ppms/permissions/group"
+                        ]
+                      },
+                      "attributes": {
+                        "type": "object",
+                        "properties": {
+                          "entity": {
+                            "type": "string",
+                            "enum": [
+                              "ppms/app"
+                            ]
+                          },
+                          "entityId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "UUIDv4 identifier of given entity",
+                            "example": "94445dcb-4da3-4e24-9f7b-c685aacc5a2a"
+                          },
+                          "group": {
+                            "type": "string",
+                            "enum": [
+                              "no-access",
+                              "view",
+                              "edit",
+                              "edit-publish",
+                              "manage"
+                            ]
+                          },
+                          "targetUserId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "UUIDv4 identifier of user which will receive permissions",
+                            "example": "94445dcb-4da3-4e24-9f7b-c685aacc5a2a"
+                          }
+                        }
+                      }
+                    },
+                    "example": {
+                      "type": "ppms/permissions/group",
+                      "attributes": {
+                        "entity": "ppms/app",
+                        "entityId": "50fca71a-e4a7-4480-a612-a9ffbdf0935f",
+                        "group": "manage",
+                        "targetUserId": "8275cf58-93db-4cda-9d11-7262376c2c72"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": "set permission",
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "tags": [
+          "Access Control"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

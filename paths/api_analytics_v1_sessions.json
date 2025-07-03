@@ -1,0 +1,463 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/analytics/v1/sessions/": {
+      "post": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Fetch sessions",
+        "description": "API that allows fetching raw sessions from the database (event-level data\nis not available in this API). Please note that each request must be\nauthenticated.\n\n#### Compression\n\nWhen requesting large amount of data, make sure to include\nan **Accept-Encoding: gzip** header to enable\ncompression.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "website_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of a website or a meta site.",
+                    "example": "70236925-724f-404e-b634-7b5633bc0bcc"
+                  },
+                  "columns": {
+                    "type": "array",
+                    "description": "Definitions of additional columns that should be returned (timestamp and\nidentifiers will be returned by default).\n",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "column_id": {
+                          "type": "string",
+                          "description": "ID of the dimension column."
+                        },
+                        "transformation_id": {
+                          "type": "string",
+                          "description": "Optional ID of the transformation. Must be supported by\nthe column that was specified and must convert the column\ninto another dimension (and not a metric).\n"
+                        }
+                      },
+                      "required": [
+                        "column_id"
+                      ]
+                    },
+                    "example": [
+                      {
+                        "column_id": "resolution"
+                      },
+                      {
+                        "column_id": "device_type"
+                      }
+                    ]
+                  },
+                  "date_from": {
+                    "type": "string",
+                    "oneOf": [
+                      {
+                        "format": "date",
+                        "description": "Start date for the query (inclusive, in website's timezone)."
+                      },
+                      {
+                        "format": "datetime",
+                        "description": "Start datetime for the query (inclusive, in website's timezone)."
+                      }
+                    ],
+                    "description": "Cannot be used with ``relative_date`` field at the same time. Mandatory if ``relative_date`` is not used."
+                  },
+                  "date_to": {
+                    "type": "string",
+                    "oneOf": [
+                      {
+                        "format": "date",
+                        "description": "End date (inclusive, in website's timezone)."
+                      },
+                      {
+                        "format": "datetime",
+                        "description": "End datetime (exclusive, in website's timezone)."
+                      }
+                    ],
+                    "description": "Cannot be used with ``relative_date`` field at the same time. Mandatory if ``relative_date`` is not used."
+                  },
+                  "relative_date": {
+                    "type": "string",
+                    "enum": [
+                      "today",
+                      "yesterday",
+                      "last_week",
+                      "last_month",
+                      "last_year",
+                      "last_X_days"
+                    ],
+                    "description": "Use relative date in query. Cannot be used with absolute date fields at\nthe same time. ``X`` in ``last_X_days`` must be in range 1 <= ``X`` <= 365.\nNote that ``last_X_days`` does not include data from today.\nMandatory if absolute date fields are not used.\n"
+                  },
+                  "filters": {
+                    "type": "object",
+                    "description": "Dimension filters for the query. The top-level object must specify\nAND/OR clause, but any nested objects may either specify another AND/OR\nclause or a single filter.\n",
+                    "properties": {
+                      "operator": {
+                        "type": "string",
+                        "description": "Logical operator (AND/OR) for the clause.",
+                        "enum": [
+                          "and",
+                          "or"
+                        ]
+                      },
+                      "conditions": {
+                        "type": "array",
+                        "description": "List of filters or recursively nested clauses.",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "column_id",
+                            "condition"
+                          ],
+                          "properties": {
+                            "column_id": {
+                              "type": "string",
+                              "description": "ID of the dimension column."
+                            },
+                            "transformation_id": {
+                              "type": "string",
+                              "description": "Optional ID of the transformation. Must be supported by\nthe column that was specified and must convert the column\ninto another dimension (and not a metric).\n"
+                            },
+                            "condition": {
+                              "type": "object",
+                              "description": "Definition of a the condition for this column.",
+                              "properties": {
+                                "operator": {
+                                  "type": "string",
+                                  "description": "Filtering operator. Available choices depend on\nthe specified column's type.\n\nString operators: ``eq``, ``neq``,\n``starts_with``, ``ends_with``.\n``starts_with``, ``ends_with``,\n``matches``, ``not_matches``. For regular expressions (operators: ``matches`` and ``not_matches``)\nuse [re2](https://github.com/google/re2/wiki/Syntax) syntax.\n\nNumeric operators: ``eq``, ``neq``, ``gt``, ``gte``,\n``lt``, ``lte``.\n\nBoolean operators: ``eq``, ``neq``.\n\nEnum operators: ``eq``, ``neq``, ``empty``, ``not_empty``.\n"
+                                },
+                                "value": {
+                                  "description": "Value that should be matched by filter. Value type must\nmatch the type of the specified column. For enumerated\nfields, you must use the ID value.\n"
+                                }
+                              },
+                              "required": [
+                                "operator",
+                                "value"
+                              ]
+                            }
+                          },
+                          "example": {
+                            "column_id": "browser_name",
+                            "condition": {
+                              "operator": "eq",
+                              "value": "FF"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "required": [
+                      "operator",
+                      "conditions"
+                    ]
+                  },
+                  "offset": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "description": "Number of rows to skip before beginning to return rows."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "default": 100,
+                    "minimum": 1,
+                    "maximum": 100000,
+                    "description": "Number of rows to return."
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "json",
+                      "json-kv",
+                      "csv"
+                    ],
+                    "default": "json",
+                    "description": "Data format of a successful response (error responses are always in json).\n"
+                  },
+                  "column_format": {
+                    "type": "string",
+                    "enum": [
+                      "id",
+                      "name"
+                    ],
+                    "default": "id",
+                    "description": "Format of the columns header (in CSV responses) and metadata labels\n(in JSON responses). By default uses identifiers (``id`` option), set to\n``name`` to use human-readable names.\n"
+                  }
+                },
+                "required": [
+                  "website_id",
+                  "columns"
+                ],
+                "example": {
+                  "website_id": "70236925-724f-404e-b634-7b5633bc0bcc",
+                  "columns": [
+                    {
+                      "column_id": "resolution"
+                    },
+                    {
+                      "column_id": "device_type"
+                    }
+                  ],
+                  "date_from": "2020-02-10",
+                  "date_to": "2020-02-10",
+                  "filters": {
+                    "operator": "and",
+                    "conditions": [
+                      {
+                        "column_id": "browser_name",
+                        "condition": {
+                          "operator": "eq",
+                          "value": "FF"
+                        }
+                      }
+                    ]
+                  },
+                  "offset": 0,
+                  "limit": 100,
+                  "format": "json"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "description": "Rows with results for the query.",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "description": "Additional results metadata for the query.",
+                      "properties": {
+                        "columns": {
+                          "type": "array",
+                          "description": "List of column IDs returned.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "count": {
+                          "type": "integer",
+                          "description": "Total number of results available for this query."
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "data": [
+                      [
+                        "2132601",
+                        "2ecf33167d400648",
+                        "2018-12-03T00:21:03",
+                        "375x667",
+                        [
+                          1,
+                          "Smartphone"
+                        ]
+                      ]
+                    ],
+                    "meta": {
+                      "columns": [
+                        "session_id",
+                        "visitor_id",
+                        "timestamp",
+                        "resolution",
+                        "device_type"
+                      ],
+                      "count": 1999
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string",
+                            "description": "HTTP status code for the error."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "Additional information about the error."
+                          },
+                          "source": {
+                            "type": "object",
+                            "description": "Source of the error (if available).",
+                            "properties": {
+                              "parameter": {
+                                "type": "string",
+                                "description": "Path to the parameter that caused the error."
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "errors": [
+                      {
+                        "status": "400",
+                        "detail": "Dimension \"example\" does not exist.",
+                        "source": {
+                          "parameter": "columns.column_id"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string",
+                            "description": "HTTP status code for the error."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "Additional information about the error."
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "errors": [
+                      {
+                        "status": "401",
+                        "detail": "No valid credentials provided."
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string",
+                            "description": "HTTP status code for the error."
+                          },
+                          "detail": {
+                            "type": "string",
+                            "description": "Additional information about the error."
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "errors": [
+                      {
+                        "status": "403",
+                        "detail": "No valid license found."
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

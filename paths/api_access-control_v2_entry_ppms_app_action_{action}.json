@@ -1,0 +1,169 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/access-control/v2/entry/ppms/app/action/{action}": {
+      "get": {
+        "summary": "Apps with granted action",
+        "description": "Returns apps with granted action for current user.",
+        "operationId": "get_apps_with_action_v2",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "path",
+            "description": "Action of the app",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "view",
+                "edit",
+                "publish",
+                "delete",
+                "add",
+                "manage"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "description": "Meta information",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Number of records found"
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "Resource ID",
+                            "example": "985ed9d7-b652-47b8-b9cf-c17d62735261"
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Resource type, unique across whole PPAS",
+                            "example": "ppms/user"
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "properties": {
+                              "entityType": {
+                                "type": "string",
+                                "description": "Entity type",
+                                "enum": [
+                                  "ppms/app"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "meta": {
+                      "total": 2
+                    },
+                    "data": [
+                      {
+                        "id": "e0180272-d1f5-4bb5-a7d3-0f1a138eacd5",
+                        "type": "ppms/permission/entity",
+                        "attributes": {
+                          "entityType": "ppms/app"
+                        }
+                      },
+                      {
+                        "id": "ccc9c3a4-fd65-4755-900f-2590460aff44",
+                        "type": "ppms/permission/entity",
+                        "attributes": {
+                          "entityType": "ppms/app"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "tags": [
+          "Access Control"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

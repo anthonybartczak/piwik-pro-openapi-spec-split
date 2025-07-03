@@ -1,0 +1,401 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/analytics/v1/manage/product-custom-dimensions/{id}/": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Get product custom dimension",
+        "description": "Returns a definition of a specific custom dimension.\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the object.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+          },
+          {
+            "name": "website_id",
+            "in": "query",
+            "required": true,
+            "description": "ID of the website.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "attributes",
+                            "id"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "description": "Type of the object.",
+                              "enum": [
+                                "ProductCustomDimension"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "ID of a Product Custom Dimension.",
+                              "readOnly": true,
+                              "format": "uuid",
+                              "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                            },
+                            "attributes": {
+                              "required": [
+                                "name",
+                                "website_id"
+                              ],
+                              "properties": {
+                                "website_id": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "ID of the website.",
+                                  "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "Name of the product custom dimension.",
+                                  "example": "Product package height in mm"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "attributes": {
+                              "type": "object",
+                              "required": [
+                                "slot"
+                              ],
+                              "properties": {
+                                "slot": {
+                                  "type": "integer",
+                                  "description": "Slot number for product custom dimension.",
+                                  "minimum": 1
+                                },
+                                "updated_at": {
+                                  "type": "string",
+                                  "readOnly": true,
+                                  "format": "datetime",
+                                  "description": "Last update datetime.",
+                                  "example": "2017-07-14T08:33:53.215948Z"
+                                },
+                                "created_at": {
+                                  "type": "string",
+                                  "readOnly": true,
+                                  "format": "datetime",
+                                  "description": "Created datetime.",
+                                  "example": "2017-07-14T08:33:53.215948Z"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Update product custom dimension",
+        "description": "Configure existing custom dimension.\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the object.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "allOf": [
+                      {
+                        "type": "object",
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "attributes",
+                              "id"
+                            ],
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "description": "Type of the object.",
+                                "enum": [
+                                  "ProductCustomDimension"
+                                ]
+                              },
+                              "id": {
+                                "type": "string",
+                                "description": "ID of a Product Custom Dimension.",
+                                "readOnly": true,
+                                "format": "uuid",
+                                "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                              },
+                              "attributes": {
+                                "required": [
+                                  "name",
+                                  "website_id"
+                                ],
+                                "properties": {
+                                  "website_id": {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "description": "ID of the website.",
+                                    "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the product custom dimension.",
+                                    "example": "Product package height in mm"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "attributes": {
+                                "type": "object",
+                                "required": [
+                                  "slot"
+                                ],
+                                "properties": {
+                                  "slot": {
+                                    "type": "integer",
+                                    "description": "Slot number for product custom dimension.",
+                                    "minimum": 1,
+                                    "readOnly": true
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "required": [
+                      "type",
+                      "attributes",
+                      "id"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of a annotation.",
+                        "format": "uuid",
+                        "readOnly": false,
+                        "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "type",
+                            "attributes",
+                            "id"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "description": "Type of the object.",
+                              "enum": [
+                                "ProductCustomDimension"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "description": "ID of a Product Custom Dimension.",
+                              "readOnly": true,
+                              "format": "uuid",
+                              "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+                            },
+                            "attributes": {
+                              "required": [
+                                "name",
+                                "website_id"
+                              ],
+                              "properties": {
+                                "website_id": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "ID of the website.",
+                                  "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "Name of the product custom dimension.",
+                                  "example": "Product package height in mm"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "attributes": {
+                              "type": "object",
+                              "required": [
+                                "slot"
+                              ],
+                              "properties": {
+                                "slot": {
+                                  "type": "integer",
+                                  "description": "Slot number for product custom dimension.",
+                                  "minimum": 1,
+                                  "readOnly": true
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

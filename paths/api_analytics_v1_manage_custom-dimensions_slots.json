@@ -1,0 +1,164 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/analytics/v1/manage/custom-dimensions/slots/": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Get custom dimension slots",
+        "description": "Returns statistics about available custom dimension slots.\n",
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "query",
+            "required": true,
+            "description": "ID of the website.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "677fe0d3-b4f7-43ed-852d-1a9e7b8e59fb"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "description": "Type of the object.",
+                          "enum": [
+                            "CustomDimensionSlots"
+                          ]
+                        },
+                        "id": {
+                          "type": "string",
+                          "readOnly": true,
+                          "format": "uuid",
+                          "description": "ID of the website.",
+                          "example": "dde2dc68-b6bb-45ee-9ac2-868b6181e33f"
+                        },
+                        "attributes": {
+                          "properties": {
+                            "event": {
+                              "type": "object",
+                              "description": "Describes number of used/available/left slots in a context of session, event or product.",
+                              "properties": {
+                                "available": {
+                                  "type": "integer"
+                                },
+                                "used": {
+                                  "type": "integer"
+                                },
+                                "left": {
+                                  "type": "integer"
+                                }
+                              }
+                            },
+                            "session": {
+                              "type": "object",
+                              "description": "Describes number of used/available/left slots in a context of session, event or product.",
+                              "properties": {
+                                "available": {
+                                  "type": "integer"
+                                },
+                                "used": {
+                                  "type": "integer"
+                                },
+                                "left": {
+                                  "type": "integer"
+                                }
+                              }
+                            },
+                            "product": {
+                              "type": "object",
+                              "description": "Describes number of used/available/left slots in a context of session, event or product.",
+                              "properties": {
+                                "available": {
+                                  "type": "integer"
+                                },
+                                "used": {
+                                  "type": "integer"
+                                },
+                                "left": {
+                                  "type": "integer"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

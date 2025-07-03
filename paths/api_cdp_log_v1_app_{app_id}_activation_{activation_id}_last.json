@@ -1,0 +1,775 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/log/v1/app/{app_id}/activation/{activation_id}/last": {
+      "get": {
+        "deprecated": true,
+        "summary": "Fetch last activation logs",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "get-log-activation-last",
+        "description": "Returns last 100 activation logs. This API is deprecated, use [API v3](#operation/get-log-activation-last-v3).",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          },
+          {
+            "in": "path",
+            "name": "activation_id",
+            "description": "An activation UUID for which last logs are requested",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "e898ae47-61cd-4c9d-9d67-e5a930eb9f39"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "outcome",
+            "description": "Return only webhook activation logs that ended with success/error",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "success",
+                "error"
+              ],
+              "example": "success"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "description": "Return only batch activation logs (e.g., Google Ads Customer Match) that ended with specific status.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "error",
+                "success",
+                "partial_success",
+                "on_hold"
+              ],
+              "example": "success"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "Webhook activation log",
+                        "required": [
+                          "time",
+                          "profile_identifier_type",
+                          "profile_identifier_value",
+                          "retry_number",
+                          "status",
+                          "success"
+                        ],
+                        "properties": {
+                          "time": {
+                            "type": "string",
+                            "format": "datetime",
+                            "description": "Time when activation happened",
+                            "example": "2023-05-26T16:58:12.195361Z"
+                          },
+                          "profile_identifier_type": {
+                            "type": "string",
+                            "description": "Type of dominant identifier",
+                            "enum": [
+                              "id",
+                              "cookie_id",
+                              "user_id",
+                              "visitor_id"
+                            ],
+                            "example": "cookie_id"
+                          },
+                          "profile_identifier_value": {
+                            "type": "string",
+                            "description": "Dominant identifier value",
+                            "example": "aa2720bcb1ddce1b"
+                          },
+                          "retry_number": {
+                            "type": "integer",
+                            "description": "Which retry this was. 0 - not a retry, 1 - first retry, 2 - second retry, etc.",
+                            "example": 1
+                          },
+                          "status": {
+                            "description": "Webhook activation status",
+                            "type": "string",
+                            "enum": [
+                              "success",
+                              "error",
+                              "on_hold"
+                            ],
+                            "example": "success"
+                          },
+                          "success": {
+                            "type": "boolean",
+                            "description": "Whether activation succeeded",
+                            "example": true
+                          },
+                          "error": {
+                            "type": "object",
+                            "description": "Activation error, present if activation failed",
+                            "required": [
+                              "code",
+                              "message"
+                            ],
+                            "properties": {
+                              "code": {
+                                "type": "string",
+                                "enum": [
+                                  "invalid-template",
+                                  "request-body-too-big",
+                                  "invalid-url",
+                                  "connection-error",
+                                  "timeout",
+                                  "redirection-error",
+                                  "client-error",
+                                  "server-error",
+                                  "other"
+                                ],
+                                "description": "Error type"
+                              },
+                              "message": {
+                                "type": "string",
+                                "description": "Human-readable error message",
+                                "example": "Host address could not be resolved"
+                              }
+                            }
+                          },
+                          "request": {
+                            "type": "object",
+                            "description": "Activation request, present if request was sent",
+                            "required": [
+                              "method",
+                              "url",
+                              "headers",
+                              "body"
+                            ],
+                            "properties": {
+                              "method": {
+                                "type": "string",
+                                "enum": [
+                                  "POST"
+                                ],
+                                "description": "HTTP method of the request",
+                                "example": "POST"
+                              },
+                              "url": {
+                                "type": "string",
+                                "description": "URL the request was sent to",
+                                "example": "https://example.com/webhook/09e107ec60874f0b/b177f26d392fc49c"
+                              },
+                              "headers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "minItems": 2,
+                                  "maxItems": 2,
+                                  "description": "Two-element array with header name and value"
+                                },
+                                "description": "Headers sent with the request",
+                                "example": [
+                                  [
+                                    "Content-type",
+                                    "application/json"
+                                  ],
+                                  [
+                                    "Host",
+                                    "example.com"
+                                  ]
+                                ]
+                              },
+                              "body": {
+                                "type": "string",
+                                "description": "Body of the request",
+                                "example": "{\"user\":\"tom@example.com\",\"revenue\":102.55}"
+                              }
+                            }
+                          },
+                          "response": {
+                            "type": "object",
+                            "description": "Response to activation request, present if response was received",
+                            "required": [
+                              "time_ms",
+                              "status",
+                              "headers",
+                              "body"
+                            ],
+                            "properties": {
+                              "time_ms": {
+                                "type": "integer",
+                                "description": "Time between sending the request and receiving the response in milliseconds",
+                                "example": 146
+                              },
+                              "status": {
+                                "type": "integer",
+                                "description": "Response status code",
+                                "example": 200
+                              },
+                              "headers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "minItems": 2,
+                                  "maxItems": 2,
+                                  "description": "Two-element array with header name and value"
+                                },
+                                "description": "Headers of the response",
+                                "example": [
+                                  [
+                                    "Content-type",
+                                    "application/json"
+                                  ],
+                                  [
+                                    "Host",
+                                    "example.com"
+                                  ]
+                                ]
+                              },
+                              "body": {
+                                "type": "string",
+                                "description": "Body of the response",
+                                "example": "OK"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "time": "2023-05-26T16:58:12.195361Z",
+                          "profile_identifier_type": "cookie_id",
+                          "profile_identifier_value": "aa2720bcb1ddce1b",
+                          "retry_number": 1,
+                          "success": true,
+                          "error": {
+                            "code": "Error type",
+                            "message": "Host address could not be resolved"
+                          },
+                          "request": {
+                            "method": "POST",
+                            "url": "https://example.com/webhook/09e107ec60874f0b/b177f26d392fc49c",
+                            "headers": [
+                              [
+                                "Content-type",
+                                "application/json"
+                              ],
+                              [
+                                "Host",
+                                "example.com"
+                              ]
+                            ],
+                            "body": "{\"user\":\"tom@example.com\",\"revenue\":102.55}"
+                          },
+                          "response": {
+                            "time_ms": 146,
+                            "status": 200,
+                            "headers": [
+                              [
+                                "Content-type",
+                                "application/json"
+                              ],
+                              [
+                                "Host",
+                                "example.com"
+                              ]
+                            ],
+                            "body": "OK"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "description": "Batch activation log",
+                            "required": [
+                              "id",
+                              "retry_number",
+                              "status",
+                              "entry_count",
+                              "entry_success_count",
+                              "entry_failure_count",
+                              "entry_on_hold_count",
+                              "entry_errors"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Batch ID",
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "retry_number": {
+                                "description": "How many previous activation attempts failed.\n`0` means that first activation attempt was successful.\n",
+                                "type": "integer",
+                                "example": 0
+                              },
+                              "status": {
+                                "description": "Batch activation status",
+                                "type": "string",
+                                "enum": [
+                                  "waiting",
+                                  "scheduled",
+                                  "accepted",
+                                  "rejected",
+                                  "polling",
+                                  "success",
+                                  "partial_success",
+                                  "failure",
+                                  "on_hold"
+                                ],
+                                "example": "success"
+                              },
+                              "created_at": {
+                                "description": "When batch was created",
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2023-12-19T16:33:26Z"
+                              },
+                              "delivered_at": {
+                                "description": "When batch was delivered",
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2023-12-19T18:12:52Z"
+                              },
+                              "time_range_start": {
+                                "description": "Start of time range the batch covers (inclusive)",
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2023-12-19T10:28:24Z"
+                              },
+                              "time_range_end": {
+                                "description": "End of time range the batch covers (exclusive)",
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2023-12-19T16:28:24Z"
+                              },
+                              "entry_count": {
+                                "description": "How many entries were in this batch",
+                                "type": "integer",
+                                "example": 231
+                              },
+                              "entry_success_count": {
+                                "description": "How many entries were delivered successfully",
+                                "type": "integer",
+                                "example": 214
+                              },
+                              "entry_failure_count": {
+                                "description": "How many entries were not delivered successfully",
+                                "type": "integer",
+                                "example": 17
+                              },
+                              "entry_on_hold_count": {
+                                "description": "How many entries were not delivered due to exceeding monthly activation limit",
+                                "type": "integer",
+                                "example": 0
+                              },
+                              "error": {
+                                "description": "Error object. Present when batch activation fails.",
+                                "type": "object",
+                                "required": [
+                                  "code",
+                                  "message"
+                                ],
+                                "properties": {
+                                  "code": {
+                                    "description": "Error code",
+                                    "type": "string",
+                                    "example": "REQUIRED"
+                                  },
+                                  "message": {
+                                    "description": "Error message",
+                                    "type": "string",
+                                    "example": "Integration not set up"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "description": "Record of Google Ads Customer Match batch activation",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "description": "Activation type",
+                                "type": "string",
+                                "const": "gads_customer_match"
+                              },
+                              "result": {
+                                "description": "Google Ads Customer Match activation specific result",
+                                "allOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "gads_consent_ad_user_data": {
+                                        "description": "Reflect the `ad_user_data` consent given for processing and sending user data to Google Ads,\nspecifically identifying the consent level applied to each batch (in case of customer match\nactivation) or entry (in case of click conversion activation).\n",
+                                        "type": "string",
+                                        "enum": [
+                                          "GRANTED",
+                                          "UNSPECIFIED",
+                                          "DENIED"
+                                        ],
+                                        "example": "GRANTED"
+                                      },
+                                      "gads_consent_ad_personalization": {
+                                        "description": "Reflect the `ad_personalization` consent given for processing and sending user data to Google Ads,\nspecifically identifying the consent level applied to each batch (in case of customer match\nactivation) or entry (in case of click conversion activation).\n",
+                                        "type": "string",
+                                        "enum": [
+                                          "GRANTED",
+                                          "UNSPECIFIED",
+                                          "DENIED"
+                                        ],
+                                        "example": "GRANTED"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "gads_match_rate": {
+                                        "description": "Customer Match match rate is the percentage of your uploaded customer list that could be connected to Google users",
+                                        "type": "string",
+                                        "example": "MATCH_RANGE_81_TO_90"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "example": [
+                        {
+                          "id": "b64033cd-62f8-4d48-bf65-79cf9adbdb2c",
+                          "type": "gads_customer_match",
+                          "retry_number": 0,
+                          "status": "success",
+                          "created_at": "2023-12-19T16:33:26Z",
+                          "delivered_at": "2023-12-19T18:12:52Z",
+                          "time_range_start": "2023-12-19T10:28:24Z",
+                          "time_range_end": "2023-12-19T16:28:24Z",
+                          "entry_count": 231,
+                          "entry_success_count": 214,
+                          "entry_failure_count": 17,
+                          "entry_on_hold_count": 0,
+                          "result": {
+                            "gads_match_rate": "MATCH_RANGE_81_TO_90"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "description": "Batch activation log",
+                            "required": [
+                              "id",
+                              "retry_number",
+                              "status",
+                              "entry_count",
+                              "entry_success_count",
+                              "entry_failure_count",
+                              "entry_on_hold_count",
+                              "entry_errors"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Batch ID",
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "retry_number": {
+                                "description": "How many previous activation attempts failed.\n`0` means that first activation attempt was successful.\n",
+                                "type": "integer",
+                                "example": 0
+                              },
+                              "status": {
+                                "description": "Batch activation status",
+                                "type": "string",
+                                "enum": [
+                                  "waiting",
+                                  "scheduled",
+                                  "accepted",
+                                  "rejected",
+                                  "polling",
+                                  "success",
+                                  "partial_success",
+                                  "failure",
+                                  "on_hold"
+                                ],
+                                "example": "success"
+                              },
+                              "created_at": {
+                                "description": "When batch was created",
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2023-12-19T16:33:26Z"
+                              },
+                              "delivered_at": {
+                                "description": "When batch was delivered",
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2023-12-19T18:12:52Z"
+                              },
+                              "time_range_start": {
+                                "description": "Start of time range the batch covers (inclusive)",
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2023-12-19T10:28:24Z"
+                              },
+                              "time_range_end": {
+                                "description": "End of time range the batch covers (exclusive)",
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2023-12-19T16:28:24Z"
+                              },
+                              "entry_count": {
+                                "description": "How many entries were in this batch",
+                                "type": "integer",
+                                "example": 231
+                              },
+                              "entry_success_count": {
+                                "description": "How many entries were delivered successfully",
+                                "type": "integer",
+                                "example": 214
+                              },
+                              "entry_failure_count": {
+                                "description": "How many entries were not delivered successfully",
+                                "type": "integer",
+                                "example": 17
+                              },
+                              "entry_on_hold_count": {
+                                "description": "How many entries were not delivered due to exceeding monthly activation limit",
+                                "type": "integer",
+                                "example": 0
+                              },
+                              "error": {
+                                "description": "Error object. Present when batch activation fails.",
+                                "type": "object",
+                                "required": [
+                                  "code",
+                                  "message"
+                                ],
+                                "properties": {
+                                  "code": {
+                                    "description": "Error code",
+                                    "type": "string",
+                                    "example": "REQUIRED"
+                                  },
+                                  "message": {
+                                    "description": "Error message",
+                                    "type": "string",
+                                    "example": "Integration not set up"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "description": "Record of Google Ads Click Conversion batch activation",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "description": "Activation type",
+                                "type": "string",
+                                "const": "gads_click_conversion"
+                              },
+                              "result": {
+                                "description": "Google Ads Click Conversion activation specific result"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "example": [
+                        {
+                          "id": "b64033cd-62f8-4d48-bf65-79cf9adbdb2c",
+                          "type": "gads_click_conversion",
+                          "retry_number": 0,
+                          "status": "success",
+                          "created_at": "2023-12-19T16:33:26Z",
+                          "delivered_at": "2023-12-19T18:12:52Z",
+                          "time_range_start": "2023-12-19T10:28:24Z",
+                          "time_range_end": "2023-12-19T16:28:24Z",
+                          "entry_count": 142,
+                          "entry_success_count": 138,
+                          "entry_failure_count": 4,
+                          "entry_on_hold_count": 0,
+                          "result": {}
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "An array of activation logs"
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "401": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Access token is missing or invalid"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Resource not found (bad ID or resource deleted)"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

@@ -1,0 +1,251 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/log/v1/app/{app_id}/audience/{audience_id}/version/{audience_version}/profile/last": {
+      "get": {
+        "deprecated": true,
+        "summary": "List profiles belonging to given audience.",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "get-log-audience-version-profile-last",
+        "description": "Returns profiles belonging to given audience. This API is deprecated, use [API v3](#operation/get-log-audience-version-profile-last-v3).",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          },
+          {
+            "in": "path",
+            "name": "audience_id",
+            "description": "An audience UUID for which profiles are requested",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "ca5b925e-6888-46fe-a0bc-55907c5af050"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "audience_version",
+            "description": "An audience version for which profiles belong",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "example": 2
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "How many last profiles should be returned",
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "example": 10
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "description": "How many profiles to skip (use in conjunction with limit for pagination)",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "example": 10
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "description": "Profile belonging to an audience with minimal data",
+                    "required": [
+                      "joined_at",
+                      "last_activity_at",
+                      "is_user",
+                      "identifier",
+                      "profile_id"
+                    ],
+                    "properties": {
+                      "joined_at": {
+                        "description": "The first time profile joined the audience",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2022-10-17T09:46:16.343024Z"
+                      },
+                      "last_activity_at": {
+                        "description": "Last time the profile met audience conditions",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2022-10-17T09:49:16.123456Z"
+                      },
+                      "is_user": {
+                        "description": "Whether the profile can be identified as a user or is just a visitor",
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "identifier": {
+                        "description": "An identifier to display on a list (user ID or cookie ID)",
+                        "type": "string",
+                        "example": "user@example.com"
+                      },
+                      "profile_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "ID of single profile",
+                        "example": 639204699
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "List of profiles in given audience"
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "401": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Access token is missing or invalid"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Resource not found (bad ID or resource deleted)"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

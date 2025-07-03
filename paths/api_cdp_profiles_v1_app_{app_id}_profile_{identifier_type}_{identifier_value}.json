@@ -1,0 +1,492 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/profiles/v1/app/{app_id}/profile/{identifier_type}/{identifier_value}": {
+      "get": {
+        "summary": "Get profile by identifier",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "get-profile-by-identifier",
+        "description": "Return profile by `id`, `cookie_id` or `user_id`",
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the app.",
+              "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+            }
+          },
+          {
+            "in": "path",
+            "name": "identifier_type",
+            "description": "Type of identifier",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "id",
+                "cookie_id",
+                "user_id",
+                "visitor_id"
+              ]
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "identifier_value",
+            "description": "Value of identifier",
+            "schema": {
+              "type": "string",
+              "example": "3a0133748b3e524c"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Profile",
+                  "required": [
+                    "version",
+                    "id",
+                    "app_id",
+                    "created_at",
+                    "updated_at",
+                    "event_count",
+                    "broken",
+                    "remind_at",
+                    "audiences",
+                    "activations_done",
+                    "identifiers",
+                    "predefined_attributes",
+                    "custom_dimension_attributes",
+                    "custom_attributes"
+                  ],
+                  "properties": {
+                    "version": {
+                      "type": "number",
+                      "description": "Profile schema version.",
+                      "example": 1
+                    },
+                    "id": {
+                      "type": "string",
+                      "description": "Unique identifier of a profile.",
+                      "example": "fc82690c0aa9f4a0"
+                    },
+                    "app_id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "05ab11d9-1876-4f00-b533-596d02572c4d",
+                      "description": "ID of the app"
+                    },
+                    "created_at": {
+                      "format": "date-time",
+                      "type": "string",
+                      "description": "Date and time when profile was created.",
+                      "example": "2023-09-22T17:39:22.830453Z"
+                    },
+                    "updated_at": {
+                      "format": "date-time",
+                      "type": "string",
+                      "description": "Date and time when profile was updated.",
+                      "example": "2023-09-22T17:42:07.443853Z"
+                    },
+                    "event_count": {
+                      "type": "integer",
+                      "description": "Number of events for profile.",
+                      "example": 34
+                    },
+                    "broken": {
+                      "type": "boolean",
+                      "description": "Flag if profile is broken (e.g. due to being too large).",
+                      "example": false
+                    },
+                    "remind_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Date and time when the profile will be updated.",
+                      "example": "2023-10-22T17:42:07.443853Z"
+                    },
+                    "audiences": {
+                      "type": "array",
+                      "description": "List of Audiences profile belongs to.",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "audience_id",
+                          "audience_version",
+                          "last_match_time",
+                          "expired"
+                        ],
+                        "properties": {
+                          "audience_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "Audience identifier.",
+                            "example": "ef3601bf-f770-4f88-a62f-55d4cccf955d"
+                          },
+                          "audience_version": {
+                            "type": "integer",
+                            "description": "Audience version number, incremented on every update of definition or membership_duration_days.",
+                            "example": 1
+                          },
+                          "last_match_time": {
+                            "format": "date-time",
+                            "type": "string",
+                            "description": "Date and time when profile matched audience definition. From this date audience membership duration is counted.",
+                            "example": "2023-09-22T17:39:49.066433Z"
+                          },
+                          "expired": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Whether audience membership has expired - membership_duration_days has passed since last_match_time."
+                          }
+                        }
+                      }
+                    },
+                    "activations_done": {
+                      "type": "array",
+                      "description": "List of Activation IDs that were sent for profile.",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "2fb368ff-c0ca-45b9-bac5-421e40a34ff0"
+                      }
+                    },
+                    "identifiers": {
+                      "type": "object",
+                      "description": "List of all known identifiers for profile.",
+                      "example": {
+                        "cookie_id": [
+                          "176a5215ff7b62e3"
+                        ],
+                        "user_id": [
+                          "tom1987@bob.com"
+                        ]
+                      }
+                    },
+                    "predefined_attributes": {
+                      "type": "object",
+                      "description": "List of all predefined attributes collected for profile.",
+                      "example": {
+                        "browser_engine": [
+                          "Blink",
+                          "Blink"
+                        ],
+                        "browser_language_iso639": [
+                          [
+                            "en",
+                            "English"
+                          ],
+                          [
+                            "en",
+                            "English"
+                          ]
+                        ],
+                        "browser_name": [
+                          [
+                            "CH",
+                            "Chrome"
+                          ],
+                          [
+                            "CH",
+                            "Chrome"
+                          ]
+                        ],
+                        "browser_version": [
+                          "117.0",
+                          "117.0"
+                        ],
+                        "consent_type_ab_testing_personalization": true,
+                        "consent_type_analytics": true,
+                        "consent_type_marketing_automation": true,
+                        "consent_type_remarketing": true,
+                        "device_type": [
+                          [
+                            0,
+                            "Desktop"
+                          ],
+                          [
+                            0,
+                            "Desktop"
+                          ]
+                        ],
+                        "first_activity": "2023-09-22T17:39:22.830453Z",
+                        "first_page_url": "https://piwik.pro/",
+                        "goal_uuids": [
+                          "f6bc167f-960f-4666-b208-e066dd430404",
+                          "71ff815b-9558-43b9-be72-f784f8985461",
+                          "c83656ee-882d-4d31-be10-3ac7eb5ffde5",
+                          "b206480d-9ed7-4bd9-83fb-ba644df81385"
+                        ],
+                        "ipv4_address": [
+                          "146.59.92.216",
+                          "178.238.11.6"
+                        ],
+                        "last_activity": "2023-09-22T17:42:07.443853Z",
+                        "last_order_time": "2023-09-22T17:39:49.066433Z",
+                        "last_page_url": "https://piwik.pro/",
+                        "location_city_geoname_id": [
+                          [
+                            756135,
+                            "Warsaw"
+                          ],
+                          [
+                            2643741,
+                            "London"
+                          ]
+                        ],
+                        "location_continent_iso_code": [
+                          [
+                            "EU",
+                            "Europe"
+                          ],
+                          [
+                            "EU",
+                            "Europe"
+                          ]
+                        ],
+                        "location_country_iso_code": [
+                          [
+                            "PL",
+                            "Poland"
+                          ],
+                          [
+                            "GB",
+                            "United Kingdom"
+                          ]
+                        ],
+                        "location_latitude": [
+                          52.2251,
+                          51.5118
+                        ],
+                        "location_longitude": [
+                          21.0477,
+                          -0.0036065
+                        ],
+                        "location_organization": [
+                          "OVH Sp. z o. o",
+                          "Packethub S.A"
+                        ],
+                        "location_provider": [
+                          "OVH SAS",
+                          "Clouvider Limited"
+                        ],
+                        "location_subdivision_1_iso_code": [
+                          [
+                            "14",
+                            "Mazovia"
+                          ],
+                          [
+                            "ENG",
+                            "England"
+                          ]
+                        ],
+                        "medium": [
+                          "direct",
+                          "direct"
+                        ],
+                        "operating_system": [
+                          [
+                            "LIN",
+                            "GNU/Linux"
+                          ],
+                          [
+                            "LIN",
+                            "GNU/Linux"
+                          ]
+                        ],
+                        "referrer_type": [
+                          [
+                            1,
+                            "Direct entry"
+                          ],
+                          [
+                            1,
+                            "Direct entry"
+                          ]
+                        ],
+                        "resolution_height": [
+                          1080,
+                          1080
+                        ],
+                        "resolution_width": [
+                          1920,
+                          1920
+                        ],
+                        "source": [
+                          "direct",
+                          "direct"
+                        ],
+                        "source_medium": [
+                          "direct / direct",
+                          "direct / direct"
+                        ],
+                        "total_goal_revenue": 70,
+                        "total_revenue": 3075
+                      }
+                    },
+                    "custom_dimension_attributes": {
+                      "type": "object",
+                      "description": "List of all attributes from custom dimensions collected for profile.",
+                      "example": {
+                        "session_custom_dimension_1": [
+                          "Male"
+                        ],
+                        "session_custom_dimension_5": [
+                          "Thursday",
+                          "Friday"
+                        ]
+                      }
+                    },
+                    "custom_attributes": {
+                      "type": "object",
+                      "description": "List of all custom attributes collected for profile.",
+                      "example": {
+                        "custom_attribute_1": "admin",
+                        "custom_attribute_2": 10.23
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Profile object"
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "403": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "403 forbidden"
+                }
+              }
+            },
+            "description": "User does not have permissions for this action"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Profile with given cookie_id or organization was not found"
+          },
+          "422": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Unprocessable Entity"
+                }
+              }
+            },
+            "description": "Data in body does not meet requirements (e.g. missing field)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}

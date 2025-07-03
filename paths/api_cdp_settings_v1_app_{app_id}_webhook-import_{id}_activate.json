@@ -1,0 +1,280 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Web API",
+    "version": "master"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.piwik.pro",
+      "variables": {
+        "account": {
+          "default": "example"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "OAuth2ClientCredentials": []
+    }
+  ],
+  "paths": {
+    "/api/cdp/settings/v1/app/{app_id}/webhook-import/{id}/activate": {
+      "post": {
+        "summary": "Activate webhook import",
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "operationId": "post-webhook-import-activate",
+        "description": "Mark the webhook import as active",
+        "responses": {
+          "200": {
+            "description": "A webhook import that has been activated",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A webhook import object with all info.",
+                  "required": [
+                    "id",
+                    "author",
+                    "name",
+                    "status"
+                  ],
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "ID of the webhook import"
+                        },
+                        "author": {
+                          "description": "Author of a webhook",
+                          "required": [
+                            "email"
+                          ],
+                          "type": "object",
+                          "properties": {
+                            "email": {
+                              "description": "Email of an author",
+                              "type": "string",
+                              "format": "email",
+                              "example": "author@piwik.pro"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 255
+                        },
+                        "identifiers": {
+                          "type": "object",
+                          "description": "Mapping of incoming keys to profile identifiers, only `cookie_id` or `user_id` allowed as values for now.",
+                          "minProperties": 1,
+                          "maxProperties": 1,
+                          "patternProperties": {
+                            "^[-_A-Za-z0-9\\.]{1,255}$": {
+                              "type": "string",
+                              "enum": [
+                                "cookie_id",
+                                "user_id"
+                              ]
+                            }
+                          },
+                          "example": {
+                            "email": "user_id"
+                          }
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "description": "Mapping of incoming keys to event data keys",
+                          "maxProperties": 100,
+                          "patternProperties": {
+                            "^[-_A-Za-z0-9\\.]{1,255}$": {
+                              "type": "string"
+                            }
+                          },
+                          "example": {
+                            "url": "analytics.event_url",
+                            "user.age": "age",
+                            "transaction_id": "session_custom_dimension_5"
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "active",
+                            "inactive"
+                          ],
+                          "description": "Whether the webhook import is active. Cannot be toggled if webhook import has no identifiers or attributes.",
+                          "example": "inactive"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "test_request_body": {
+                          "type": "string",
+                          "example": "{\"user_id\":\"test\",\"total_revenue\":1}",
+                          "description": "JSON body of the webhook request to store temporarily for setting up the webhook import attribute mappings."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "created_at",
+                        "updated_at"
+                      ],
+                      "properties": {
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2022-10-17T09:49:16.123456Z",
+                          "description": "Time of the creation of the webhook import."
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2022-10-17T09:49:16.123456Z",
+                          "description": "Time when the webhook import's settings were updated."
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Request parameters deserialization error."
+                }
+              }
+            },
+            "description": "Bad request response (e.g. missing GET parameter, parameter value out of bounds)"
+          },
+          "401": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "description": "Access token is missing or invalid"
+          },
+          "402": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Module disabled."
+                }
+              }
+            },
+            "description": "CDP module is disabled"
+          },
+          "404": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "404 page not found"
+                }
+              }
+            },
+            "description": "Resource not found (bad ID or resource deleted)"
+          },
+          "500": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Internal error occurred. Check logs"
+                }
+              }
+            },
+            "description": "Internal application error response (some service encountered unexpected error)"
+          }
+        },
+        "tags": [
+          "Customer Data Platform"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "app_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the app.",
+            "example": "3929d56c-cd62-4001-a4fc-013f5f954691"
+          }
+        },
+        {
+          "in": "path",
+          "name": "id",
+          "description": "ID of a webhook import",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ]
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "/auth/token",
+            "scopes": {}
+          }
+        }
+      },
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "OrganizationHeaderAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Organization",
+        "description": "Organization name as the header value"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "x-api-checksum": "3c5ea1220b71cba477af28107966d0e7a7bdf735d5b8006a7c729dc6c346f66d",
+  "x-readme": {
+    "explorer-enabled": true,
+    "proxy-enabled": true
+  }
+}
